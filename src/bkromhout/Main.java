@@ -8,8 +8,8 @@ import bkromhout.Downloaders.FictionHuntDL;
  * Should be run with one argument, which is a path (absolute or relative from where JVM is started) to a text file
  * which contains a list of FictionHuntStory story URLs.
  * <p>
- * Will download the HTML files for each story into folders at the same location as the file. Sadly, since FictionHuntStory
- * doesn't preserve chapter names, the files will be named like "Chapter #".
+ * Will download the HTML files for each story into folders at the same location as the file. Sadly, since
+ * FictionHuntStory doesn't preserve chapter names, the files will be named like "Chapter #".
  */
 public class Main {
 
