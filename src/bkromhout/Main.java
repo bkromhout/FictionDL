@@ -2,6 +2,7 @@ package bkromhout;
 
 import bkromhout.Downloader.FanfictionNetDL;
 import bkromhout.Downloader.FictionHuntDL;
+import bkromhout.Downloader.SiyeDL;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -39,6 +40,10 @@ public class Main {
         FanfictionNetDL fanfictionNetDL = new FanfictionNetDL(parser.getFfnUrls());
         fanfictionNetDL.download();
         System.out.printf(C.FINISHED_WITH_SITE, FanfictionNetDL.SITE);
+        // Create a SIYE downloader and download stories.
+        SiyeDL siyeDL = new SiyeDL(parser.getSiyeUrls());
+        siyeDL.download();
+        System.out.printf(C.FINISHED_WITH_SITE, SiyeDL.SITE);
         // All done!
         System.out.println(C.ALL_FINISHED);
     }

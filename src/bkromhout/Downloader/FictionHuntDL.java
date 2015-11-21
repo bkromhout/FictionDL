@@ -23,7 +23,7 @@ public class FictionHuntDL {
     private FanfictionNetDL ffnDownloader = null;
 
     /**
-     * Downloader for FictionHuntStory.
+     * Downloader for FictionHunt stories.
      * @param urls List of FictionHunt URLs.
      */
     public FictionHuntDL(ArrayList<String> urls) {
