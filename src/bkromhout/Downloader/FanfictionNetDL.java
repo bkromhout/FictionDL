@@ -1,7 +1,12 @@
 package bkromhout.Downloader;
 
 import bkromhout.C;
+import bkromhout.Main;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -52,11 +57,41 @@ public class FanfictionNetDL {
     }
 
     /**
-     * Download a story based on its ID.
+     * Download and save ePUB for a story based on its ID. Not knowing the title means we need to try and scrape it from
+     * FFN first (not just for the sake of having the title, more to ensure that FFN has the story available).
      * @param storyId The ID of the story.
      */
     public void downloadByStoryId(String storyId) {
-        //TODO:this
+        // First try to get the first chapter of the story. 2 reasons for this. First, we ensure the story exists.
+        // Second, we can get the title for logging purposes.
+        String ffnUrl = String.format(C.FFN_LINK, storyId);
+        Document storyDoc = Main.downloadHtml(ffnUrl);
+        if (storyDoc == null) {
+            // If we couldn't download the chapter from Fanfiction.net, we'll skip try to get it from p0ody-files
+            // (though technically there's certainly the possibility that it does exist there in the archive).
+            System.out.printf(C.FFN_DL_FAILED, storyId);
+            return;
+        }
+        // Now try to get the story title from the document.
+        Element titleElement = storyDoc.select("div#content b").first();
+        if (titleElement == null) {
+            // If we can't find the title, that means that the story isn't available. Tell the user.
+            System.out.printf(C.FFN_DL_FAILED, storyId);
+            return;
+        }
+        // If we've gotten to here, we should be golden. Download the ePUB for the story from p0ody-files now.
+        downloadByStoryId(storyId, titleElement.text());
+    }
+
+    /**
+     * Download and save ePUB for a story based on its ID. We assume that the fact that we know the title means that FFN
+     * has the story available.
+     * @param storyId The ID of the story.
+     * @param title   The title of the story. (It's really just for logging purposes)
+     */
+    public void downloadByStoryId(String storyId, String title) {
+        System.out.printf(C.DL_SAVE_EPUB_FOR_STORY, title);
+        String pfUrl = String.format(C.PF_DL_LINK, storyId);
     }
 
     /**
@@ -66,6 +101,6 @@ public class FanfictionNetDL {
      * @return The story ID from the given URL.
      */
     private String storyIdFromFfnUrl(String ffnUrl) {
-        return Pattern.compile(C.ffnRegex).matcher(ffnUrl).group(4);
+        return Pattern.compile(C.FFN_REGEX).matcher(ffnUrl).group(4);
     }
 }

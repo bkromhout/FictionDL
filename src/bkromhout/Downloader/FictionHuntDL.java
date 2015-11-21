@@ -62,7 +62,7 @@ public class FictionHuntDL {
             // Story is still on Fanfiction.net, which is preferable since we can use p0ody-files to download the ePUB.
             if (ffnDownloader == null) ffnDownloader = new FanfictionNetDL(); // Get a FFN downloader instance.
             System.out.println(C.FH_STORY_ON_FFN);
-            ffnDownloader.downloadByStoryId(story.getFfnStoryId());
+            ffnDownloader.downloadByStoryId(story.getFfnStoryId(), story.getTitle());
         } else {
             // Story isn't on Fanfiction.net anymore, download directly from FictionHunt.
             // Get chapter documents, and make sure we didn't fail to get some chapter (and if we did, skip this story.

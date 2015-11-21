@@ -2,7 +2,6 @@ package bkromhout.Story;
 
 import bkromhout.C;
 import bkromhout.Main;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
@@ -45,7 +44,7 @@ public class FictionHuntStory {
         if (title != null) return;
         // Get the HTML at the url we've specified to use as the entry point.
         Document doc = Main.downloadHtml(url);
-        if (doc == null) throw new IOException(C.DL_ENTRY_PT_FAILED);
+        if (doc == null) throw new IOException(C.ENTRY_PT_DL_FAILED);
         // Check if story is on Fanfiction.net. If so, just get its FFN story ID.
         ffnStoryId = tryGetFfnStoryId();
         if (ffnStoryId != null) return; // If the story is on FFN, don't bother with the rest!
@@ -75,20 +74,18 @@ public class FictionHuntStory {
         // FictionHunt has done a very handy thing with their URLs, their story IDs correspond to the original FFN
         // story IDs, which makes generating an FFN link easy to do. First, we need to get the story ID from the
         // FictionHunt URL.
-        String storyId = Pattern.compile(C.fictionHuntRegex).matcher(url).group(5);
+        String storyId = Pattern.compile(C.FICTIONHUNT_REGEX).matcher(url).group(5);
         // The create a FFN link and download the resulting page.
-        Document ffnDoc;
-        try {
-            ffnDoc = Jsoup.connect(String.format(C.ffnLink, storyId)).get();
-        } catch (IOException e) {
+        Document ffnDoc = Main.downloadHtml(String.format(C.FFN_LINK, storyId));
+        if (ffnDoc == null) {
             // It really doesn't matter if we can't get the page from FFN since we can still get it from FictionHunt.
             System.out.println(C.FH_FFN_CHECK_FAILED);
             return null;
         }
         // Now check the resulting FFN HTML to see if the warning panel which indicates that the story isn't
-        // available is present. If it is present, the story isn't on FFN anymore, so return a -1, otherwise, the
+        // available is present. If it is present, the story isn't on FFN anymore, so return a null; otherwise, the
         // story is still up, return the real story ID.
-        return ffnDoc.select("div.panel_warning").first() != null ? null : storyId;
+        return ffnDoc.select("span.gui_warning").first() != null ? null : storyId;
     }
 
     public String getUrl() {

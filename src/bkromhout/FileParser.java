@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  */
 public class FileParser {
     // Regex for extracting host strings.
-    private Pattern hostRegex = Pattern.compile(C.hostRegex);
+    private Pattern hostRegex = Pattern.compile(C.HOST_REGEX);
     // FictionHunt URLs.
     private ArrayList<String> fictionHuntUrls = new ArrayList<>();
     // Fanfiction.net URLs.
