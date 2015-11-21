@@ -1,12 +1,14 @@
 package bkromhout;
 
+import bkromhout.Downloaders.FictionHuntDL;
+
 /**
- * FictionHunt downloader.
+ * FictionHuntStory downloader.
  * <p>
  * Should be run with one argument, which is a path (absolute or relative from where JVM is started) to a text file
- * which contains a list of FictionHunt story URLs.
+ * which contains a list of FictionHuntStory story URLs.
  * <p>
- * Will download the HTML files for each story into folders at the same location as the file. Sadly, since FictionHunt
+ * Will download the HTML files for each story into folders at the same location as the file. Sadly, since FictionHuntStory
  * doesn't preserve chapter names, the files will be named like "Chapter #".
  */
 public class Main {
@@ -17,7 +19,7 @@ public class Main {
             System.out.println("Usage: java FictionHuntDL.jar <path to URL list txt file>");
             System.exit(0);
         }
-        // Create a FictionHunt downloader and download the files.
+        // Create a FictionHuntStory downloader and download the files.
         FictionHuntDL fictionHuntDL = new FictionHuntDL(args[0]);
         fictionHuntDL.download();
     }
