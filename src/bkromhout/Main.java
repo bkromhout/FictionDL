@@ -1,6 +1,6 @@
 package bkromhout;
 
-import bkromhout.Downloaders.FictionHuntDL;
+import bkromhout.Downloader.FictionHuntDL;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 

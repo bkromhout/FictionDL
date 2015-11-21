@@ -1,14 +1,14 @@
-package bkromhout.Downloaders;
+package bkromhout.Downloader;
 
 import bkromhout.Main;
-import bkromhout.StoryModels.FictionHuntStory;
+import bkromhout.Story.FictionHuntStory;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 /**
  * Downloader for FictionHuntStory.
@@ -62,13 +62,16 @@ public class FictionHuntDL {
      */
     public void download() {
         System.out.println("Starting download process...");
-        // Get initial HTML Document for each story.
-        System.out.println("Fetching stories...");
-        ArrayList<Document> initialStoryDocs = Main.getDocuments(urls);
-        // Create story models from initial chapters.
-        System.out.println("Building story models...");
-        ArrayList<FictionHuntStory> stories = initialStoryDocs.stream().map(FictionHuntStory::new).collect(
-                Collectors.toCollection(ArrayList<FictionHuntStory>::new));
+        // Create story models from URLs.
+        System.out.println("Fetching stories and building story models...");
+        ArrayList<FictionHuntStory> stories = new ArrayList<>();
+        for (String url : urls) {
+            try {
+                stories.add(new FictionHuntStory(url));
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
+        }
         // Download and save the stories.
         System.out.println("Downloading stories...");
         stories.forEach(this::downloadStory);
@@ -88,6 +91,7 @@ public class FictionHuntDL {
             return;
         }
         // Sanitize the chapters; there are parts of FictionHunt's HTML that we don't really want.
+        // TODO if we want to get real chapter names, it's gonna need to happen before this!!!
         System.out.printf("Sanitizing chapters for: \"%s\"\n", story.getTitle());
         chapters.forEach(this::sanitizeChapter);
         // Save the story.
@@ -97,11 +101,15 @@ public class FictionHuntDL {
     }
 
     /**
-     * Remove parts of a FictionHunt story chapter's HTML to make it cleaner.
+     * Removes all parts of the FictionHunt HTML except for the head's title element and the chapter text, which gets
+     * pulled up and becomes the contents of the body.
      * @param chapter Document for a FictionHunt story chapter.
      */
     private void sanitizeChapter(Document chapter) {
-        // TODO: this
+        // Remove all Elements in <head> except for <title>.
+        chapter.select("head > *:not(title)").forEach(Element::remove);
+        // Get the chapter's text, keeping all HTML formatting intact. Then replace <body>'s contents with it.
+        chapter.body().html(chapter.select("div.text").first().html());
     }
 
     /**
