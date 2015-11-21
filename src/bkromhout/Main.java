@@ -22,7 +22,7 @@ public class Main {
     public static void main(String[] args) {
         // Check args, print usage if needed.
         if (args.length != 1) {
-            System.out.println("Usage: java FictionHuntDL.jar <path to URL list txt file>");
+            System.out.println("Usage: java -jar FictionHuntDL.jar <path to URL list txt file>");
             System.exit(0);
         }
         // Create a FictionHuntStory downloader and download the files.
