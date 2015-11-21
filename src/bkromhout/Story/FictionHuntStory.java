@@ -22,6 +22,8 @@ public class FictionHuntStory {
     private String rating;
     // List of chapter URLs.
     private ArrayList<String> chapterUrls = new ArrayList<>();
+    // If the story is still available on Fanfiction.net, get its story ID and use p0ody-files to download it.
+    private long ffnStoryId = -1;
 
     /**
      * Create a new FictionHuntStory object based off of a URL.
@@ -41,6 +43,9 @@ public class FictionHuntStory {
         // Get the HTML at the url we've specified to use as the entry point.
         Document doc = Main.downloadHtml(url);
         if (doc == null) throw new IOException("Couldn't download story entry point!");
+        // Check if story is on Fanfiction.net. If so, just get its FFN story ID.
+        ffnStoryId = tryGetFfnStoryId();
+        if (ffnStoryId != -1) return; // If the story is on FFN, don't bother with the rest!
         // Get title string.
         title = doc.select("div.title").first().text();
         // Get author string.
@@ -56,6 +61,15 @@ public class FictionHuntStory {
         // Generate chapter URLs.
         String baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
         for (int i = 0; i < numChapters; i++) chapterUrls.add(baseUrl + String.valueOf(i + 1));
+    }
+
+    /**
+     * Parse the entry point for the link to FFN and download the page at that link. If it's a valid story (i.e., it
+     * hasn't been taken down), then return its story ID so that we can use p0ody-files to download it later.
+     * @return Story ID if on FFN, or -1 if not.
+     */
+    private long tryGetFfnStoryId() {
+        //TODO: This
     }
 
     public String getUrl() {
@@ -80,6 +94,10 @@ public class FictionHuntStory {
 
     public ArrayList<String> getChapterUrls() {
         return chapterUrls;
+    }
+
+    public long getFfnStoryId() {
+        return ffnStoryId;
     }
 
     @Override

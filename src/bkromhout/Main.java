@@ -5,6 +5,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,8 @@ import java.util.stream.Collectors;
  * Will download the HTML files for each story into folders at the same location as the file.
  */
 public class Main {
+    // Path where the input file resides, which is where stories will be saved.
+    public static Path dirPath;
 
     public static void main(String[] args) {
         // Check args, print usage if needed.
@@ -27,6 +30,7 @@ public class Main {
         // Create a FictionHuntStory downloader and download the files.
         FictionHuntDL fictionHuntDL = new FictionHuntDL(args[0]);
         fictionHuntDL.download();
+        System.out.println("All Finished! :)");
     }
 
     /**
