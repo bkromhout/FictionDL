@@ -14,8 +14,6 @@ import java.util.ArrayList;
  * Downloader for FictionHuntStory.
  */
 public class FictionHuntDL {
-    // Argument from main, the path to the file.
-    private File storiesFile;
     // Path to save directory. This is where story folders will be created, and where the story urls file is.
     private Path dirPath;
     // List of story URLs
@@ -37,7 +35,7 @@ public class FictionHuntDL {
     private void initialize(String path) {
         System.out.println("Checking file...");
         // Make sure the given path is valid, is a file, and can be read.
-        storiesFile = new File(path);
+        File storiesFile = new File(path);
         if (!(storiesFile.exists() && storiesFile.isFile() && storiesFile.canRead())) {
             System.err.println("Invalid path.");
             System.exit(1);
@@ -74,9 +72,9 @@ public class FictionHuntDL {
             }
         }
         // Download and save the stories.
-        System.out.println("Downloading stories...");
+        System.out.println("Downloading stories...\n");
         stories.forEach(this::downloadStory);
-        System.out.println("\nAll Finished! :)");
+        System.out.println("All Finished! :)");
     }
 
     /**
@@ -88,7 +86,7 @@ public class FictionHuntDL {
         System.out.printf("Downloading chapters for: \"%s\"\n", story.getTitle());
         ArrayList<Document> chapters = Main.getDocuments(story.getChapterUrls());
         if (story.getChapterUrls().size() != chapters.size()) {
-            System.out.printf("Skipping this story; some chapters failed to download: \"%s\"\n", story.getTitle());
+            System.out.printf("Skipping this story; some chapters failed to download: \"%s\"\n\n", story.getTitle());
             return;
         }
         // Sanitize the chapters; there are parts of FictionHunt's HTML that we don't really want.
@@ -98,7 +96,7 @@ public class FictionHuntDL {
         // Save the story.
         System.out.printf("Saving story: \"%s\"\n", story.getTitle());
         saveStory(story, chapters);
-        System.out.println("Done!");
+        System.out.println("Done!\n");
     }
 
     /**
