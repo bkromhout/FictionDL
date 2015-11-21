@@ -1,10 +1,13 @@
 package bkromhout.Story;
 
+import bkromhout.C;
 import bkromhout.Main;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 /**
  * Model object for a story.
@@ -23,7 +26,7 @@ public class FictionHuntStory {
     // List of chapter URLs.
     private ArrayList<String> chapterUrls = new ArrayList<>();
     // If the story is still available on Fanfiction.net, get its story ID and use p0ody-files to download it.
-    private long ffnStoryId = -1;
+    private String ffnStoryId = null;
 
     /**
      * Create a new FictionHuntStory object based off of a URL.
@@ -42,10 +45,10 @@ public class FictionHuntStory {
         if (title != null) return;
         // Get the HTML at the url we've specified to use as the entry point.
         Document doc = Main.downloadHtml(url);
-        if (doc == null) throw new IOException("Couldn't download story entry point!");
+        if (doc == null) throw new IOException(C.DL_ENTRY_PT_FAILED);
         // Check if story is on Fanfiction.net. If so, just get its FFN story ID.
         ffnStoryId = tryGetFfnStoryId();
-        if (ffnStoryId != -1) return; // If the story is on FFN, don't bother with the rest!
+        if (ffnStoryId != null) return; // If the story is on FFN, don't bother with the rest!
         // Get title string.
         title = doc.select("div.title").first().text();
         // Get author string.
@@ -68,8 +71,24 @@ public class FictionHuntStory {
      * hasn't been taken down), then return its story ID so that we can use p0ody-files to download it later.
      * @return Story ID if on FFN, or -1 if not.
      */
-    private long tryGetFfnStoryId() {
-        //TODO: This
+    private String tryGetFfnStoryId() {
+        // FictionHunt has done a very handy thing with their URLs, their story IDs correspond to the original FFN
+        // story IDs, which makes generating an FFN link easy to do. First, we need to get the story ID from the
+        // FictionHunt URL.
+        String storyId = Pattern.compile(C.fictionHuntRegex).matcher(url).group(5);
+        // The create a FFN link and download the resulting page.
+        Document ffnDoc;
+        try {
+            ffnDoc = Jsoup.connect(String.format(C.ffnLink, storyId)).get();
+        } catch (IOException e) {
+            // It really doesn't matter if we can't get the page from FFN since we can still get it from FictionHunt.
+            System.out.println(C.FH_FFN_CHECK_FAILED);
+            return null;
+        }
+        // Now check the resulting FFN HTML to see if the warning panel which indicates that the story isn't
+        // available is present. If it is present, the story isn't on FFN anymore, so return a -1, otherwise, the
+        // story is still up, return the real story ID.
+        return ffnDoc.select("div.panel_warning").first() != null ? null : storyId;
     }
 
     public String getUrl() {
@@ -96,7 +115,7 @@ public class FictionHuntStory {
         return chapterUrls;
     }
 
-    public long getFfnStoryId() {
+    public String getFfnStoryId() {
         return ffnStoryId;
     }
 

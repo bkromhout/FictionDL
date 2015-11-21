@@ -16,6 +16,7 @@ import java.util.ArrayList;
  * Downloader for FictionHuntStory.
  */
 public class FictionHuntDL {
+    public static final String SITE = "FictionHunt";
     // List of story URLs
     private ArrayList<String> urls = new ArrayList<>();
     // Instance of an FFN downloader, created the first time it's needed, to easily download FFN stories.
@@ -30,12 +31,14 @@ public class FictionHuntDL {
     }
 
     /**
-     * Download the stories with URLs in the file.
+     * Download the stories whose URLs were passed to this instance of the downloader upon creation.
      */
     public void download() {
-        System.out.println("Starting FictionHunt download process...");
+        // Do nothing if we have no URLs.
+        if (urls.isEmpty()) return;
+        System.out.printf(C.STARTING_SITE_DL_PROCESS, SITE);
         // Create story models from URLs.
-        System.out.println("Fetching stories from FictionHunt and building story models...");
+        System.out.printf(C.FETCH_BUILD_MODELS, SITE);
         ArrayList<FictionHuntStory> stories = new ArrayList<>();
         for (String url : urls) {
             try {
@@ -45,7 +48,7 @@ public class FictionHuntDL {
             }
         }
         // Download and save the stories.
-        System.out.println("Downloading stories from FictionHunt...\n");
+        System.out.printf(C.DL_STORIES_FROM_SITE, SITE);
         stories.forEach(this::downloadStory);
     }
 
@@ -55,27 +58,27 @@ public class FictionHuntDL {
      * @param story Story to download.
      */
     private void downloadStory(FictionHuntStory story) {
-        if (story.getFfnStoryId() != -1) {
+        if (story.getFfnStoryId() != null) {
             // Story is still on Fanfiction.net, which is preferable since we can use p0ody-files to download the ePUB.
             if (ffnDownloader == null) ffnDownloader = new FanfictionNetDL(); // Get a FFN downloader instance.
-            System.out.println("Story is still available on Fanfiction.net; using p0ody-files.com to download ePUB...");
-            ffnDownloader.downloadStoryId(story.getFfnStoryId());
+            System.out.println(C.FH_STORY_ON_FFN);
+            ffnDownloader.downloadByStoryId(story.getFfnStoryId());
         } else {
             // Story isn't on Fanfiction.net anymore, download directly from FictionHunt.
             // Get chapter documents, and make sure we didn't fail to get some chapter (and if we did, skip this story.
-            System.out.printf("Downloading chapters for: \"%s\"\n", story.getTitle());
+            System.out.printf(C.DL_CHAPS_FOR, story.getTitle());
             ArrayList<Chapter> chapters = downloadChapters(story);
             if (story.getChapterUrls().size() != chapters.size()) {
-                System.out.println("Skipping this story; some chapters failed to download!!!\n");
+                System.out.println(C.SOME_CHAPS_FAILED);
                 return;
             }
             // Sanitize the chapters; there are parts of FictionHunt's HTML that we don't really want.
-            System.out.println("Sanitizing chapters...");
+            System.out.println(C.SANITIZING_CHAPS);
             chapters.forEach(this::sanitizeChapter);
             // Save the story.
-            System.out.println("Saving story...");
+            System.out.println(C.SAVING_STORY);
             saveStory(story, chapters);
-            System.out.println("Done!\n");
+            System.out.println(C.DONE);
         }
     }
 
@@ -118,38 +121,24 @@ public class FictionHuntDL {
         Path storyDirPath = Main.dirPath.resolve(String.format("%s - %s", story.getAuthor(), story.getTitle()));
         File storyDir = storyDirPath.toFile();
         if (!storyDir.exists() && !storyDir.mkdir()) {
-            System.err.printf("Couldn't create dir to save files at \"%s\"\n", storyDir.getAbsolutePath());
+            System.err.printf(C.CREATE_DIR_FAILED, storyDir.getAbsolutePath());
             // Technically this might be just because of a fail file title... but we should just stop anyway.
             System.exit(1);
         }
         // Create style.css file.
-        saveFile(storyDirPath.resolve("style.css"), C.CSS.getBytes(StandardCharsets.UTF_8));
+        Main.saveFile(storyDirPath.resolve("style.css"), C.CSS.getBytes(StandardCharsets.UTF_8));
         // Create title.xhtml file.
         String titlePageText = String.format(C.TITLE_PAGE, story.getTitle(), story.getAuthor(), story.getRating(),
                 story.getWordCount(), story.getChapterUrls().size());
-        saveFile(storyDirPath.resolve("title.xhtml"), titlePageText.getBytes(StandardCharsets.UTF_8));
+        Main.saveFile(storyDirPath.resolve("title.xhtml"), titlePageText.getBytes(StandardCharsets.UTF_8));
         // Save chapter file(s).
         for (int i = 0; i < chapters.size(); i++) {
             String chapterFileName = String.format("Chapter %d.xhtml", i + 1);
             Path chapterPath = storyDirPath.resolve(chapterFileName);
             byte[] chapterData = chapters.get(i).html.outerHtml().getBytes(StandardCharsets.UTF_8);
-            saveFile(chapterPath, chapterData);
+            Main.saveFile(chapterPath, chapterData);
         }
     }
 
-    /**
-     * Save a file at the specified path with the specified data. Will create the file if it doesn't exist and overwrite
-     * it if it does.
-     * @param filePath Path at which to save the file.
-     * @param data     Data to save to the file.
-     */
-    private void saveFile(Path filePath, byte[] data) {
-        try {
-            Files.write(filePath, data);
-        } catch (IOException e) {
-            System.err.printf("Failed to save file: %s\n", filePath.toString());
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
+
 }

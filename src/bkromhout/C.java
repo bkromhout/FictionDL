@@ -4,6 +4,88 @@ package bkromhout;
  * Constants
  */
 public class C {
+    /*
+    Log output strings.
+     */
+    // General
+    public static final String USAGE = "Usage: java -jar FictionHuntDL.jar <path to URL list txt file>";
+    public static final String CHECK_AND_PARSE_FILE = "Checking and parsing file...";
+    public static final String PROCESSED_FILE = "Processed file.\n";
+
+    // Download Process
+    public static final String STARTING_SITE_DL_PROCESS = "Starting %s download process...\n";
+    public static final String DONE = "Done!\n";
+    public static final String FINISHED_WITH_SITE = "Finished with %s.\n";
+    public static final String ALL_FINISHED = "All Finished! :)";
+
+    // Stories
+    public static final String FETCH_BUILD_MODELS = "Fetching stories from %s and building story models...\n";
+    public static final String DL_STORIES_FROM_SITE = "Downloading stories from %s...\n";
+    public static final String DL_SAVE_EPUB_FOR_STORY = "Downloading and saving ePUB file for: \"%s\"\n";
+    public static final String SAVING_STORY = "Saving Story...";
+    public static final String FH_STORY_ON_FFN = "Story still available on Fanfiction.net; will download from there.";
+
+    // Chapters
+    public static final String DL_CHAPS_FOR = "Downloading chapters for: \"%s\"\n";
+    public static final String SANITIZING_CHAPS = "Sanitizing chapters...";
+
+    // Errors and Warnings
+    public static final String INVALID_PATH = "Invalid path.";
+    public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the file: \"%s\"\n";
+    public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"\n";
+    public static final String DL_ENTRY_PT_FAILED = "Couldn't download story entry point!";
+    public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!!!\n";
+    public static final String SAVE_FILE_FAILED = "Failed to save file: %s\n";
+    public static final String CREATE_DIR_FAILED = "Couldn't create dir to save files at \"%s\"\n";
+    public static final String NO_URLS_FFNDL = "No URLs were passed to this FanfictionNetDL when it was created. " +
+            "Perhaps another downloader is using it?";
+    public static final String FH_FFN_CHECK_FAILED = "Failed to check if story is still active on FFN. Oh well, " +
+            "never hurts to try!";
+
+    /*
+    Link template strings.
+     */
+
+    /**
+     * Fanfiction.net story link, just needs the story ID string substituted into it.
+     */
+    public static final String ffnLink = "https://www.fanfiction.net/s/%s";
+
+    /**
+     * p0ody-files.com download link, just needs the FFN story ID substituted into it.
+     */
+    public static final String pfDlLink = "http://www.p0ody-files.com/ff_to_ebook/mobile/makeEpub.php?id=%s";
+
+    /*
+    RegEx Strings
+     */
+
+    /**
+     * Regex to obtain website host from URL. Group 2 is the host.
+     *
+     */
+    public static final String hostRegex = "^(http[s]?:\\/\\/)?([^:\\/\\s]+)(\\/.*)?$";
+
+    /**
+     * Regex to extract storyId from FictionHunt URL. Group 5 is the ID.
+     */
+    public static final String fictionHuntRegex =
+            "^(http[s]?:\\/\\/(([^:\\/\\s]*\\.)?fictionhunt.com\\/read\\/))?([^:\\/\\s]+)?(\\/\\d*)?$";
+
+    /**
+     * Regex to extract story ID from Fanfiction.net URL. Group 4 is the ID.
+     */
+    public static final String ffnRegex = "^(http[s]?:\\/\\/((www|m)\\.fanfiction.net\\/s\\/))?(\\d+)?(\\/.*)?$";
+
+    /**
+     * Regex to extract the story ID
+     */
+    public static final String siyeRegex = "";
+
+    /*
+    File Template Strings
+     */
+
     /**
      * Shamelessly taken from p0oody-files :D
      */

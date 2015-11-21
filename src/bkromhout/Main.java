@@ -1,10 +1,12 @@
 package bkromhout;
 
+import bkromhout.Downloader.FanfictionNetDL;
 import bkromhout.Downloader.FictionHuntDL;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -24,13 +26,21 @@ public class Main {
     public static void main(String[] args) {
         // Check args, print usage if needed.
         if (args.length != 1) {
-            System.out.println("Usage: java -jar FictionHuntDL.jar <path to URL list txt file>");
+            System.out.println(C.USAGE);
             System.exit(0);
         }
-        // Create a FictionHuntStory downloader and download the files.
-        FictionHuntDL fictionHuntDL = new FictionHuntDL(args[0]);
+        // Create a FileParser to get the story URLs from the input file.
+        FileParser parser = new FileParser(args[0]);
+        // Create a FictionHunt downloader and download stories.
+        FictionHuntDL fictionHuntDL = new FictionHuntDL(parser.getFictionHuntUrls());
         fictionHuntDL.download();
-        System.out.println("All Finished! :)");
+        System.out.printf(C.FINISHED_WITH_SITE, FictionHuntDL.SITE);
+        // Create a Fanfiction.net downloader and download stories.
+        FanfictionNetDL fanfictionNetDL = new FanfictionNetDL(parser.getFfnUrls());
+        fanfictionNetDL.download();
+        System.out.printf(C.FINISHED_WITH_SITE, FanfictionNetDL.SITE);
+        // All done!
+        System.out.println(C.ALL_FINISHED);
     }
 
     /**
@@ -44,7 +54,7 @@ public class Main {
             doc = Jsoup.connect(url).get();
         } catch (IOException e) {
             // We're just ignoring the exception really.
-            System.out.printf("Failed to download HTML from: \"%s\"\n", url);
+            System.out.printf(C.HTML_DL_FAILED, url);
         }
         return doc;
     }
@@ -59,5 +69,21 @@ public class Main {
         // Loop through the URL list and download from each. Obviously filter out any null elements.
         return new ArrayList<>(urlList.stream().map(Main::downloadHtml).filter(out -> out != null)
                 .collect(Collectors.toList()));
+    }
+
+    /**
+     * Save a file at the specified path with the specified data. Will create the file if it doesn't exist and overwrite
+     * it if it does.
+     * @param filePath Path at which to save the file.
+     * @param data     Data to save to the file.
+     */
+    public static void saveFile(Path filePath, byte[] data) {
+        try {
+            Files.write(filePath, data);
+        } catch (IOException e) {
+            System.err.printf(C.SAVE_FILE_FAILED, filePath.toString());
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 }
