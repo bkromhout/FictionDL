@@ -50,6 +50,7 @@ public class FictionHuntDL {
                 line = line.trim();
                 // Add line to list if it isn't blank or already in the list.
                 if (!line.isEmpty() && !urls.contains(line)) urls.add(line);
+                line = br.readLine();
             }
         } catch (IOException e) {
             e.printStackTrace();
