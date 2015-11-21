@@ -88,30 +88,32 @@ public class FictionHuntDL {
         System.out.printf("Downloading chapters for: \"%s\"\n", story.getTitle());
         ArrayList<Chapter> chapters = downloadChapters(story);
         if (story.getChapterUrls().size() != chapters.size()) {
-            System.out.printf("Skipping this story; some chapters failed to download: \"%s\"\n\n", story.getTitle());
+            System.out.println("Skipping this story; some chapters failed to download!!!\n");
             return;
         }
         // Sanitize the chapters; there are parts of FictionHunt's HTML that we don't really want.
-        System.out.printf("Sanitizing chapters for: \"%s\"\n", story.getTitle());
+        System.out.println("Sanitizing chapters...");
         chapters.forEach(this::sanitizeChapter);
         // Save the story.
-        System.out.printf("Saving story: \"%s\"\n", story.getTitle());
+        System.out.println("Saving story...");
         saveStory(story, chapters);
         System.out.println("Done!\n");
     }
 
     /**
-     * Download the chapters for a story. TODO eventually make this use real chapter names where possible.
+     * Download the chapters for a story.
      * @param story Story to download chapters for.
      * @return ArrayList of Chapter objects.
      */
     private ArrayList<Chapter> downloadChapters(FictionHuntStory story) {
-        ArrayList<Document> chapterHtmls = Main.getDocuments(story.getChapterUrls());
-        ArrayList<String> chapterNames = new ArrayList<>();
-        for (int i = 0; i < chapterHtmls.size(); i++) chapterNames.add(String.format("Chapter %d", i + 1));
+        // Download chapter HTML Documents.
+        ArrayList<Document> htmls = Main.getDocuments(story.getChapterUrls());
+        // Get chapter titles. TODO get real titles if at all possible.
+        ArrayList<String> titles = new ArrayList<>();
+        for (int i = 0; i < htmls.size(); i++) titles.add(String.format("Chapter %d", i + 1));
+        // Create Chapter models.
         ArrayList<Chapter> chapters = new ArrayList<>();
-        for (int i = 0; i < chapterHtmls.size(); i++)
-            chapters.add(new Chapter(chapterNames.get(i), chapterHtmls.get(i)));
+        for (int i = 0; i < htmls.size(); i++) chapters.add(new Chapter(titles.get(i), htmls.get(i)));
         return chapters;
     }
 
