@@ -123,7 +123,7 @@ public class FictionHuntDL {
      */
     private void sanitizeChapter(Chapter chapter) {
         // Get the chapter's text, keeping all HTML formatting intact
-        String chapterText = chapter.html.body().html();
+        String chapterText = chapter.html.select("div.text").first().html();
         // Create a new chapter HTML Document which is minimal.
         String newChapterHtml = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText);
         chapter.html = Jsoup.parse(newChapterHtml);
