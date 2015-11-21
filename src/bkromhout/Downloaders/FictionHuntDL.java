@@ -1,7 +1,7 @@
 package bkromhout.Downloaders;
 
+import bkromhout.Main;
 import bkromhout.StoryModels.FictionHuntStory;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 import java.io.*;
@@ -58,36 +58,18 @@ public class FictionHuntDL {
     }
 
     /**
-     * Takes in a list of URLs (as strings) and returns a list of Documents downloaded from the URLs. Any malformed URLs
-     * in the input list will be skipped.
-     * @param urlList List of URLs to get Documents for.
-     * @return Documents for all valid URLs that were in the input list.
-     */
-    private ArrayList<Document> getDocuments(ArrayList<String> urlList) {
-        ArrayList<Document> docs = new ArrayList<>();
-        // Loop through the URL list and download from each.
-        for (String url : urlList) {
-            try {
-                docs.add(Jsoup.connect(url).get());
-            } catch (IOException e) {
-                System.out.printf("Failed to download HTML from: \"%s\"\n", url);
-            }
-        }
-        return docs;
-    }
-
-    /**
      * Download the stories with URLs in the file.
      */
     public void download() {
         System.out.println("Starting download process...");
         // Get initial HTML Document for each story.
-        System.out.println("Finding stories...");
-        ArrayList<Document> initialStoryDocs = getDocuments(urls);
+        System.out.println("Fetching stories...");
+        ArrayList<Document> initialStoryDocs = Main.getDocuments(urls);
         // Create story models from initial chapters.
         System.out.println("Building story models...");
         ArrayList<FictionHuntStory> stories = initialStoryDocs.stream().map(FictionHuntStory::new).collect(
                 Collectors.toCollection(ArrayList<FictionHuntStory>::new));
+        // Download and save the stories.
         System.out.println("Downloading stories...");
         stories.forEach(this::downloadStory);
         System.out.println("\nAll Finished! :)");
@@ -100,7 +82,7 @@ public class FictionHuntDL {
     private void downloadStory(FictionHuntStory story) {
         // Get chapter documents, and make sure we didn't fail to get some chapter (and if we did, skip this story.
         System.out.printf("Downloading chapters for: \"%s\"\n", story.getTitle());
-        ArrayList<Document> chapters = getDocuments(story.getChapterUrls());
+        ArrayList<Document> chapters = Main.getDocuments(story.getChapterUrls());
         if (story.getChapterUrls().size() != chapters.size()) {
             System.out.printf("Skipping this story; some chapters failed to download: \"%s\"\n", story.getTitle());
             return;
