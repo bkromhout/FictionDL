@@ -1,9 +1,11 @@
 package bkromhout.Downloader;
 
+import bkromhout.C;
+import bkromhout.Chapter;
 import bkromhout.Main;
 import bkromhout.Story.FictionHuntStory;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -84,13 +86,12 @@ public class FictionHuntDL {
     private void downloadStory(FictionHuntStory story) {
         // Get chapter documents, and make sure we didn't fail to get some chapter (and if we did, skip this story.
         System.out.printf("Downloading chapters for: \"%s\"\n", story.getTitle());
-        ArrayList<Document> chapters = Main.getDocuments(story.getChapterUrls());
+        ArrayList<Chapter> chapters = downloadChapters(story);
         if (story.getChapterUrls().size() != chapters.size()) {
             System.out.printf("Skipping this story; some chapters failed to download: \"%s\"\n\n", story.getTitle());
             return;
         }
         // Sanitize the chapters; there are parts of FictionHunt's HTML that we don't really want.
-        // TODO if we want to get real chapter names, it's gonna need to happen before this!!!
         System.out.printf("Sanitizing chapters for: \"%s\"\n", story.getTitle());
         chapters.forEach(this::sanitizeChapter);
         // Save the story.
@@ -100,48 +101,58 @@ public class FictionHuntDL {
     }
 
     /**
-     * Removes all parts of the FictionHunt HTML except for the head's title element and the chapter text, which gets
-     * pulled up and becomes the contents of the body.
-     * @param chapter Document for a FictionHunt story chapter.
+     * Download the chapters for a story. TODO eventually make this use real chapter names where possible.
+     * @param story Story to download chapters for.
+     * @return ArrayList of Chapter objects.
      */
-    private void sanitizeChapter(Document chapter) {
-        // Remove all Elements in <head> except for <title>.
-        chapter.select("head > *:not(title)").forEach(Element::remove);
-        // Get the chapter's text, keeping all HTML formatting intact. Then replace <body>'s contents with it.
-        chapter.body().html(chapter.select("div.text").first().html());
+    private ArrayList<Chapter> downloadChapters(FictionHuntStory story) {
+        ArrayList<Document> chapterHtmls = Main.getDocuments(story.getChapterUrls());
+        ArrayList<String> chapterNames = new ArrayList<>();
+        for (int i = 0; i < chapterHtmls.size(); i++) chapterNames.add(String.format("Chapter %d", i + 1));
+        ArrayList<Chapter> chapters = new ArrayList<>();
+        for (int i = 0; i < chapterHtmls.size(); i++)
+            chapters.add(new Chapter(chapterNames.get(i), chapterHtmls.get(i)));
+        return chapters;
     }
 
     /**
-     * Save the given story. TODO eventually make this use real chapter names where possible.
+     * Takes chapter text from
+     * @param chapter Document for a FictionHunt story chapter.
+     */
+    private void sanitizeChapter(Chapter chapter) {
+        // Get the chapter's text, keeping all HTML formatting intact
+        String chapterText = chapter.html.body().html();
+        // Create a new chapter HTML Document which is minimal.
+        String newChapterHtml = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText);
+        chapter.html = Jsoup.parse(newChapterHtml);
+    }
+
+    /**
+     * Save the given story.
      * @param story    Story to save.
      * @param chapters Chapters of the story.
      */
-    private void saveStory(FictionHuntStory story, ArrayList<Document> chapters) {
+    private void saveStory(FictionHuntStory story, ArrayList<Chapter> chapters) {
         // Create the directory if it doesn't already exist.
         Path storyDirPath = dirPath.resolve(String.format("%s - %s", story.getAuthor(), story.getTitle()));
         File storyDir = storyDirPath.toFile();
         if (!storyDir.exists() && !storyDir.mkdir()) {
             System.err.printf("Couldn't create dir to save files at \"%s\"\n", storyDir.getAbsolutePath());
-            // Technically this might be just because of a fail file name... but we should just stop anyway.
+            // Technically this might be just because of a fail file title... but we should just stop anyway.
             System.exit(1);
         }
-        // Create storyinfo.txt file.
-        saveFile(storyDirPath.resolve("_storyinfo_.txt"), story.toString().getBytes(StandardCharsets.UTF_8));
-        // Save chapter files.
-        if (chapters.size() == 1) {
-            // Only one chapter, use the same name as the directory.
-            String chapterFileName = String.format("%s - %s.html", story.getAuthor(), story.getTitle());
+        // Create style.css file.
+        saveFile(storyDirPath.resolve("style.css"), C.CSS.getBytes(StandardCharsets.UTF_8));
+        // Create title.xhtml file.
+        String titlePageText = String.format(C.TITLE_PAGE, story.getTitle(), story.getAuthor(), story.getRating(),
+                story.getWordCount(), story.getChapterUrls().size());
+        saveFile(storyDirPath.resolve("title.xhtml"), titlePageText.getBytes(StandardCharsets.UTF_8));
+        // Save chapter file(s).
+        for (int i = 0; i < chapters.size(); i++) {
+            String chapterFileName = String.format("Chapter %d.xhtml", i + 1);
             Path chapterPath = storyDirPath.resolve(chapterFileName);
-            byte[] chapterData = chapters.get(0).outerHtml().getBytes(StandardCharsets.UTF_8);
+            byte[] chapterData = chapters.get(i).html.outerHtml().getBytes(StandardCharsets.UTF_8);
             saveFile(chapterPath, chapterData);
-        } else {
-            // We have multiple chapters.
-            for (int i = 0; i < chapters.size(); i++) {
-                String chapterFileName = String.format("Chapter %d.html", i + 1);
-                Path chapterPath = storyDirPath.resolve(chapterFileName);
-                byte[] chapterData = chapters.get(i).outerHtml().getBytes(StandardCharsets.UTF_8);
-                saveFile(chapterPath, chapterData);
-            }
         }
     }
 
