@@ -106,6 +106,9 @@ public class SiyeStory {
         if (chDoc == null) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
         // Then find the element that lets us get the relative link to the author's page.
         Element aIdElement = chDoc.select("h3 a").first();
+        // Throw an exception if we couldn't find the link to the author's page, as it likely means that the URL
+        // format was valid but that it doesn't point to a real story/chapter on SIYE.
+        if (aIdElement == null) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
         // Now return the author page URL.
         return aIdElement.attr("href");
     }
