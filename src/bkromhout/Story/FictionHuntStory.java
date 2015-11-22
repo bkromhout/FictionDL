@@ -10,7 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Model object for a FictionHunt story.
+ * Model object for a FictionHunt story. Despite the word "model", this is not an object with a light initialization
+ * cost, as it accesses the internet to retrieve story information.
  */
 public class FictionHuntStory {
     // Story URL.

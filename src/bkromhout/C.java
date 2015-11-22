@@ -59,9 +59,9 @@ public class C {
     public static final String PF_DL_URL = "http://www.p0ody-files.com/ff_to_ebook/mobile/makeEpub.php?id=%s";
 
     /**
-     * SIYE story link, just needs the story ID string substituted into it.
+     * SIYE first chapter link, used as an entry point, just needs the story ID string substituted into it.
      */
-    public static final String SIYE_CH_URL = "http://siye.co.uk/viewstory.php?sid=%s&chapter=1";
+    public static final String SIYE_INFO_URL = "http://siye.co.uk/viewstory.php?sid=%s&chapter=1";
 
     /**
      * SIYE author page link, just needs relative author link string substituted into it.
@@ -69,10 +69,10 @@ public class C {
     public static final String SIYE_AUTHOR_URL = "http://siye.co.uk/%s";
 
     /**
-     * SIYE story link, just needs the story ID string substituted into it. This will point to the printable version of
-     * the whole story.
+     * SIYE story chapter link, just needs the story ID string and chapter number substituted into it. This will point
+     * to the printable version of some chapter of a story.
      */
-    public static final String SIYE_CONTENT_URL = "http://siye.co.uk/viewstory.php?action=printable&sid=%s&chapter=all";
+    public static final String SIYE_CHAP_URL = "http://siye.co.uk/viewstory.php?action=printable&sid=%s&chapter=%d";
 
     /*
     RegEx Strings
