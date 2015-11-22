@@ -33,7 +33,7 @@ public class FileParser {
         // Make sure the given path is valid, is a file, and can be read.
         File storiesFile = new File(path);
         if (!(storiesFile.exists() && storiesFile.isFile() && storiesFile.canRead())) {
-            System.err.println(C.INVALID_PATH);
+            System.out.println(C.INVALID_PATH);
             System.exit(1);
         }
         Main.dirPath = storiesFile.getParentFile().toPath();

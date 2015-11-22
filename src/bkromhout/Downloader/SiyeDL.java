@@ -44,7 +44,7 @@ public class SiyeDL {
             try {
                 stories.add(new SiyeStory(url));
             } catch (IOException e) {
-                System.err.println(e.getMessage());
+                System.out.println(e.getMessage());
             }
         }
         // Download and save the stories.
@@ -114,7 +114,7 @@ public class SiyeDL {
         Path storyDirPath = Main.dirPath.resolve(String.format("%s - %s", story.getAuthor(), story.getTitle()));
         File storyDir = storyDirPath.toFile();
         if (!storyDir.exists() && !storyDir.mkdir()) {
-            System.err.printf(C.CREATE_DIR_FAILED, storyDir.getAbsolutePath());
+            System.out.printf(C.CREATE_DIR_FAILED, storyDir.getAbsolutePath());
             // Technically this might be just because of a fail file title... but we should just stop anyway.
             System.exit(1);
         }

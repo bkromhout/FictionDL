@@ -105,7 +105,7 @@ public class Main {
         try {
             Files.write(filePath, data);
         } catch (IOException e) {
-            System.err.printf(C.SAVE_FILE_FAILED, filePath.toString());
+            System.out.printf(C.SAVE_FILE_FAILED, filePath.toString());
             e.printStackTrace();
             System.exit(1);
         }

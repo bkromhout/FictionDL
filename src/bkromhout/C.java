@@ -16,8 +16,8 @@ public class C {
     public static final String FETCH_BUILD_MODELS = "Fetching story info from %s and building story models...\n";
     public static final String DL_STORIES_FROM_SITE = "Downloading stories from %s...\n\n";
     public static final String DONE = "Done!";
-    public static final String FINISHED_WITH_SITE = "\nFinished with %s.\n\n";
-    public static final String ALL_FINISHED = "All Finished! :)";
+    public static final String FINISHED_WITH_SITE = "Finished with %s.\n\n";
+    public static final String ALL_FINISHED = "\nAll Finished! :)";
 
     // Stories
     public static final String DL_SAVE_EPUB_FOR_STORY = "Downloading and saving ePUB file for: \"%s\"...";
@@ -46,6 +46,11 @@ public class C {
     /*
     Link template strings.
      */
+    /**
+     * Used to search FictionHunt for a story in order to get its summary. Just need to substitute in the title.
+     */
+    public static final String FH_SEARCH_URL = "http://fictionhunt.com/5/0/0/0/0/0/0/0/0/0/0/%s/1";
+
     /**
      * Fanfiction.net story link, just needs the story ID string substituted into it. We use the mobile site because
      * it's easier to parse.

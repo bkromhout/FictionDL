@@ -23,6 +23,8 @@ public class FictionHuntStory {
     private String title;
     // Story author.
     private String author;
+    // Story Summary.
+    private String summary;
     // Story word count.
     private int wordCount;
     // Story rating.
@@ -99,6 +101,15 @@ public class FictionHuntStory {
         // available is present. If it is present, the story isn't on FFN anymore, so return a null; otherwise, the
         // story is still up, return the real story ID.
         return ffnDoc.select("span.gui_warning").first() != null ? null : storyId;
+    }
+
+    /**
+     * Uses the FictionHunt search to attempt to find the story summary.
+     * @return Story summary.
+     */
+    private String getSummary() {
+        // TODO.
+        return null;
     }
 
     public String getTitle() {
