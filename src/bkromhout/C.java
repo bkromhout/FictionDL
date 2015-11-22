@@ -155,39 +155,6 @@ public class C {
             "</html>";
 
     /**
-     * Title page. Has a number of areas for replacement using String.format(): Title of story, Author of story, Rating,
-     * Word count, Chapter count.
-     */
-    public static final String TITLE_PAGE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n" +
-            "  \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n" +
-            "\n" +
-            "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
-            "<head>\n" +
-            "  <link href=\"../Styles/style.css\" rel=\"stylesheet\" type=\"text/css\"/>\n" +
-            "  <meta content=\"http://www.w3.org/1999/xhtml; charset=UTF-8\" http-equiv=\"Content-Type\"/>\n" +
-            "  <title> </title>\n" +
-            "</head>\n" +
-            "\n" +
-            "<body>\n" +
-            "  <div id=\"ficTitle\">\n" +
-            "    %s\n" +
-            "  </div>\n" +
-            "\n" +
-            "  <div id=\"ficAuthor\">\n" +
-            "    By: %s\n" +
-            "  </div>\n" +
-            "\n" +
-            "  <p><strong>Rated:</strong> %s</p>\n" +
-            "\n" +
-            "  <p><strong>Word Count:</strong> %d</p>\n" +
-            "\n" +
-            "  <p><strong>Chapters:</strong> %d</p>\n" +
-            "\n" +
-            "</body>\n" +
-            "</html>";
-
-    /**
      * Chapter page. Has a number of areas for replacement using String.format(): Chapter title, Chapter title, Chapter
      * text (HTML!).
      */

@@ -34,8 +34,6 @@ public class SiyeDL {
      * Download the stories whose URLs were passed to this instance of the downloader upon creation..
      */
     public void download() {
-        // Do nothing if we have no URLs.
-        if (urls.isEmpty()) return;
         System.out.printf(C.STARTING_SITE_DL_PROCESS, SITE);
         // Create story models from URLs.
         System.out.printf(C.FETCH_BUILD_MODELS, SITE);

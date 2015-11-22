@@ -34,8 +34,6 @@ public class FictionHuntDL {
      * Download the stories whose URLs were passed to this instance of the downloader upon creation.
      */
     public void download() {
-        // Do nothing if we have no URLs.
-        if (urls.isEmpty()) return;
         System.out.printf(C.STARTING_SITE_DL_PROCESS, SITE);
         // Create story models from URLs.
         System.out.printf(C.FETCH_BUILD_MODELS, SITE);
@@ -129,8 +127,8 @@ public class FictionHuntDL {
         // Create style.css file.
         Main.saveFile(storyDirPath.resolve("style.css"), C.CSS.getBytes(StandardCharsets.UTF_8));
         // Create title.xhtml file.
-        String titlePageText = String.format(C.TITLE_PAGE, story.getTitle(), story.getAuthor(), story.getRating(),
-                story.getWordCount(), chapters.size());
+        String titlePageText = String.format(C.TITLE_PAGE_SUMMARY, story.getTitle(), story.getAuthor(),
+                story.getSummary(), story.getRating(), story.getWordCount(), chapters.size());
         Main.saveFile(storyDirPath.resolve("title.xhtml"), titlePageText.getBytes(StandardCharsets.UTF_8));
         // Save chapter file(s).
         for (int i = 0; i < chapters.size(); i++) {

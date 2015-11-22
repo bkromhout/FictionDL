@@ -66,9 +66,7 @@ public class SiyeStory {
             // the info we need. Starting from the <td> we currently have, we need to go up to the parent <tr>, then
             // over to the next immediate sibling <tr> from the parent <tr>, and then into that sibling <tr>'s last
             // <td> child...yes, this *is* complicated sounding and SIYE *should* have properly structured HTML. Ugh.
-            Element parentTr = story.parent();
-            Element nextTr = parentTr.nextElementSibling();
-            story = nextTr.children().last(); // TODO collapse this into a one-liner once we know it works...
+            story = story.parent().nextElementSibling().children().last();
             // Oh, and we have to get the summary now too since the index of the TextNode is different.
             summary = story.ownText().trim();
         } else {

@@ -107,7 +107,7 @@ public class FictionHuntStory {
      * Uses the FictionHunt search to attempt to find the story summary.
      * @return Story summary.
      */
-    private String getSummary() {
+    private String findSummary() {
         // TODO.
         return null;
     }
@@ -118,6 +118,10 @@ public class FictionHuntStory {
 
     public String getAuthor() {
         return author;
+    }
+
+    public String getSummary() {
+        return summary;
     }
 
     public int getWordCount() {

@@ -46,25 +46,30 @@ public class Main {
      * @param parser FileParser which has successfully parsed input file.
      */
     private static void getStories(FileParser parser) {
-        // TODO put the check for empty story lists here instead of in the downloaders' .download() method.
         /*
         Create a FictionHunt downloader and download stories.
           */
-        FictionHuntDL fictionHuntDL = new FictionHuntDL(parser.getFictionHuntUrls());
-        fictionHuntDL.download();
-        System.out.printf(C.FINISHED_WITH_SITE, FictionHuntDL.SITE);
+        if (!parser.getFictionHuntUrls().isEmpty()) {
+            FictionHuntDL fictionHuntDL = new FictionHuntDL(parser.getFictionHuntUrls());
+            fictionHuntDL.download();
+            System.out.printf(C.FINISHED_WITH_SITE, FictionHuntDL.SITE);
+        }
         /*
         Create a Fanfiction.net downloader and download stories.
           */
-        FanfictionNetDL fanfictionNetDL = new FanfictionNetDL(parser.getFfnUrls());
-        fanfictionNetDL.download();
-        System.out.printf(C.FINISHED_WITH_SITE, FanfictionNetDL.SITE);
+        if (!parser.getFfnUrls().isEmpty()) {
+            FanfictionNetDL fanfictionNetDL = new FanfictionNetDL(parser.getFfnUrls());
+            fanfictionNetDL.download();
+            System.out.printf(C.FINISHED_WITH_SITE, FanfictionNetDL.SITE);
+        }
         /*
         Create a SIYE downloader and download stories.
           */
-        SiyeDL siyeDL = new SiyeDL(parser.getSiyeUrls());
-        siyeDL.download();
-        System.out.printf(C.FINISHED_WITH_SITE, SiyeDL.SITE);
+        if (!parser.getSiyeUrls().isEmpty()) {
+            SiyeDL siyeDL = new SiyeDL(parser.getSiyeUrls());
+            siyeDL.download();
+            System.out.printf(C.FINISHED_WITH_SITE, SiyeDL.SITE);
+        }
     }
 
     /**

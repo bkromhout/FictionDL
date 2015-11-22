@@ -47,10 +47,9 @@ public class FanfictionNetDL {
      * Download the stories whose URLs were passed to this instance of the downloader upon creation.
      */
     public void download() {
-        // If we don't have any URLs, don't do anything.
-        if (urls == null || urls.isEmpty()) {
-            // Only speak up if, for some very odd reason, this gets called when urls == null.
-            if (urls == null) System.out.println(C.NO_URLS_FFNDL);
+        // Only speak up if, for some very odd reason, this gets called when urls == null.
+        if (urls == null) {
+            System.out.println(C.NO_URLS_FFNDL);
             return;
         }
         System.out.printf(C.STARTING_SITE_DL_PROCESS, SITE);
