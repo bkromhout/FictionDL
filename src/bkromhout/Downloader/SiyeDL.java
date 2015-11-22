@@ -3,12 +3,9 @@ package bkromhout.Downloader;
 import bkromhout.C;
 import bkromhout.Chapter;
 import bkromhout.Main;
-import bkromhout.Story.FictionHuntStory;
 import bkromhout.Story.SiyeStory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.IOException;
