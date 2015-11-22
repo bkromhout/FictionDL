@@ -55,8 +55,8 @@ public class FanfictionNetDL {
         }
         System.out.printf(C.STARTING_SITE_DL_PROCESS, SITE);
         // Convert FFN story URLs to FFN story IDs.
-        ArrayList<String> storyIds = new ArrayList<>(
-                urls.stream().map(this::storyIdFromFfnUrl).collect(Collectors.toCollection(ArrayList::new)));
+        ArrayList<String> storyIds = new ArrayList<>(urls.stream()
+                .map(this::storyIdFromFfnUrl).collect(Collectors.toCollection(ArrayList::new)));
         // Then download stories from p0ody-files.
         System.out.printf(C.DL_STORIES_FROM_SITE, "Fanfiction.net (through p0ody-files.com/ff_to_ebook/)");
         storyIds.forEach(this::downloadByStoryId);

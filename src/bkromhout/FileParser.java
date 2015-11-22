@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -62,8 +63,10 @@ public class FileParser {
      * @param line Line from the input file.
      */
     private void processLine(String line) throws IllegalStateException {
-        // Figure out what list this URL might be added to...
-        String hostString = hostRegex.matcher(line).group(2).toLowerCase();
+        // Try to match this line to a URL so that we can extract the host.
+        Matcher hostMatcher = hostRegex.matcher(line);
+        if (!hostMatcher.matches()) throw new IllegalStateException();
+        String hostString = hostMatcher.group(2).toLowerCase();
         // ...then add it to it, so long as it isn't a repeat. (Note that since FFN has so many different link styles,
         // it's totally possible for the same story to get added twice. Maybe I'll add some normalization code later.)
         if (hostString.contains("fictionhunt.com") && !fictionHuntUrls.contains(line)) fictionHuntUrls.add(line);
