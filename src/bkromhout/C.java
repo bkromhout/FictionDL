@@ -13,17 +13,18 @@ public class C {
     public static final String PROCESSED_FILE = "Processed file.\n";
 
     // Download Process
-    public static final String STARTING_SITE_DL_PROCESS = "Starting %s download process...\n";
+    public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n";
     public static final String DONE = "Done!\n";
-    public static final String FINISHED_WITH_SITE = "Finished with %s.\n";
+    public static final String FINISHED_WITH_SITE = "\nFinished with %s.\n\n";
     public static final String ALL_FINISHED = "All Finished! :)";
 
     // Stories
     public static final String FETCH_BUILD_MODELS = "Fetching stories from %s and building story models...\n";
-    public static final String DL_STORIES_FROM_SITE = "Downloading stories from %s...\n";
+    public static final String DL_STORIES_FROM_SITE = "Downloading stories from %s...\n\n";
     public static final String DL_SAVE_EPUB_FOR_STORY = "Downloading and saving ePUB file for: \"%s\"\n";
     public static final String SAVING_STORY = "Saving Story...";
-    public static final String FH_STORY_ON_FFN = "Story still available on Fanfiction.net; will download from there.";
+    public static final String FH_STORY_ON_FFN = "Story with ID=%s still available on Fanfiction.net; will download " +
+            "from there.\n";
 
     // Chapters
     public static final String DL_CHAPS_FOR = "Downloading chapters for: \"%s\"\n";
@@ -34,8 +35,7 @@ public class C {
     public static final String INVALID_URL = "Invalid URL.";
     public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the file: \"%s\"\n";
     public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"\n";
-    public static final String ENTRY_PT_DL_FAILED = "Couldn't download story entry point!";
-    public static final String FFN_DL_FAILED = "Couldn't download the Fanfiction.net story with ID=%s. Skipping it.\n";
+    public static final String STORY_DL_FAILED = "Couldn't download %s story with ID=%s. Skipping it.\n\n";
     public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n";
     public static final String SAVE_FILE_FAILED = "Failed to save file: %s\n";
     public static final String CREATE_DIR_FAILED = "Couldn't create dir to save files at \"%s\"\n";

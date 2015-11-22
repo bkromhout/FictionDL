@@ -1,6 +1,7 @@
 package bkromhout.Story;
 
 import bkromhout.C;
+import bkromhout.Downloader.SiyeDL;
 import bkromhout.Main;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -50,7 +51,7 @@ public class SiyeStory {
         String authorIdLink = findAuthorIdLink(url);
         // Get the HTML at the info url.
         Document doc = Main.downloadHtml(String.format(C.SIYE_AUTHOR_URL, authorIdLink));
-        if (doc == null) throw new IOException(C.ENTRY_PT_DL_FAILED);
+        if (doc == null) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
         // Get the story entry from on the author's page.
         Element story = doc.select(String.format("td td:has(a[href=\"%s\"])", authorIdLink)).first();
         // Get title.
@@ -87,7 +88,7 @@ public class SiyeStory {
         storyId = idMatcher.group(1);
         // Now download the first chapter's HTML.
         Document chDoc = Main.downloadHtml(String.format(C.SIYE_INFO_URL, storyId));
-        if (chDoc == null) throw new IOException(C.ENTRY_PT_DL_FAILED);
+        if (chDoc == null) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
         // Then find the element that lets us get the relative link to the author's page.
         Element aIdElement = chDoc.select("h3 a").first();
         // Now return the author page URL.

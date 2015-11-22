@@ -46,6 +46,7 @@ public class Main {
      * @param parser FileParser which has successfully parsed input file.
      */
     private static void getStories(FileParser parser) {
+        // TODO put the check for empty story lists here instead of in the downloaders' .download() method.
         /*
         Create a FictionHunt downloader and download stories.
           */

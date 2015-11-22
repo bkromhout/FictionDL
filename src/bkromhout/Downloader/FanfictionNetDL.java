@@ -75,18 +75,18 @@ public class FanfictionNetDL {
         if (storyDoc == null) {
             // If we couldn't download the chapter from Fanfiction.net, we'll skip try to get it from p0ody-files
             // (though technically there's certainly the possibility that it does exist there in the archive).
-            System.out.printf(C.FFN_DL_FAILED, storyId);
+            System.out.printf(C.STORY_DL_FAILED, SITE, storyId);
             return;
         }
         // Now try to get the story title from the document.
         Element titleElement = storyDoc.select("div#content b").first();
         if (titleElement == null) {
             // If we can't find the title, that means that the story isn't available. Tell the user.
-            System.out.printf(C.FFN_DL_FAILED, storyId);
+            System.out.printf(C.STORY_DL_FAILED, SITE, storyId);
             return;
         }
         // If we've gotten to here, we should be golden. Download the ePUB for the story from p0ody-files now.
-        downloadByStoryId(storyId, titleElement.text());
+        downloadByStoryId(storyId, titleElement.text()); // TODO .text() here is returning null... should fix that.
     }
 
     /**
@@ -109,7 +109,7 @@ public class FanfictionNetDL {
             String pfFilename = getFilenameFromCDHeader(pfConnection.getHeaderField("Content-Disposition"));
             if (pfFilename == null) {
                 // If we don't have the file name here, then p0ody-files won't be able to give us the ePUB.
-                System.out.printf(C.FFN_DL_FAILED, storyId);
+                System.out.printf(C.STORY_DL_FAILED, SITE, storyId);
                 return;
             }
             // Open an input stream from the URL and an output stream to the file, then download the file.
@@ -122,7 +122,7 @@ public class FanfictionNetDL {
             e.printStackTrace();
         } catch (IOException e) {
             // Now this, on the other hand, is much more likely to happen, since basically everything in here throws it.
-            System.out.printf(C.FFN_DL_FAILED, storyId);
+            System.out.printf(C.STORY_DL_FAILED, SITE, storyId);
             e.printStackTrace();
         }
     }

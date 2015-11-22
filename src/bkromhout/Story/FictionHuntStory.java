@@ -1,6 +1,7 @@
 package bkromhout.Story;
 
 import bkromhout.C;
+import bkromhout.Downloader.FictionHuntDL;
 import bkromhout.Main;
 import org.jsoup.nodes.Document;
 
@@ -16,6 +17,8 @@ import java.util.regex.Pattern;
 public class FictionHuntStory {
     // Story URL.
     private String url;
+    // Story ID (FictionHunt).
+    private String storyId;
     // Story title.
     private String title;
     // Story author.
@@ -42,11 +45,11 @@ public class FictionHuntStory {
      * Populate fields.
      */
     private void populateInfo() throws IOException {
-        // Don't do this again if we already did it.
-        if (title != null) return;
+        // Get FictionHunt story ID.
+        storyId = getStoryId();
         // Get the HTML at the url we've specified to use as the entry point.
         Document doc = Main.downloadHtml(url);
-        if (doc == null) throw new IOException(C.ENTRY_PT_DL_FAILED);
+        if (doc == null) throw new IOException(String.format(C.STORY_DL_FAILED, FictionHuntDL.SITE, storyId));
         // Check if story is on Fanfiction.net. If so, just get its FFN story ID.
         ffnStoryId = tryGetFfnStoryId();
         if (ffnStoryId != null) return; // If the story is on FFN, don't bother with the rest!
@@ -68,18 +71,24 @@ public class FictionHuntStory {
     }
 
     /**
+     * Parses the FictionHunt story ID from the FictionHunt URL.
+     * @return FictionHunt story ID.
+     */
+    private String getStoryId() {
+        Matcher matcher = Pattern.compile(C.FICTIONHUNT_REGEX).matcher(url);
+        matcher.find();
+        return storyId = matcher.group(1);
+    }
+
+    /**
      * Parse the entry point for the link to FFN and download the page at that link. If it's a valid story (i.e., it
      * hasn't been taken down), then return its story ID so that we can use p0ody-files to download it later.
-     * @return Story ID if on FFN, or -1 if not.
+     * @return Story ID if on FFN, or null if not.
      */
     private String tryGetFfnStoryId() {
         // FictionHunt has done a very handy thing with their URLs, their story IDs correspond to the original FFN
-        // story IDs, which makes generating an FFN link easy to do. First, we need to get the story ID from the
-        // FictionHunt URL.
-        Matcher matcher = Pattern.compile(C.FICTIONHUNT_REGEX).matcher(url);
-        matcher.find();
-        String storyId = matcher.group(1);
-        // The create a FFN link and download the resulting page.
+        // story IDs, which makes generating an FFN link easy to do. First, create a FFN link and download the
+        // resulting page.
         Document ffnDoc = Main.downloadHtml(String.format(C.FFN_URL, storyId));
         if (ffnDoc == null) {
             // It really doesn't matter if we can't get the page from FFN since we can still get it from FictionHunt.
@@ -90,10 +99,6 @@ public class FictionHuntStory {
         // available is present. If it is present, the story isn't on FFN anymore, so return a null; otherwise, the
         // story is still up, return the real story ID.
         return ffnDoc.select("span.gui_warning").first() != null ? null : storyId;
-    }
-
-    public String getUrl() {
-        return url;
     }
 
     public String getTitle() {
@@ -118,10 +123,5 @@ public class FictionHuntStory {
 
     public String getFfnStoryId() {
         return ffnStoryId;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Title: %s\nAuthor: %s\nWord Count: %d\nRating: %s\n", title, author, wordCount, rating);
     }
 }

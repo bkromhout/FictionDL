@@ -44,7 +44,7 @@ public class FictionHuntDL {
             try {
                 stories.add(new FictionHuntStory(url));
             } catch (IOException e) {
-                System.err.println(e.getMessage());
+                System.out.println(e.getMessage());
             }
         }
         // Download and save the stories.
@@ -61,7 +61,7 @@ public class FictionHuntDL {
         if (story.getFfnStoryId() != null) {
             // Story is still on Fanfiction.net, which is preferable since we can use p0ody-files to download the ePUB.
             if (ffnDownloader == null) ffnDownloader = new FanfictionNetDL(); // Get a FFN downloader instance.
-            System.out.println(C.FH_STORY_ON_FFN);
+            System.out.printf(C.FH_STORY_ON_FFN, story.getFfnStoryId());
             ffnDownloader.downloadByStoryId(story.getFfnStoryId(), story.getTitle());
         } else {
             // Story isn't on Fanfiction.net anymore, download directly from FictionHunt.
