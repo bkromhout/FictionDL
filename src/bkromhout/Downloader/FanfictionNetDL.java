@@ -86,7 +86,7 @@ public class FanfictionNetDL {
             return;
         }
         // If we've gotten to here, we should be golden. Download the ePUB for the story from p0ody-files now.
-        downloadByStoryId(storyId, titleElement.text()); // TODO .text() here is returning null... should fix that.
+        downloadByStoryId(storyId, titleElement.text());
     }
 
     /**
