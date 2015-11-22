@@ -6,6 +6,7 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -52,7 +53,7 @@ public class FictionHuntStory {
         title = doc.select("div.title").first().text();
         // Get author string.
         author = doc.select("div.details > a").first().text();
-        // Get details string to extract other bits of information from that.
+        // Get details string to extract other bits of information from that. TODO use regex for this bc yay.
         String[] details = doc.select("div.details").first().ownText().split(" - ");
         // Get word count.
         wordCount = Integer.parseInt(details[1].replace("Words: ", "").replaceAll(",", ""));
@@ -74,7 +75,9 @@ public class FictionHuntStory {
         // FictionHunt has done a very handy thing with their URLs, their story IDs correspond to the original FFN
         // story IDs, which makes generating an FFN link easy to do. First, we need to get the story ID from the
         // FictionHunt URL.
-        String storyId = Pattern.compile(C.FICTIONHUNT_REGEX).matcher(url).group(5);
+        Matcher matcher = Pattern.compile(C.FICTIONHUNT_REGEX).matcher(url);
+        matcher.find();
+        String storyId = matcher.group(1);
         // The create a FFN link and download the resulting page.
         Document ffnDoc = Main.downloadHtml(String.format(C.FFN_URL, storyId));
         if (ffnDoc == null) {

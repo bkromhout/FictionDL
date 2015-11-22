@@ -145,6 +145,8 @@ public class FanfictionNetDL {
      * @return The story ID from the given URL.
      */
     private String storyIdFromFfnUrl(String ffnUrl) {
-        return Pattern.compile(C.FFN_REGEX).matcher(ffnUrl).group(4);
+        Matcher matcher = Pattern.compile(C.FFN_REGEX).matcher(ffnUrl);
+        matcher.find();
+        return matcher.group(1);
     }
 }

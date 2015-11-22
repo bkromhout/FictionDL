@@ -12,7 +12,7 @@ public class SiyeDL {
 
     /**
      * Create a new SIYE downloader.
-     * @param urls SIYE URLs to download.
+     * @param urls List of SIYE URLs.
      */
     public SiyeDL(ArrayList<String> urls) {
         this.urls = urls;

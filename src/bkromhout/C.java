@@ -59,10 +59,20 @@ public class C {
     public static final String PF_DL_URL = "http://www.p0ody-files.com/ff_to_ebook/mobile/makeEpub.php?id=%s";
 
     /**
+     * SIYE story link, just needs the story ID string substituted into it.
+     */
+    public static final String SIYE_CH_URL = "http://siye.co.uk/viewstory.php?sid=%s&chapter=1";
+
+    /**
+     * SIYE author page link, just needs relative author link string substituted into it.
+     */
+    public static final String SIYE_AUTHOR_URL = "http://siye.co.uk/%s";
+
+    /**
      * SIYE story link, just needs the story ID string substituted into it. This will point to the printable version of
      * the whole story.
      */
-    public static final String SIYE_URL = "http://siye.co.uk/viewstory.php?action=printable&sid=%s&chapter=all";
+    public static final String SIYE_CONTENT_URL = "http://siye.co.uk/viewstory.php?action=printable&sid=%s&chapter=all";
 
     /*
     RegEx Strings
@@ -73,25 +83,29 @@ public class C {
     public static final String HOST_REGEX = "^(http[s]?:\\/\\/)?([^:\\/\\s]+)(\\/.*)?$";
 
     /**
-     * Regex to help obtain file name from a Content-Disposition header (Do Matcher.find() and then Matcher.group()).
+     * Regex to help obtain file name from a Content-Disposition header. Use .find() then .group();
      */
     public static final String PF_FNAME_REGEX = "(?<=filename=\").*?(?=\")";
 
     /**
-     * Regex to extract storyId from FictionHunt URL. Group 5 is the ID.
+     * Regex to extract storyId from FictionHunt URL. Use .find() then .group(1).
      */
-    public static final String FICTIONHUNT_REGEX =
-            "^(http[s]?:\\/\\/(([^:\\/\\s]*\\.)?fictionhunt.com\\/read\\/))?([^:\\/\\s]+)?(\\/\\d*)?$";
+    public static final String FICTIONHUNT_REGEX = "\\/read\\/(\\d*)";
 
     /**
-     * Regex to extract story ID from Fanfiction.net URL. Group 4 is the ID.
+     * Regex to extract story ID from Fanfiction.net URL. Use .find() then .group(1).
      */
-    public static final String FFN_REGEX = "^(http[s]?:\\/\\/((www|m)\\.fanfiction.net\\/s\\/))?(\\d+)?(\\/.*)?$";
+    public static final String FFN_REGEX = "\\/s\\/(\\d*)";
 
     /**
-     * Regex to extract the story ID
+     * Regex to extract the story ID. Use .find() then .group(1).
      */
-    public static final String SIYE_REGEX = ""; // TODO make this!
+    public static final String SIYE_SID_REGEX = "sid=(\\d*)";
+
+    /**
+     * Regex to get title and author for SIYE story. Title is group 1, author is group 3.
+     */
+    public static final String SIYE_TA_REGEX = "^(.*)(\\sBy\\s)(.*)(\\s-\\sText\\sSize\\s\\+)$";
 
     /*
     File Template Strings
@@ -109,8 +123,43 @@ public class C {
             " Calibri}body{\ttext-align: left;\tfont: 1em Calibri;\tline-height: 1.05em;}";
 
     /**
-     * Title Page. Has a number of areas for replacement using String.format(): -Title of story -Author of story -Rating
-     * -Word count -Chapter count
+     * Title page with summary. Has a number of areas for replacement using String.format(): Title of story, Author of
+     * story, Summary, Rating, Word count, Chapter count
+     */
+    public static final String TITLE_PAGE_SUMMARY = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n" +
+            "  \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n" +
+            "\n" +
+            "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+            "<head>\n" +
+            "  <link href=\"../Styles/style.css\" rel=\"stylesheet\" type=\"text/css\"/>\n" +
+            "  <meta content=\"http://www.w3.org/1999/xhtml; charset=UTF-8\" http-equiv=\"Content-Type\"/>\n" +
+            "  <title> </title>\n" +
+            "</head>\n" +
+            "\n" +
+            "<body>\n" +
+            "  <div id=\"ficTitle\">\n" +
+            "    %s\n" +
+            "  </div>\n" +
+            "\n" +
+            "  <div id=\"ficAuthor\">\n" +
+            "    By: %s\n" +
+            "  </div>\n" +
+            "\n" +
+            "  <p><strong>Summary:</strong> %s</p>\n" +
+            "\n" +
+            "  <p><strong>Rated:</strong> %s</p>\n" +
+            "\n" +
+            "  <p><strong>Word Count:</strong> %d</p>\n" +
+            "\n" +
+            "  <p><strong>Chapters:</strong> %d</p>\n" +
+            "\n" +
+            "</body>\n" +
+            "</html>";
+
+    /**
+     * Title page. Has a number of areas for replacement using String.format(): Title of story, Author of story, Rating,
+     * Word count, Chapter count
      */
     public static final String TITLE_PAGE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
             "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n" +

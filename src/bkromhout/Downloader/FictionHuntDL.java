@@ -13,17 +13,17 @@ import java.nio.file.*;
 import java.util.ArrayList;
 
 /**
- * Downloader for FictionHuntStory.
+ * Downloader for FictionHunt stories.
  */
 public class FictionHuntDL {
     public static final String SITE = "FictionHunt";
     // List of story URLs
-    private ArrayList<String> urls = new ArrayList<>();
+    private ArrayList<String> urls;
     // Instance of an FFN downloader, created the first time it's needed, to easily download FFN stories.
     private FanfictionNetDL ffnDownloader = null;
 
     /**
-     * Downloader for FictionHunt stories.
+     * Create a new FictionHunt downloader.
      * @param urls List of FictionHunt URLs.
      */
     public FictionHuntDL(ArrayList<String> urls) {
