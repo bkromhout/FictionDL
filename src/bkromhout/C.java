@@ -10,6 +10,7 @@ public class C {
     // General
     public static final String USAGE = "Usage: java -jar FictionHuntDL.jar <path to URL list txt file>";
     public static final String CHECK_AND_PARSE_FILE = "Checking and parsing file...";
+    public static final String FH_NO_SUMMARY = "(Couldn't get summary from FictionHunt, sorry!)";
 
     // Download Process
     public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n";

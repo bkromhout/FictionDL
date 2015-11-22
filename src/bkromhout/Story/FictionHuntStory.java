@@ -4,6 +4,7 @@ import bkromhout.C;
 import bkromhout.Downloader.FictionHuntDL;
 import bkromhout.Main;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,6 +60,10 @@ public class FictionHuntStory {
         if (ffnStoryId != null) return; // If the story is on FFN, don't bother with the rest!
         // Get author string.
         author = doc.select("div.details > a").first().text();
+        // Get the summary. Note that we do this by trying to search FictionHunt for the story title, then parsing
+        // the search results. We sort by relevancy, but if the story still doesn't show up on the first page then we
+        // just give up and use an apology message as the summary :)
+        summary = findSummary();
         // Get details string to extract other bits of information from that. TODO use regex for this bc yay.
         String[] details = doc.select("div.details").first().ownText().split(" - ");
         // Get word count.
@@ -108,8 +113,15 @@ public class FictionHuntStory {
      * @return Story summary.
      */
     private String findSummary() {
-        // TODO.
-        return null;
+        // Generate a FictionHunt search URL using the title.
+        String fhSearchUrl = String.format(C.FH_SEARCH_URL, title);
+        // Download search page.
+        Document fhSearch = Main.downloadHtml(fhSearchUrl);
+        if (fhSearch == null) return C.FH_NO_SUMMARY;
+        // Get summary.
+        Element summaryElement = fhSearch.select(
+                String.format("li:has(a[href=\"http://fanfiction.net/s/%s\"]) div.ficContent", storyId)).first();
+        return summaryElement != null ? summaryElement.text() : C.FH_NO_SUMMARY;
     }
 
     public String getTitle() {
