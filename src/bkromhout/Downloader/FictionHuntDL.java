@@ -65,14 +65,14 @@ public class FictionHuntDL {
             ffnDownloader.downloadByStoryId(story.getFfnStoryId(), story.getTitle());
         } else {
             // Story isn't on Fanfiction.net anymore, download directly from FictionHunt.
-            // Get chapter documents, and make sure we didn't fail to get some chapter (and if we did, skip this story.
+            // Get chapter documents, and make sure we didn't fail to get some chapter (and if we did, skip this story).
             System.out.printf(C.DL_CHAPS_FOR, story.getTitle());
             ArrayList<Chapter> chapters = downloadChapters(story);
             if (story.getChapterUrls().size() != chapters.size()) {
                 System.out.println(C.SOME_CHAPS_FAILED);
                 return;
             }
-            // Sanitize the chapters; there are parts of FictionHunt's HTML that we don't really want.
+            // Sanitize the chapters so that they are in the expected xhtml format for ePUB.
             System.out.println(C.SANITIZING_CHAPS);
             chapters.forEach(this::sanitizeChapter);
             // Save the story.
@@ -100,8 +100,9 @@ public class FictionHuntDL {
     }
 
     /**
-     * Takes chapter text from
-     * @param chapter Document for a FictionHunt story chapter.
+     * Takes chapter HTML from a FictionHunt chapter and cleans it up, before putting it into the xhtml format required
+     * for an ePUB.
+     * @param chapter Chapter object containing HTML for a FictionHunt story chapter.
      */
     private void sanitizeChapter(Chapter chapter) {
         // Get the chapter's text, keeping all HTML formatting intact
@@ -129,7 +130,7 @@ public class FictionHuntDL {
         Main.saveFile(storyDirPath.resolve("style.css"), C.CSS.getBytes(StandardCharsets.UTF_8));
         // Create title.xhtml file.
         String titlePageText = String.format(C.TITLE_PAGE, story.getTitle(), story.getAuthor(), story.getRating(),
-                story.getWordCount(), story.getChapterUrls().size());
+                story.getWordCount(), chapters.size());
         Main.saveFile(storyDirPath.resolve("title.xhtml"), titlePageText.getBytes(StandardCharsets.UTF_8));
         // Save chapter file(s).
         for (int i = 0; i < chapters.size(); i++) {

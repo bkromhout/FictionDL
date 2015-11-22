@@ -3,3 +3,4 @@ So, here are the things we want:
 -Convert files into ePUBs ourselves!! See http://www.siegmann.nl/epublib for a library perhaps??
     -Or, if it isn't that difficult, just do it ourselves... I mean, how complicated could it be??
 -Mark the input file for each story downloaded.
+-(Easy one) Get more story details for the title page.

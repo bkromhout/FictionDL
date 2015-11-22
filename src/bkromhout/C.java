@@ -102,29 +102,22 @@ public class C {
      */
     public static final String SIYE_SID_REGEX = "sid=(\\d*)";
 
-    /**
-     * Regex to get title and author for SIYE story. Title is group 1, author is group 3.
-     */
-    public static final String SIYE_TA_REGEX = "^(.*)(\\sBy\\s)(.*)(\\s-\\sText\\sSize\\s\\+)$";
-
     /*
     File Template Strings
      */
     /**
-     * Shamelessly taken from p0oody-files :D
+     * Yay CSS. It doesn't honestly matter that much anyway though, ePUB readers can do whatever they want to.
      */
-    public static final String CSS = "#chapText{\ttext-align: left;\tfont: 1em Calibri;\tline-height: 1.05em;" +
-            "}#chapTitle{\tfont: bold 1.2em Calibri;\ttext-align: left;\tline-height: 1.25em;" +
-            "}#ficTitle{\tfont: bold " +
-            "1.7em Calibri;\ttext-align: center;}#ficAuthor{\tfont: 1.4em Calibri;\ttext-align: center;" +
-            "}#footer {   " +
-            "position: absolute;   bottom: 0;   width: 100%;   height :60px;   /* Height of the footer */   " +
-            "font: 1em" +
-            " Calibri}body{\ttext-align: left;\tfont: 1em Calibri;\tline-height: 1.05em;}";
+    public static final String CSS = "#chapText{\ttext-align: left;\tfont: 1em Calibri;\tline-height: 1.05em;}" +
+            "#chapTitle{\tfont: bold 1.2em Calibri;\ttext-align: left;\tline-height: 1.25em;}" +
+            "#ficTitle{\tfont: bold 1.7em Calibri;\ttext-align: center;}" +
+            "#ficAuthor{\tfont: 1.4em Calibri;\ttext-align: center;}" +
+            "#footer {position: absolute; bottom: 0; width: 100%; height :60px; font: 1em Calibri}" +
+            "body{\ttext-align: left;\tfont: 1em Calibri;\tline-height: 1.05em;}";
 
     /**
      * Title page with summary. Has a number of areas for replacement using String.format(): Title of story, Author of
-     * story, Summary, Rating, Word count, Chapter count
+     * story, Summary, Rating, Word count, Chapter count.
      */
     public static final String TITLE_PAGE_SUMMARY = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
             "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n" +
@@ -159,7 +152,7 @@ public class C {
 
     /**
      * Title page. Has a number of areas for replacement using String.format(): Title of story, Author of story, Rating,
-     * Word count, Chapter count
+     * Word count, Chapter count.
      */
     public static final String TITLE_PAGE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
             "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n" +
@@ -191,8 +184,8 @@ public class C {
             "</html>";
 
     /**
-     * Chapter page. Has a number of areas for replacement using String.format(): -Chapter title -Chapter title -Chapter
-     * text (HTML!)
+     * Chapter page. Has a number of areas for replacement using String.format(): Chapter title, Chapter title, Chapter
+     * text (HTML!).
      */
     public static final String CHAPTER_PAGE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
             "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n" +
