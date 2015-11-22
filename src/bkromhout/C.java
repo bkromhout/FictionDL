@@ -1,7 +1,7 @@
 package bkromhout;
 
 /**
- * Constants
+ * Constants file.
  */
 public class C {
     /*
@@ -51,12 +51,18 @@ public class C {
      * Fanfiction.net story link, just needs the story ID string substituted into it. We use the mobile site because
      * it's easier to parse.
      */
-    public static final String FFN_LINK = "https://m.fanfiction.net/s/%s";
+    public static final String FFN_URL = "https://m.fanfiction.net/s/%s";
 
     /**
      * p0ody-files.com download link, just needs the FFN story ID substituted into it.
      */
-    public static final String PF_DL_LINK = "http://www.p0ody-files.com/ff_to_ebook/mobile/makeEpub.php?id=%s";
+    public static final String PF_DL_URL = "http://www.p0ody-files.com/ff_to_ebook/mobile/makeEpub.php?id=%s";
+
+    /**
+     * SIYE story link, just needs the story ID string substituted into it. This will point to the printable version of
+     * the whole story.
+     */
+    public static final String SIYE_URL = "http://siye.co.uk/viewstory.php?action=printable&sid=%s&chapter=all";
 
     /*
     RegEx Strings

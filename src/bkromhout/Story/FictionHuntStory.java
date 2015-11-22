@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
- * Model object for a story.
+ * Model object for a FictionHunt story.
  */
 public class FictionHuntStory {
     // Story URL.
@@ -76,7 +76,7 @@ public class FictionHuntStory {
         // FictionHunt URL.
         String storyId = Pattern.compile(C.FICTIONHUNT_REGEX).matcher(url).group(5);
         // The create a FFN link and download the resulting page.
-        Document ffnDoc = Main.downloadHtml(String.format(C.FFN_LINK, storyId));
+        Document ffnDoc = Main.downloadHtml(String.format(C.FFN_URL, storyId));
         if (ffnDoc == null) {
             // It really doesn't matter if we can't get the page from FFN since we can still get it from FictionHunt.
             System.out.println(C.FH_FFN_CHECK_FAILED);

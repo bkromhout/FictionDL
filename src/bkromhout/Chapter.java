@@ -3,7 +3,7 @@ package bkromhout;
 import org.jsoup.nodes.Document;
 
 /**
- * Chapter model.
+ * Chapter model. Very simple, just holds the chapter title and content.
  */
 public class Chapter {
     // Chapter title.
@@ -11,6 +11,11 @@ public class Chapter {
     // Chapter HTML.
     public Document html;
 
+    /**
+     * Create a new Chapter model (just for convenience, since instance members are public).
+     * @param title The chapter's title.
+     * @param html  The chapter's HTML content.
+     */
     public Chapter(String title, Document html) {
         this.title = title;
         this.html = html;

@@ -67,10 +67,10 @@ public class FanfictionNetDL {
      * FFN first (not just for the sake of having the title, more to ensure that FFN has the story available).
      * @param storyId The ID of the story.
      */
-    public void downloadByStoryId(String storyId) {
+    private void downloadByStoryId(String storyId) {
         // First try to get the first chapter of the story. 2 reasons for this. First, we ensure the story exists.
         // Second, we can get the title for logging purposes.
-        String ffnUrl = String.format(C.FFN_LINK, storyId);
+        String ffnUrl = String.format(C.FFN_URL, storyId);
         Document storyDoc = Main.downloadHtml(ffnUrl);
         if (storyDoc == null) {
             // If we couldn't download the chapter from Fanfiction.net, we'll skip try to get it from p0ody-files
@@ -100,7 +100,7 @@ public class FanfictionNetDL {
         // Get the p0ody-files URL to download this story.
         URL pfUrl;
         try {
-            pfUrl = new URL(String.format(C.PF_DL_LINK, storyId));
+            pfUrl = new URL(String.format(C.PF_DL_URL, storyId));
             // Download the ePUB from p0ody-files. Open a connection to the URL.
             URLConnection pfConnection = pfUrl.openConnection();
             // First thing to do is to figure out what the filename of the file we're about to download is.
