@@ -31,6 +31,7 @@ public class C {
 
     // Errors and Warnings
     public static final String INVALID_PATH = "Invalid path.";
+    public static final String INVALID_URL = "Invalid URL.";
     public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the file: \"%s\"\n";
     public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"\n";
     public static final String ENTRY_PT_DL_FAILED = "Couldn't download story entry point!";
@@ -64,6 +65,11 @@ public class C {
      * Regex to obtain website host from URL. Group 2 is the host.
      */
     public static final String HOST_REGEX = "^(http[s]?:\\/\\/)?([^:\\/\\s]+)(\\/.*)?$";
+
+    /**
+     * Regex to help obtain file name from a Content-Disposition header (Do Matcher.find() and then Matcher.group()).
+     */
+    public static final String PF_FNAME_REGEX = "(?<=filename=\").*?(?=\")";
 
     /**
      * Regex to extract storyId from FictionHunt URL. Group 5 is the ID.

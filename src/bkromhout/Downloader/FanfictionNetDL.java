@@ -2,12 +2,18 @@ package bkromhout.Downloader;
 
 import bkromhout.C;
 import bkromhout.Main;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -91,7 +97,45 @@ public class FanfictionNetDL {
      */
     public void downloadByStoryId(String storyId, String title) {
         System.out.printf(C.DL_SAVE_EPUB_FOR_STORY, title);
-        String pfUrl = String.format(C.PF_DL_LINK, storyId);
+        // Get the p0ody-files URL to download this story.
+        URL pfUrl;
+        try {
+            pfUrl = new URL(String.format(C.PF_DL_LINK, storyId));
+            // Download the ePUB from p0ody-files. Open a connection to the URL.
+            URLConnection pfConnection = pfUrl.openConnection();
+            // First thing to do is to figure out what the filename of the file we're about to download is.
+            // We'll need to get and parse the Content-Disposition header to do this. Then we'll use Regex to parse the
+            // file name from the header.
+            String pfFilename = getFilenameFromCDHeader(pfConnection.getHeaderField("Content-Disposition"));
+            if (pfFilename == null) {
+                // If we don't have the file name here, then p0ody-files won't be able to give us the ePUB.
+                System.out.printf(C.FFN_DL_FAILED, storyId);
+                return;
+            }
+            // Open an input stream from the URL and an output stream to the file, then download the file.
+            ReadableByteChannel pfStream = Channels.newChannel(pfConnection.getInputStream());
+            FileOutputStream pfFile = new FileOutputStream(Main.dirPath.resolve(pfFilename).toFile());
+            pfFile.getChannel().transferFrom(pfStream, 0, Long.MAX_VALUE);
+        } catch (MalformedURLException e) {
+            // This really shouldn't happen, but if it does, skip this story.
+            System.out.println(C.INVALID_URL);
+            e.printStackTrace();
+        } catch (IOException e) {
+            // Now this, on the other hand, is much more likely to happen, since basically everything in here throws it.
+            System.out.printf(C.FFN_DL_FAILED, storyId);
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Use the power of Regex to extract a file name from a Content-Disposition header.
+     * @param cdHeader Content-Disposition header string.
+     * @return File name from header.
+     */
+    private String getFilenameFromCDHeader(String cdHeader) {
+        if (cdHeader == null) return null; // Obviously don't even bother if we don't have the header.
+        Matcher filenameMatcher = Pattern.compile(C.PF_FNAME_REGEX).matcher(cdHeader);
+        return filenameMatcher.find() ? filenameMatcher.group() : null;
     }
 
     /**
