@@ -29,7 +29,7 @@ public class FileParser {
     }
 
     private void initialize(String path) {
-        System.out.println(C.CHECK_AND_PARSE_FILE);
+        System.out.printf(C.CHECK_AND_PARSE_FILE);
         // Make sure the given path is valid, is a file, and can be read.
         File storiesFile = new File(path);
         if (!(storiesFile.exists() && storiesFile.isFile() && storiesFile.canRead())) {
@@ -54,7 +54,7 @@ public class FileParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(C.PROCESSED_FILE);
+        System.out.println(C.DONE);
     }
 
     /**

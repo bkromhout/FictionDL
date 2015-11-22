@@ -68,9 +68,9 @@ public class SiyeDL {
         System.out.println(C.SANITIZING_CHAPS);
         chapters.forEach(this::sanitizeChapter);
         // Save the story.
-        System.out.println(C.SAVING_STORY);
+        System.out.printf(C.SAVING_STORY);
         saveStory(story, chapters);
-        System.out.println(C.DONE);
+        System.out.println(C.DONE + "\n"); // Add an empty line.
     }
 
     /**

@@ -58,15 +58,15 @@ public class FictionHuntDL {
      * @param story Story to download.
      */
     private void downloadStory(FictionHuntStory story) {
+        System.out.printf(C.DL_CHAPS_FOR, story.getTitle());
         if (story.getFfnStoryId() != null) {
             // Story is still on Fanfiction.net, which is preferable since we can use p0ody-files to download the ePUB.
             if (ffnDownloader == null) ffnDownloader = new FanfictionNetDL(); // Get a FFN downloader instance.
-            System.out.printf(C.FH_STORY_ON_FFN, story.getFfnStoryId());
+            System.out.printf(C.FH_STORY_ON_FFN, story.getTitle());
             ffnDownloader.downloadByStoryId(story.getFfnStoryId(), story.getTitle());
         } else {
             // Story isn't on Fanfiction.net anymore, download directly from FictionHunt.
             // Get chapter documents, and make sure we didn't fail to get some chapter (and if we did, skip this story).
-            System.out.printf(C.DL_CHAPS_FOR, story.getTitle());
             ArrayList<Chapter> chapters = downloadChapters(story);
             if (story.getChapterUrls().size() != chapters.size()) {
                 System.out.println(C.SOME_CHAPS_FAILED);
@@ -76,9 +76,9 @@ public class FictionHuntDL {
             System.out.println(C.SANITIZING_CHAPS);
             chapters.forEach(this::sanitizeChapter);
             // Save the story.
-            System.out.println(C.SAVING_STORY);
+            System.out.printf(C.SAVING_STORY);
             saveStory(story, chapters);
-            System.out.println(C.DONE);
+            System.out.println(C.DONE + "\n"); // Add an empty line.
         }
     }
 

@@ -50,11 +50,11 @@ public class FictionHuntStory {
         // Get the HTML at the url we've specified to use as the entry point.
         Document doc = Main.downloadHtml(url);
         if (doc == null) throw new IOException(String.format(C.STORY_DL_FAILED, FictionHuntDL.SITE, storyId));
+        // Get title string. Even if the story is on FFN, we want to have this for logging purposes.
+        title = doc.select("div.title").first().text();
         // Check if story is on Fanfiction.net. If so, just get its FFN story ID.
         ffnStoryId = tryGetFfnStoryId();
         if (ffnStoryId != null) return; // If the story is on FFN, don't bother with the rest!
-        // Get title string.
-        title = doc.select("div.title").first().text();
         // Get author string.
         author = doc.select("div.details > a").first().text();
         // Get details string to extract other bits of information from that. TODO use regex for this bc yay.

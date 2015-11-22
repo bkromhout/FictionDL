@@ -10,24 +10,23 @@ public class C {
     // General
     public static final String USAGE = "Usage: java -jar FictionHuntDL.jar <path to URL list txt file>";
     public static final String CHECK_AND_PARSE_FILE = "Checking and parsing file...";
-    public static final String PROCESSED_FILE = "Processed file.\n";
 
     // Download Process
     public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n";
-    public static final String DONE = "Done!\n";
+    public static final String FETCH_BUILD_MODELS = "Fetching story info from %s and building story models...\n";
+    public static final String DL_STORIES_FROM_SITE = "Downloading stories from %s...\n\n";
+    public static final String DONE = "Done!";
     public static final String FINISHED_WITH_SITE = "\nFinished with %s.\n\n";
     public static final String ALL_FINISHED = "All Finished! :)";
 
     // Stories
-    public static final String FETCH_BUILD_MODELS = "Fetching stories from %s and building story models...\n";
-    public static final String DL_STORIES_FROM_SITE = "Downloading stories from %s...\n\n";
-    public static final String DL_SAVE_EPUB_FOR_STORY = "Downloading and saving ePUB file for: \"%s\"\n";
+    public static final String DL_SAVE_EPUB_FOR_STORY = "Downloading and saving ePUB file for: \"%s\"...";
     public static final String SAVING_STORY = "Saving Story...";
-    public static final String FH_STORY_ON_FFN = "Story with ID=%s still available on Fanfiction.net; will download " +
-            "from there.\n";
+    public static final String FH_STORY_ON_FFN = "\"%s\" is still available on Fanfiction.net; will download from " +
+            "there.\n";
 
     // Chapters
-    public static final String DL_CHAPS_FOR = "Downloading chapters for: \"%s\"\n";
+    public static final String DL_CHAPS_FOR = "Downloading: \"%s\"\n";
     public static final String SANITIZING_CHAPS = "Sanitizing chapters...";
 
     // Errors and Warnings
@@ -35,7 +34,7 @@ public class C {
     public static final String INVALID_URL = "Invalid URL.";
     public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the file: \"%s\"\n";
     public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"\n";
-    public static final String STORY_DL_FAILED = "Couldn't download %s story with ID=%s. Skipping it.\n\n";
+    public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it.";
     public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n";
     public static final String SAVE_FILE_FAILED = "Failed to save file: %s\n";
     public static final String CREATE_DIR_FAILED = "Couldn't create dir to save files at \"%s\"\n";
