@@ -36,7 +36,7 @@ public class FileParser {
             System.out.println(C.INVALID_PATH);
             System.exit(1);
         }
-        Main.dirPath = storiesFile.getParentFile().toPath();
+        FictionDL.dirPath = storiesFile.getParentFile().toPath();
         // Try to read lines from file into the url list
         try (BufferedReader br = new BufferedReader(new FileReader(storiesFile))) {
             String line = br.readLine();

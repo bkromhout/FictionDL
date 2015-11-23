@@ -2,7 +2,7 @@ package bkromhout.FictionDL.Story;
 
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Downloader.SiyeDL;
-import bkromhout.FictionDL.Main;
+import bkromhout.FictionDL.FictionDL;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
@@ -50,7 +50,7 @@ public class SiyeStory {
         // Figure out the SIYE story ID and author ID link.
         String authorIdLink = findAuthorIdLink(url);
         // Get the HTML at the info url.
-        Document doc = Main.downloadHtml(String.format(C.SIYE_AUTHOR_URL, authorIdLink));
+        Document doc = FictionDL.downloadHtml(String.format(C.SIYE_AUTHOR_URL, authorIdLink));
         if (doc == null) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
         // Get the story entry from on the author's page.
         Element story = doc.select(String.format("td tr td:has(a[href=\"viewstory.php?sid=%s\"])", storyId)).last();
@@ -100,7 +100,7 @@ public class SiyeStory {
         idMatcher.find();
         storyId = idMatcher.group(1);
         // Now download the first chapter's HTML.
-        Document chDoc = Main.downloadHtml(String.format(C.SIYE_INFO_URL, storyId));
+        Document chDoc = FictionDL.downloadHtml(String.format(C.SIYE_INFO_URL, storyId));
         if (chDoc == null) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
         // Then find the element that lets us get the relative link to the author's page.
         Element aIdElement = chDoc.select("h3 a").first();

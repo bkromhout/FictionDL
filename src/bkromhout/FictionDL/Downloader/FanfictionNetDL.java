@@ -1,7 +1,7 @@
 package bkromhout.FictionDL.Downloader;
 
 import bkromhout.FictionDL.C;
-import bkromhout.FictionDL.Main;
+import bkromhout.FictionDL.FictionDL;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
@@ -70,7 +70,7 @@ public class FanfictionNetDL {
         // First try to get the first chapter of the story. 2 reasons for this. First, we ensure the story exists.
         // Second, we can get the title for logging purposes.
         String ffnUrl = String.format(C.FFN_URL, storyId);
-        Document storyDoc = Main.downloadHtml(ffnUrl);
+        Document storyDoc = FictionDL.downloadHtml(ffnUrl);
         if (storyDoc == null) {
             // If we couldn't download the chapter from Fanfiction.net, we'll skip try to get it from p0ody-files
             // (though technically there's certainly the possibility that it does exist there in the archive).
@@ -113,7 +113,7 @@ public class FanfictionNetDL {
             }
             // Open an input stream from the URL and an output stream to the file, then download the file.
             ReadableByteChannel pfStream = Channels.newChannel(pfConnection.getInputStream());
-            FileOutputStream pfFile = new FileOutputStream(Main.dirPath.resolve(pfFilename).toFile());
+            FileOutputStream pfFile = new FileOutputStream(FictionDL.dirPath.resolve(pfFilename).toFile());
             pfFile.getChannel().transferFrom(pfStream, 0, Long.MAX_VALUE);
         } catch (MalformedURLException e) {
             // This really shouldn't happen, but if it does, skip this story.

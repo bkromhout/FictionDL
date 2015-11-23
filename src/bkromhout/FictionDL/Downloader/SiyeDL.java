@@ -2,7 +2,7 @@ package bkromhout.FictionDL.Downloader;
 
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Chapter;
-import bkromhout.FictionDL.Main;
+import bkromhout.FictionDL.FictionDL;
 import bkromhout.FictionDL.Story.SiyeStory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class SiyeDL {
     public static final String SITE = "SIYE";
     // List of SIYE URLs.
-    ArrayList<String> urls;
+    private ArrayList<String> urls;
 
     /**
      * Create a new SIYE downloader.
@@ -78,7 +78,7 @@ public class SiyeDL {
      */
     private ArrayList<Chapter> downloadChapters(SiyeStory story) {
         // Download chapter HTML Documents.
-        ArrayList<Document> htmls = Main.getDocuments(story.getChapterUrls());
+        ArrayList<Document> htmls = FictionDL.getDocuments(story.getChapterUrls());
         // Parse chapter titles from chapters.
         ArrayList<String> titles = htmls.stream()
                 .map(html -> html.select("div[style=\"text-align: center; font-weight: bold;\"]").first().text())
@@ -109,7 +109,7 @@ public class SiyeDL {
      */
     private void saveStory(SiyeStory story, ArrayList<Chapter> chapters) {
         // Create the directory if it doesn't already exist.
-        Path storyDirPath = Main.dirPath.resolve(String.format("%s - %s", story.getAuthor(), story.getTitle()));
+        Path storyDirPath = FictionDL.dirPath.resolve(String.format("%s - %s", story.getAuthor(), story.getTitle()));
         File storyDir = storyDirPath.toFile();
         if (!storyDir.exists() && !storyDir.mkdir()) {
             System.out.printf(C.CREATE_DIR_FAILED, storyDir.getAbsolutePath());
@@ -117,17 +117,17 @@ public class SiyeDL {
             System.exit(1);
         }
         // Create style.css file.
-        Main.saveFile(storyDirPath.resolve("style.css"), C.CSS.getBytes(StandardCharsets.UTF_8));
+        FictionDL.saveFile(storyDirPath.resolve("style.css"), C.CSS.getBytes(StandardCharsets.UTF_8));
         // Create title.xhtml file.
         String titlePageText = String.format(C.TITLE_PAGE_SUMMARY, story.getTitle(), story.getAuthor(),
                 story.getSummary(), story.getRating(), story.getWordCount(), chapters.size());
-        Main.saveFile(storyDirPath.resolve("title.xhtml"), titlePageText.getBytes(StandardCharsets.UTF_8));
+        FictionDL.saveFile(storyDirPath.resolve("title.xhtml"), titlePageText.getBytes(StandardCharsets.UTF_8));
         // Save chapter file(s).
         for (int i = 0; i < chapters.size(); i++) {
             String chapterFileName = String.format("Chapter %d.xhtml", i + 1);
             Path chapterPath = storyDirPath.resolve(chapterFileName);
             byte[] chapterData = chapters.get(i).html.outerHtml().getBytes(StandardCharsets.UTF_8);
-            Main.saveFile(chapterPath, chapterData);
+            FictionDL.saveFile(chapterPath, chapterData);
         }
     }
 }

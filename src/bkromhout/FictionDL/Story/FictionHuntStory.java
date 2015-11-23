@@ -2,7 +2,7 @@ package bkromhout.FictionDL.Story;
 
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Downloader.FictionHuntDL;
-import bkromhout.FictionDL.Main;
+import bkromhout.FictionDL.FictionDL;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
@@ -51,7 +51,7 @@ public class FictionHuntStory {
         // Get FictionHunt story ID.
         storyId = getStoryId();
         // Get the HTML at the url we've specified to use as the entry point.
-        Document doc = Main.downloadHtml(url);
+        Document doc = FictionDL.downloadHtml(url);
         if (doc == null) throw new IOException(String.format(C.STORY_DL_FAILED, FictionHuntDL.SITE, storyId));
         // Get title string. Even if the story is on FFN, we want to have this for logging purposes.
         title = doc.select("div.title").first().text();
@@ -96,7 +96,7 @@ public class FictionHuntStory {
         // FictionHunt has done a very handy thing with their URLs, their story IDs correspond to the original FFN
         // story IDs, which makes generating an FFN link easy to do. First, create a FFN link and download the
         // resulting page.
-        Document ffnDoc = Main.downloadHtml(String.format(C.FFN_URL, storyId));
+        Document ffnDoc = FictionDL.downloadHtml(String.format(C.FFN_URL, storyId));
         if (ffnDoc == null) {
             // It really doesn't matter if we can't get the page from FFN since we can still get it from FictionHunt.
             System.out.println(C.FH_FFN_CHECK_FAILED);
@@ -116,7 +116,7 @@ public class FictionHuntStory {
         // Generate a FictionHunt search URL using the title.
         String fhSearchUrl = String.format(C.FH_SEARCH_URL, title);
         // Download search page.
-        Document fhSearch = Main.downloadHtml(fhSearchUrl);
+        Document fhSearch = FictionDL.downloadHtml(fhSearchUrl);
         if (fhSearch == null) return C.FH_NO_SUMMARY;
         // Get summary.
         Element summaryElement = fhSearch.select(
