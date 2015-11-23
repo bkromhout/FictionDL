@@ -5,10 +5,16 @@ package bkromhout.FictionDL;
  */
 public class C {
     /*
+    General Strings.
+     */
+    public static final String VER = "1.0";
+    public static final String VER_STRING = "FictionDL Version " + VER;
+    public static final String USAGE = "Usage: java -jar FictionDL.jar \"<path to URL list txt file>\"";
+
+    /*
     Log output strings.
      */
     // General
-    public static final String USAGE = "Usage: java -jar FictionHuntDL.jar <path to URL list txt file>";
     public static final String CHECK_AND_PARSE_FILE = "Checking and parsing file...";
     public static final String FH_NO_SUMMARY = "(Couldn't get summary from FictionHunt, sorry!)";
 

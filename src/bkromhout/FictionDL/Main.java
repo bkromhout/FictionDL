@@ -28,6 +28,7 @@ public class Main {
     public static Path dirPath;
 
     public static void main(String[] args) {
+        System.out.println(C.VER_STRING);
         // Check args, print usage if needed.
         if (args.length != 1) {
             System.out.println(C.USAGE);
