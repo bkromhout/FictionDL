@@ -33,4 +33,5 @@ local.properties
 # Keystore and properties
 *.keystore
 keystore.properties
-FictionHuntDL.jar
+
+FictionDL.jar

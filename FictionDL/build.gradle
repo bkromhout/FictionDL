@@ -1,0 +1,28 @@
+/*
+ * FictionDL build file.
+ */
+apply plugin: 'java'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+version = '1.0'
+sourceCompatibility = 1.8
+
+// We'd really like to just have the shadow jar since we need the dependencies included.
+jar.deleteAllActions()
+shadowJar {
+    classifier = ''
+    manifest {
+        attributes 'Main-Class': 'bkromhout.FictionDL.Main',
+                   'Implementation-Title': 'FictionDL',
+                   'Implementation-Version': version
+    }
+}
+jar.dependsOn(shadowJar)
+
+dependencies {
+    compile 'org.jsoup:jsoup:1.8.3' // jsoup for HTML parsing.
+}
+
+artifacts {
+    shadowJar
+}
