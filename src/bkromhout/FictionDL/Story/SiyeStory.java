@@ -1,8 +1,8 @@
-package bkromhout.Story;
+package bkromhout.FictionDL.Story;
 
-import bkromhout.C;
-import bkromhout.Downloader.SiyeDL;
-import bkromhout.Main;
+import bkromhout.FictionDL.C;
+import bkromhout.FictionDL.Downloader.SiyeDL;
+import bkromhout.FictionDL.Main;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.TextNode;
