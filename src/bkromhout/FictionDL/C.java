@@ -1,4 +1,4 @@
-package bkromhout;
+package bkromhout.FictionDL;
 
 /**
  * Constants file.

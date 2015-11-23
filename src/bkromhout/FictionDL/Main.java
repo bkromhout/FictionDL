@@ -1,8 +1,8 @@
-package bkromhout;
+package bkromhout.FictionDL;
 
-import bkromhout.Downloader.FanfictionNetDL;
-import bkromhout.Downloader.FictionHuntDL;
-import bkromhout.Downloader.SiyeDL;
+import bkromhout.FictionDL.Downloader.FanfictionNetDL;
+import bkromhout.FictionDL.Downloader.FictionHuntDL;
+import bkromhout.FictionDL.Downloader.SiyeDL;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 

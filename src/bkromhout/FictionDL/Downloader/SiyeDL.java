@@ -1,46 +1,46 @@
-package bkromhout.Downloader;
+package bkromhout.FictionDL.Downloader;
 
-import bkromhout.C;
-import bkromhout.Chapter;
-import bkromhout.Main;
-import bkromhout.Story.FictionHuntStory;
+import bkromhout.FictionDL.C;
+import bkromhout.FictionDL.Chapter;
+import bkromhout.FictionDL.Main;
+import bkromhout.FictionDL.Story.SiyeStory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
- * Downloader for FictionHunt stories.
+ * Downloader for siye.co.uk ("Sink Into Your Eyes").
  */
-public class FictionHuntDL {
-    public static final String SITE = "FictionHunt";
-    // List of story URLs
-    private ArrayList<String> urls;
-    // Instance of an FFN downloader, created the first time it's needed, to easily download FFN stories.
-    private FanfictionNetDL ffnDownloader = null;
+public class SiyeDL {
+    public static final String SITE = "SIYE";
+    // List of SIYE URLs.
+    ArrayList<String> urls;
 
     /**
-     * Create a new FictionHunt downloader.
-     * @param urls List of FictionHunt URLs.
+     * Create a new SIYE downloader.
+     * @param urls List of SIYE URLs.
      */
-    public FictionHuntDL(ArrayList<String> urls) {
+    public SiyeDL(ArrayList<String> urls) {
         this.urls = urls;
     }
 
     /**
-     * Download the stories whose URLs were passed to this instance of the downloader upon creation.
+     * Download the stories whose URLs were passed to this instance of the downloader upon creation..
      */
     public void download() {
         System.out.printf(C.STARTING_SITE_DL_PROCESS, SITE);
         // Create story models from URLs.
         System.out.printf(C.FETCH_BUILD_MODELS, SITE);
-        ArrayList<FictionHuntStory> stories = new ArrayList<>();
+        ArrayList<SiyeStory> stories = new ArrayList<>();
         for (String url : urls) {
             try {
-                stories.add(new FictionHuntStory(url));
+                stories.add(new SiyeStory(url));
             } catch (IOException e) {
                 System.out.println(e.getMessage());
             }
@@ -51,33 +51,24 @@ public class FictionHuntDL {
     }
 
     /**
-     * Download the chapters of a story. If the story is still active on Fanfiction.net, an ePUB file will be downloaded
-     * from p0ody-files. If not, it will be downloaded from FictionHunt by scraping and sanitizing the chapters.
-     * @param story Story to download.
+     * Download chapters of a story.
+     * @param story The story to download.
      */
-    private void downloadStory(FictionHuntStory story) {
+    private void downloadStory(SiyeStory story) {
+        // Get chapter documents, and make sure we didn't fail to get some chapter (and if we did, skip this story).
         System.out.printf(C.DL_CHAPS_FOR, story.getTitle());
-        if (story.getFfnStoryId() != null) {
-            // Story is still on Fanfiction.net, which is preferable since we can use p0ody-files to download the ePUB.
-            if (ffnDownloader == null) ffnDownloader = new FanfictionNetDL(); // Get a FFN downloader instance.
-            System.out.printf(C.FH_STORY_ON_FFN, story.getTitle());
-            ffnDownloader.downloadByStoryId(story.getFfnStoryId(), story.getTitle());
-        } else {
-            // Story isn't on Fanfiction.net anymore, download directly from FictionHunt.
-            // Get chapter documents, and make sure we didn't fail to get some chapter (and if we did, skip this story).
-            ArrayList<Chapter> chapters = downloadChapters(story);
-            if (story.getChapterUrls().size() != chapters.size()) {
-                System.out.println(C.SOME_CHAPS_FAILED);
-                return;
-            }
-            // Sanitize the chapters so that they are in the expected xhtml format for ePUB.
-            System.out.println(C.SANITIZING_CHAPS);
-            chapters.forEach(this::sanitizeChapter);
-            // Save the story.
-            System.out.printf(C.SAVING_STORY);
-            saveStory(story, chapters);
-            System.out.println(C.DONE + "\n"); // Add an empty line.
+        ArrayList<Chapter> chapters = downloadChapters(story);
+        if (story.getChapterUrls().size() != chapters.size()) {
+            System.out.println(C.SOME_CHAPS_FAILED);
+            return;
         }
+        // Sanitize the chapters so that they are in the expected xhtml format for ePUB.
+        System.out.println(C.SANITIZING_CHAPS);
+        chapters.forEach(this::sanitizeChapter);
+        // Save the story.
+        System.out.printf(C.SAVING_STORY);
+        saveStory(story, chapters);
+        System.out.println(C.DONE + "\n"); // Add an empty line.
     }
 
     /**
@@ -85,12 +76,13 @@ public class FictionHuntDL {
      * @param story Story to download chapters for.
      * @return ArrayList of Chapter objects.
      */
-    private ArrayList<Chapter> downloadChapters(FictionHuntStory story) {
+    private ArrayList<Chapter> downloadChapters(SiyeStory story) {
         // Download chapter HTML Documents.
         ArrayList<Document> htmls = Main.getDocuments(story.getChapterUrls());
-        // Generate chapter titles in the format "Chapter #"
-        ArrayList<String> titles = new ArrayList<>();
-        for (int i = 0; i < htmls.size(); i++) titles.add(String.format("Chapter %d", i + 1));
+        // Parse chapter titles from chapters.
+        ArrayList<String> titles = htmls.stream()
+                .map(html -> html.select("div[style=\"text-align: center; font-weight: bold;\"]").first().text())
+                .collect(Collectors.toCollection(ArrayList::new));
         // Create Chapter models.
         ArrayList<Chapter> chapters = new ArrayList<>();
         for (int i = 0; i < htmls.size(); i++) chapters.add(new Chapter(titles.get(i), htmls.get(i)));
@@ -98,13 +90,13 @@ public class FictionHuntDL {
     }
 
     /**
-     * Takes chapter HTML from a FictionHunt chapter and cleans it up, before putting it into the xhtml format required
-     * for an ePUB.
-     * @param chapter Chapter object containing HTML for a FictionHunt story chapter.
+     * Takes chapter HTML from a SIYE chapter and cleans it up, before putting it into the xhtml format required for an
+     * ePUB.
+     * @param chapter Chapter object containing HTML for a SIYE story chapter.
      */
     private void sanitizeChapter(Chapter chapter) {
         // Get the chapter's text, keeping all HTML formatting intact
-        String chapterText = chapter.html.select("div.text").first().html();
+        String chapterText = chapter.html.select("span span").first().html();
         // Create a new chapter HTML Document which is minimal.
         String newChapterHtml = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText);
         chapter.html = Jsoup.parse(newChapterHtml);
@@ -115,7 +107,7 @@ public class FictionHuntDL {
      * @param story    Story to save.
      * @param chapters Chapters of the story.
      */
-    private void saveStory(FictionHuntStory story, ArrayList<Chapter> chapters) {
+    private void saveStory(SiyeStory story, ArrayList<Chapter> chapters) {
         // Create the directory if it doesn't already exist.
         Path storyDirPath = Main.dirPath.resolve(String.format("%s - %s", story.getAuthor(), story.getTitle()));
         File storyDir = storyDirPath.toFile();
@@ -138,6 +130,4 @@ public class FictionHuntDL {
             Main.saveFile(chapterPath, chapterData);
         }
     }
-
-
 }
