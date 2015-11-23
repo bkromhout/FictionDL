@@ -1,7 +1,7 @@
-package bkromhout.Downloader;
+package bkromhout.FictionDL.Downloader;
 
-import bkromhout.C;
-import bkromhout.Main;
+import bkromhout.FictionDL.C;
+import bkromhout.FictionDL.Main;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
