@@ -16,7 +16,6 @@ public class C {
      */
     // General
     public static final String CHECK_AND_PARSE_FILE = "Checking and parsing file...";
-    public static final String FH_NO_SUMMARY = "(Couldn't get summary from FictionHunt, sorry!)";
 
     // Download Process
     public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n";
@@ -57,28 +56,23 @@ public class C {
      * Used to search FictionHunt for a story in order to get its summary. Just need to substitute in the title.
      */
     public static final String FH_SEARCH_URL = "http://fictionhunt.com/5/0/0/0/0/0/0/0/0/0/0/%s/1";
-
     /**
      * Fanfiction.net story link, just needs the story ID string substituted into it. We use the mobile site because
      * it's easier to parse.
      */
     public static final String FFN_URL = "https://m.fanfiction.net/s/%s";
-
     /**
      * p0ody-files.com download link, just needs the FFN story ID substituted into it.
      */
     public static final String PF_DL_URL = "http://www.p0ody-files.com/ff_to_ebook/mobile/makeEpub.php?id=%s";
-
     /**
      * SIYE first chapter link, used as an entry point, just needs the story ID string substituted into it.
      */
     public static final String SIYE_INFO_URL = "http://siye.co.uk/viewstory.php?sid=%s&chapter=1";
-
     /**
      * SIYE author page link, just needs relative author link string substituted into it.
      */
     public static final String SIYE_AUTHOR_URL = "http://siye.co.uk/%s";
-
     /**
      * SIYE story chapter link, just needs the story ID string and chapter number substituted into it. This will point
      * to the printable version of some chapter of a story.
@@ -92,26 +86,61 @@ public class C {
      * Regex to obtain website host from URL. Group 2 is the host.
      */
     public static final String HOST_REGEX = "^(http[s]?:\\/\\/)?([^:\\/\\s]+)(\\/.*)?$";
-
     /**
      * Regex to help obtain file name from a Content-Disposition header. Use .find() then .group();
      */
     public static final String PF_FNAME_REGEX = "(?<=filename=\").*?(?=\")";
-
     /**
      * Regex to extract storyId from FictionHunt URL. Use .find() then .group(1).
      */
     public static final String FICTIONHUNT_REGEX = "\\/read\\/(\\d*)";
-
     /**
      * Regex to extract story ID from Fanfiction.net URL. Use .find() then .group(1).
      */
     public static final String FFN_REGEX = "\\/s\\/(\\d*)";
-
     /**
      * Regex to extract the story ID. Use .find() then .group(1).
      */
     public static final String SIYE_SID_REGEX = "sid=(\\d*)";
+
+    /*
+    Title Page Part Names (AKA, details for a fic)
+     */
+    public static final String SUMMARY = "Summary";
+    public static final String FIC_TYPE = "Fic Type";
+    public static final String RATING = "Rated";
+    public static final String GENRES = "Genres";
+    public static final String CHARACTERS = "Characters";
+    public static final String WORD_COUNT = "Word Count";
+    public static final String CHAP_COUNT = "Chapter Count";
+    public static final String DATE_PUBL = "Date Published";
+    public static final String DATE_LUPD = "Date Last Updated";
+    public static final String STATUS = "Status";
+
+    /*
+    Default/specific detail values.
+     */
+    /**
+     * Used when a story doesn't have a genre.
+     */
+    public static final String NO_GENRE = "None/Gen";
+    /**
+     * Used for completed stories.
+     */
+    public static final String STAT_C = "Complete";
+    /**
+     * Used for incomplete stories.
+     */
+    public static final String STAT_I = "Incomplete";
+    /**
+     * Used for abandoned stories.
+     */
+    public static final String STAT_A = "Abandoned";
+    /**
+     * For FictionHunt stories, used in place of a summary if we can't find the story on the first page of search
+     * results (which is what we do to try and get summaries from FictionHunt).
+     */
+    public static final String FH_NO_SUMMARY = "(Couldn't get summary from FictionHunt, sorry!)";
 
     /*
     File Template Strings
@@ -125,10 +154,9 @@ public class C {
             "#ficAuthor{\tfont: 1.4em Calibri;\ttext-align: center;}" +
             "#footer {position: absolute; bottom: 0; width: 100%; height :60px; font: 1em Calibri}" +
             "body{\ttext-align: left;\tfont: 1em Calibri;\tline-height: 1.05em;}";
-
     /**
-     * Title page. Has a number of areas for replacement using String.format(): Title of story, Author of
-     * story, Summary, Rating, Word count, Chapter count.
+     * Title page. Has a number of areas for replacement using String.format(): Title of story, Author of story,
+     * Summary, Rating, Word count, Chapter count.
      */
     public static final String TITLE_PAGE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
             "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n" +
@@ -160,11 +188,40 @@ public class C {
             "\n" +
             "</body>\n" +
             "</html>";
-
-    public static final String TITLE_PAGE_START = "";
-
-    public static final String TITLE_PAGE_END = "";
-
+    /**
+     * The first portion of a title page. Has places to substitute in the title and author.
+     */
+    public static final String TITLE_PAGE_START = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n" +
+            "  \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n" +
+            "\n" +
+            "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+            "<head>\n" +
+            "  <link href=\"../Styles/style.css\" rel=\"stylesheet\" type=\"text/css\"/>\n" +
+            "  <meta content=\"http://www.w3.org/1999/xhtml; charset=UTF-8\" http-equiv=\"Content-Type\"/>\n" +
+            "  <title> </title>\n" +
+            "</head>\n" +
+            "\n" +
+            "<body>\n" +
+            "  <div id=\"ficTitle\">\n" +
+            "    %s\n" +
+            "  </div>\n" +
+            "\n" +
+            "  <div id=\"ficAuthor\">\n" +
+            "    By: %s\n" +
+            "  </div>\n";
+    /**
+     * A part of the title page. Has a place for the name and value of a string detail.
+     */
+    public static final String TITLE_PAGE_S_PART = "\n<p><strong>%s:</strong> %s</p>\n";
+    /**
+     * A part of the title page. Has a place for the name and value of a numeric detail.
+     */
+    public static final String TITLE_PAGE_D_PART = "\n<p><strong>%s:</strong> %,d</p>\n";
+    /**
+     * The end part of the title page.
+     */
+    public static final String TITLE_PAGE_END = "\n</body>\n</html>";
     /**
      * Chapter page. Has a number of areas for replacement using String.format(): Chapter title, Chapter title, Chapter
      * text (HTML!).

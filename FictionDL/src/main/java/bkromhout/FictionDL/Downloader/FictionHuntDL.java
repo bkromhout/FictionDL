@@ -2,6 +2,7 @@ package bkromhout.FictionDL.Downloader;
 
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Chapter;
+import bkromhout.FictionDL.EpubGen;
 import bkromhout.FictionDL.FictionDL;
 import bkromhout.FictionDL.Story.FictionHuntStory;
 import org.jsoup.Jsoup;
@@ -75,7 +76,9 @@ public class FictionHuntDL {
             chapters.forEach(this::sanitizeChapter);
             // Save the story.
             System.out.printf(C.SAVING_STORY);
-            saveStory(story, chapters);
+            //saveStory(story, chapters);
+            // TODO trying out our (hopefully) magical ePUB-making skillz.
+            new EpubGen(story).makeEpub(FictionDL.dirPath);
             System.out.println(C.DONE + "\n"); // Add an empty line.
         }
     }
