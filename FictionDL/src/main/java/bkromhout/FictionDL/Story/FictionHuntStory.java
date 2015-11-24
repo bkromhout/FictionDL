@@ -15,23 +15,9 @@ import java.util.regex.Pattern;
  * Model object for a FictionHunt story. Despite the word "model", this is not an object with a light initialization
  * cost, as it accesses the internet to retrieve story information.
  */
-public class FictionHuntStory {
+public class FictionHuntStory extends Story {
     // Story URL.
     private String url;
-    // Story ID (FictionHunt).
-    private String storyId;
-    // Story title.
-    private String title;
-    // Story author.
-    private String author;
-    // Story Summary.
-    private String summary;
-    // Story word count.
-    private int wordCount;
-    // Story rating.
-    private String rating;
-    // List of chapter URLs.
-    private ArrayList<String> chapterUrls = new ArrayList<>();
     // If the story is still available on Fanfiction.net, get its story ID and use p0ody-files to download it.
     private String ffnStoryId = null;
 
@@ -122,30 +108,6 @@ public class FictionHuntStory {
         Element summaryElement = fhSearch.select(
                 String.format("li:has(a[href=\"http://fanfiction.net/s/%s\"]) div.ficContent", storyId)).first();
         return summaryElement != null ? summaryElement.text() : C.FH_NO_SUMMARY;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public int getWordCount() {
-        return wordCount;
-    }
-
-    public String getRating() {
-        return rating;
-    }
-
-    public ArrayList<String> getChapterUrls() {
-        return chapterUrls;
     }
 
     public String getFfnStoryId() {

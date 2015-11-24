@@ -21,6 +21,7 @@ jar.dependsOn(shadowJar)
 
 dependencies {
     compile 'org.jsoup:jsoup:1.8.3' // jsoup for HTML parsing.
+    compile 'nl.siegmann.epublib:epublib-core:3.1'
 }
 
 artifacts {

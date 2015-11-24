@@ -17,21 +17,7 @@ import java.util.stream.Collectors;
  * Model object for a SIYE story. Despite the word "model", this is not an object with a light initialization cost, as
  * it accesses the internet to retrieve story information.
  */
-public class SiyeStory {
-    // Story ID.
-    private String storyId;
-    // Story title.
-    private String title;
-    // Story author.
-    private String author;
-    // Story summary.
-    private String summary;
-    // Story word count.
-    private int wordCount;
-    // Story rating.
-    private String rating;
-    // List of chapter URLs.
-    private ArrayList<String> chapterUrls = new ArrayList<>();
+public class SiyeStory extends Story {
 
     /**
      * Create a new SiyeStory object based off of a URL.
@@ -109,29 +95,5 @@ public class SiyeStory {
         if (aIdElement == null) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
         // Now return the author page URL.
         return aIdElement.attr("href");
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public int getWordCount() {
-        return wordCount;
-    }
-
-    public String getRating() {
-        return rating;
-    }
-
-    public ArrayList<String> getChapterUrls() {
-        return chapterUrls;
     }
 }

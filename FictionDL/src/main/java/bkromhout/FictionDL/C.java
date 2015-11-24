@@ -127,10 +127,10 @@ public class C {
             "body{\ttext-align: left;\tfont: 1em Calibri;\tline-height: 1.05em;}";
 
     /**
-     * Title page with summary. Has a number of areas for replacement using String.format(): Title of story, Author of
+     * Title page. Has a number of areas for replacement using String.format(): Title of story, Author of
      * story, Summary, Rating, Word count, Chapter count.
      */
-    public static final String TITLE_PAGE_SUMMARY = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+    public static final String TITLE_PAGE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
             "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n" +
             "  \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n" +
             "\n" +
@@ -160,6 +160,10 @@ public class C {
             "\n" +
             "</body>\n" +
             "</html>";
+
+    public static final String TITLE_PAGE_START = "";
+
+    public static final String TITLE_PAGE_END = "";
 
     /**
      * Chapter page. Has a number of areas for replacement using String.format(): Chapter title, Chapter title, Chapter
