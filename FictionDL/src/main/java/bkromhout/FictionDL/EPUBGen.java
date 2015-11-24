@@ -67,10 +67,10 @@ public final class EpubGen {
         // Set title, author, and description (summary).
         book.getMetadata().addTitle(story.getTitle());
         book.getMetadata().addAuthor(new Author(story.getAuthor()));
-        book.getMetadata().addDescription(story.getSummary()); // TODO Seems appropriate, but unsure what it'll do.
+        book.getMetadata().addDescription(story.getSummary());
         // Create and add CSS file.
         book.addResource(createCss());
-        // Create and add title page. TODO not really sure I'm supposed to be doing this twice??
+        // Create and add title page.
         Resource titlePage = createTitlePage();
         book.addSection("Title Page", titlePage);
         book.getGuide().addReference(new GuideReference(titlePage, GuideReference.TITLE_PAGE, "Title Page"));

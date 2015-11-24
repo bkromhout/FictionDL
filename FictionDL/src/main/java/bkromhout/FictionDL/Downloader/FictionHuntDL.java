@@ -108,11 +108,14 @@ public class FictionHuntDL {
     private void sanitizeChapter(Chapter chapter) {
         // Get the chapter's text, keeping all HTML formatting intact
         String chapterText = chapter.html.select("div.text").first().html();
-        // Create a new chapter HTML Document which is minimal.
-        String newChapterHtml = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText);
-        // Make sure we aren't stripping dumb xhtml things to make pretty, modern html ;)
-        chapter.html = Jsoup.parse(newChapterHtml);
-        chapter.html.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
-        chapter.html.outputSettings().escapeMode(Entities.EscapeMode.xhtml);
+        // Create the new chapter HTML which is ready to be used in an ePUB.
+        String cleanedHtml = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText);
+        // Make sure that all <br> and <hr> tags are closed.
+        cleanedHtml = cleanedHtml.replaceAll("<br>", "<br />");
+        cleanedHtml = cleanedHtml.replaceAll("<hr>", "<hr />");
+        // FictionHunt specific cleaning.
+        cleanedHtml = cleanedHtml.replaceAll("<hr size=\"1\" noshade>", "<hr size=\"1\" noshade=\"noshade\" />");
+        // Store the new HTML string in the chapter.
+        chapter.cleanedHtml = cleanedHtml;
     }
 }

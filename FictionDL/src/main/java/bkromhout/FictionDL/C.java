@@ -154,6 +154,29 @@ public class C {
             "#footer {position: absolute; bottom: 0; width: 100%; height :60px; font: 1em Calibri}" +
             "body{\ttext-align: left;\tfont: 1em Calibri;\tline-height: 1.05em;}";
     /**
+     * Chapter page. Has a number of areas for replacement using String.format(): Chapter title, Chapter title, Chapter
+     * text (HTML!).
+     */
+    public static final String CHAPTER_PAGE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
+            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n" +
+            "  \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n" +
+            "\n" +
+            "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
+            "<head>\n" +
+            "  <link href=\"../Styles/style.css\" rel=\"stylesheet\" type=\"text/css\"></link>\n" +
+            "  <meta content=\"http://www.w3.org/1999/xhtml; charset=utf-8\" http-equiv=\"Content-Type\"></meta>\n" +
+            "  <title>%s</title>\n" +
+            "</head>\n" +
+            "\n" +
+            "<body>\n" +
+            "  <h1 id=\"chapTitle\">%s</h1>\n" +
+            "\n" +
+            "  <div id=\"chapText\">\n" +
+            "%s\n" +
+            "</div>\n" +
+            "</body>\n" +
+            "</html>";
+    /**
      * The first portion of a title page. Has places to substitute in the title and author.
      */
     public static final String TITLE_PAGE_START = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
@@ -162,19 +185,21 @@ public class C {
             "\n" +
             "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
             "<head>\n" +
-            "  <link href=\"../Styles/style.css\" rel=\"stylesheet\" type=\"text/css\"/>\n" +
-            "  <meta content=\"http://www.w3.org/1999/xhtml; charset=UTF-8\" http-equiv=\"Content-Type\"/>\n" +
+            "  <link href=\"../Styles/style.css\" rel=\"stylesheet\" type=\"text/css\"></link>\n" +
+            "  <meta content=\"http://www.w3.org/1999/xhtml; charset=UTF-8\" http-equiv=\"Content-Type\"></meta>\n" +
             "  <title> </title>\n" +
             "</head>\n" +
             "\n" +
             "<body>\n" +
+            "<center>\n" +
             "  <div id=\"ficTitle\">\n" +
             "    %s\n" +
             "  </div>\n" +
             "\n" +
             "  <div id=\"ficAuthor\">\n" +
             "    By: %s\n" +
-            "  </div>\n";
+            "  </div>\n" +
+            "</center>\n";
     /**
      * A part of the title page. Has a place for the name and value of a string detail.
      */
@@ -187,27 +212,4 @@ public class C {
      * The end part of the title page.
      */
     public static final String TITLE_PAGE_END = "\n</body>\n</html>";
-    /**
-     * Chapter page. Has a number of areas for replacement using String.format(): Chapter title, Chapter title, Chapter
-     * text (HTML!).
-     */
-    public static final String CHAPTER_PAGE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n" +
-            "  \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n" +
-            "\n" +
-            "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
-            "<head>\n" +
-            "  <link href=\"../Styles/style.css\" rel=\"stylesheet\" type=\"text/css\"/>\n" +
-            "  <meta content=\"http://www.w3.org/1999/xhtml; charset=utf-8\" http-equiv=\"Content-Type\"/>\n" +
-            "  <title>%s</title>\n" +
-            "</head>\n" +
-            "\n" +
-            "<body>\n" +
-            "  <h1 id=\"chapTitle\">%s</h1>\n" +
-            "\n" +
-            "  <div id=\"chapText\">\n" +
-            "%s\n" +
-            "</div>\n" +
-            "</body>\n" +
-            "</html>";
 }

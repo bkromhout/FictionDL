@@ -12,6 +12,8 @@ public class Chapter {
     public String title;
     // Chapter HTML.
     public Document html;
+    // A clean chapter HTML, ready to be used in an ePUB.
+    public String cleanedHtml;
 
     /**
      * Create a new Chapter model (just for convenience, since instance members are public).
@@ -28,6 +30,6 @@ public class Chapter {
      * @return Chapter HTML as byte[].
      */
     public byte[] getContentBytes() {
-        return html.outerHtml().getBytes(StandardCharsets.UTF_8);
+        return cleanedHtml.getBytes(StandardCharsets.UTF_8);
     }
 }
