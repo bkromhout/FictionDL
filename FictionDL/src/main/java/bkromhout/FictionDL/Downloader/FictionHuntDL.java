@@ -7,6 +7,7 @@ import bkromhout.FictionDL.FictionDL;
 import bkromhout.FictionDL.Story.FictionHuntStory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Entities;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -71,13 +72,12 @@ public class FictionHuntDL {
                 System.out.println(C.SOME_CHAPS_FAILED);
                 return;
             }
-            // Sanitize the chapters so that they are in the expected xhtml format for ePUB.
+            // Sanitize the chapters so that they are in the expected xhtml format for ePUB, then add them to the story.
             System.out.println(C.SANITIZING_CHAPS);
             chapters.forEach(this::sanitizeChapter);
-            // Save the story.
+            story.setChapters(chapters);
+            // Save the story as an ePUB.
             System.out.printf(C.SAVING_STORY);
-            //saveStory(story, chapters);
-            // TODO trying out our (hopefully) magical ePUB-making skillz.
             new EpubGen(story).makeEpub(FictionDL.dirPath);
             System.out.println(C.DONE + "\n"); // Add an empty line.
         }
@@ -110,37 +110,9 @@ public class FictionHuntDL {
         String chapterText = chapter.html.select("div.text").first().html();
         // Create a new chapter HTML Document which is minimal.
         String newChapterHtml = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText);
+        // Make sure we aren't stripping dumb xhtml things to make pretty, modern html ;)
         chapter.html = Jsoup.parse(newChapterHtml);
+        chapter.html.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
+        chapter.html.outputSettings().escapeMode(Entities.EscapeMode.xhtml);
     }
-
-    /**
-     * Save the given story.
-     * @param story    Story to save.
-     * @param chapters Chapters of the story.
-     */
-    private void saveStory(FictionHuntStory story, ArrayList<Chapter> chapters) {
-        // Create the directory if it doesn't already exist.
-        Path storyDirPath = FictionDL.dirPath.resolve(String.format("%s - %s", story.getAuthor(), story.getTitle()));
-        File storyDir = storyDirPath.toFile();
-        if (!storyDir.exists() && !storyDir.mkdir()) {
-            System.out.printf(C.CREATE_DIR_FAILED, storyDir.getAbsolutePath());
-            // Technically this might be just because of a fail file title... but we should just stop anyway.
-            System.exit(1);
-        }
-        // Create style.css file.
-        FictionDL.saveFile(storyDirPath.resolve("style.css"), C.CSS.getBytes(StandardCharsets.UTF_8));
-        // Create title.xhtml file.
-        String titlePageText = String.format(C.TITLE_PAGE, story.getTitle(), story.getAuthor(),
-                story.getSummary(), story.getRating(), story.getWordCount(), chapters.size());
-        FictionDL.saveFile(storyDirPath.resolve("title.xhtml"), titlePageText.getBytes(StandardCharsets.UTF_8));
-        // Save chapter file(s).
-        for (int i = 0; i < chapters.size(); i++) {
-            String chapterFileName = String.format("Chapter %d.xhtml", i + 1);
-            Path chapterPath = storyDirPath.resolve(chapterFileName);
-            byte[] chapterData = chapters.get(i).html.outerHtml().getBytes(StandardCharsets.UTF_8);
-            FictionDL.saveFile(chapterPath, chapterData);
-        }
-    }
-
-
 }

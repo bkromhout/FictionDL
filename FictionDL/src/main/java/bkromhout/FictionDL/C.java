@@ -43,7 +43,6 @@ public class C {
     public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it.";
     public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n";
     public static final String SAVE_FILE_FAILED = "Failed to save file: %s\n";
-    public static final String CREATE_DIR_FAILED = "Couldn't create dir to save files at \"%s\"\n";
     public static final String NO_URLS_FFNDL = "No URLs were passed to this FanfictionNetDL when it was created. " +
             "Perhaps another downloader is using it?";
     public static final String FH_FFN_CHECK_FAILED = "Failed to check if story is still active on FFN. Oh well, " +
@@ -154,40 +153,6 @@ public class C {
             "#ficAuthor{\tfont: 1.4em Calibri;\ttext-align: center;}" +
             "#footer {position: absolute; bottom: 0; width: 100%; height :60px; font: 1em Calibri}" +
             "body{\ttext-align: left;\tfont: 1em Calibri;\tline-height: 1.05em;}";
-    /**
-     * Title page. Has a number of areas for replacement using String.format(): Title of story, Author of story,
-     * Summary, Rating, Word count, Chapter count.
-     */
-    public static final String TITLE_PAGE = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n" +
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\"\n" +
-            "  \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">\n" +
-            "\n" +
-            "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
-            "<head>\n" +
-            "  <link href=\"../Styles/style.css\" rel=\"stylesheet\" type=\"text/css\"/>\n" +
-            "  <meta content=\"http://www.w3.org/1999/xhtml; charset=UTF-8\" http-equiv=\"Content-Type\"/>\n" +
-            "  <title> </title>\n" +
-            "</head>\n" +
-            "\n" +
-            "<body>\n" +
-            "  <div id=\"ficTitle\">\n" +
-            "    %s\n" +
-            "  </div>\n" +
-            "\n" +
-            "  <div id=\"ficAuthor\">\n" +
-            "    By: %s\n" +
-            "  </div>\n" +
-            "\n" +
-            "  <p><strong>Summary:</strong> %s</p>\n" +
-            "\n" +
-            "  <p><strong>Rated:</strong> %s</p>\n" +
-            "\n" +
-            "  <p><strong>Word Count:</strong> %d</p>\n" +
-            "\n" +
-            "  <p><strong>Chapters:</strong> %d</p>\n" +
-            "\n" +
-            "</body>\n" +
-            "</html>";
     /**
      * The first portion of a title page. Has places to substitute in the title and author.
      */
