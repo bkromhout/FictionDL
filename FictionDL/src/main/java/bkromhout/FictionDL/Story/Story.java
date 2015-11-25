@@ -18,6 +18,8 @@ public class Story {
     protected String summary;
     // Story type.
     protected String ficType;
+    // Story warnings.
+    protected String warnings;
     // Story rating.
     protected String rating;
     // Story genre(s) (may be "None/Gen").
@@ -70,6 +72,14 @@ public class Story {
      */
     public String getFicType() {
         return ficType;
+    }
+
+    /**
+     * Get this story's warnings. Some sites may not support this.
+     * @return Story warnings.
+     */
+    public String getWarnings() {
+        return warnings;
     }
 
     /**

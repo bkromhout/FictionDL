@@ -73,10 +73,9 @@ public class C {
      */
     public static final String SIYE_AUTHOR_URL = "http://siye.co.uk/%s";
     /**
-     * SIYE story chapter link, just needs the story ID string and chapter number substituted into it. This will point
-     * to the printable version of some chapter of a story.
+     * SIYE story chapter link, just needs the story ID string and chapter number substituted into it.
      */
-    public static final String SIYE_CHAP_URL = "http://siye.co.uk/viewstory.php?action=printable&sid=%s&chapter=%d";
+    public static final String SIYE_CHAP_URL = "http://siye.co.uk/viewstory.php?sid=%s&chapter=%d";
 
     /*
     RegEx Strings
@@ -101,12 +100,21 @@ public class C {
      * Regex to extract the story ID. Use .find() then .group(1).
      */
     public static final String SIYE_SID_REGEX = "sid=(\\d*)";
+    /**
+     * Regex to extract SIYE chapter title without the leading "#. " part. Group 2 is the chapter title.
+     */
+    public static final String SIYE_CHAP_TITLE_REGEX = "(\\d+\\.\\s)(.*)";
+    /**
+     * Regex to find all ampersands in a piece of HTML which are actual ampersands and not part of a character code.
+     */
+    public static final String AMP_REGEX = "[\\&](?=[^#])";
 
     /*
     Title Page Part Names (AKA, details for a fic)
      */
     public static final String SUMMARY = "Summary";
     public static final String FIC_TYPE = "Fic Type";
+    public static final String WARNINGS = "Warnings";
     public static final String RATING = "Rated";
     public static final String GENRES = "Genres";
     public static final String CHARACTERS = "Characters";
@@ -163,8 +171,8 @@ public class C {
             "\n" +
             "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
             "<head>\n" +
-            "  <link href=\"../Styles/style.css\" rel=\"stylesheet\" type=\"text/css\"></link>\n" +
-            "  <meta content=\"http://www.w3.org/1999/xhtml; charset=utf-8\" http-equiv=\"Content-Type\"></meta>\n" +
+            "  <link href=\"../Styles/style.css\" rel=\"stylesheet\" type=\"text/css\" />\n" +
+            "  <meta content=\"http://www.w3.org/1999/xhtml; charset=utf-8\" http-equiv=\"Content-Type\" />\n" +
             "  <title>%s</title>\n" +
             "</head>\n" +
             "\n" +
@@ -173,7 +181,7 @@ public class C {
             "\n" +
             "  <div id=\"chapText\">\n" +
             "%s\n" +
-            "</div>\n" +
+            "  </div>\n" +
             "</body>\n" +
             "</html>";
     /**
@@ -185,8 +193,8 @@ public class C {
             "\n" +
             "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n" +
             "<head>\n" +
-            "  <link href=\"../Styles/style.css\" rel=\"stylesheet\" type=\"text/css\"></link>\n" +
-            "  <meta content=\"http://www.w3.org/1999/xhtml; charset=UTF-8\" http-equiv=\"Content-Type\"></meta>\n" +
+            "  <link href=\"../Styles/style.css\" rel=\"stylesheet\" type=\"text/css\" />\n" +
+            "  <meta content=\"http://www.w3.org/1999/xhtml; charset=UTF-8\" http-equiv=\"Content-Type\" />\n" +
             "  <title> </title>\n" +
             "</head>\n" +
             "\n" +

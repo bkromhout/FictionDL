@@ -2,6 +2,7 @@ package bkromhout.FictionDL.Downloader;
 
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.FictionDL;
+import bkromhout.FictionDL.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
@@ -70,7 +71,7 @@ public class FanfictionNetDL {
         // First try to get the first chapter of the story. 2 reasons for this. First, we ensure the story exists.
         // Second, we can get the title for logging purposes.
         String ffnUrl = String.format(C.FFN_URL, storyId);
-        Document storyDoc = FictionDL.downloadHtml(ffnUrl);
+        Document storyDoc = Util.downloadHtml(ffnUrl);
         if (storyDoc == null) {
             // If we couldn't download the chapter from Fanfiction.net, we'll skip try to get it from p0ody-files
             // (though technically there's certainly the possibility that it does exist there in the archive).

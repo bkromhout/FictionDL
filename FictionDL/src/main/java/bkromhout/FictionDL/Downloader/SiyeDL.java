@@ -1,25 +1,21 @@
 package bkromhout.FictionDL.Downloader;
 
-import bkromhout.FictionDL.C;
-import bkromhout.FictionDL.Chapter;
-import bkromhout.FictionDL.EpubGen;
-import bkromhout.FictionDL.FictionDL;
+import bkromhout.FictionDL.*;
 import bkromhout.FictionDL.Story.SiyeStory;
-import org.jsoup.Jsoup;
+import bkromhout.FictionDL.Story.Story;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Entities;
+import org.jsoup.nodes.Element;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
  * Downloader for siye.co.uk ("Sink Into Your Eyes").
  */
-public class SiyeDL {
+public class SiyeDL extends ParsingDL {
     public static final String SITE = "SIYE";
     // List of SIYE URLs.
     private ArrayList<String> urls;
@@ -53,59 +49,51 @@ public class SiyeDL {
     }
 
     /**
-     * Download chapters of a story.
-     * @param story The story to download.
-     */
-    private void downloadStory(SiyeStory story) {
-        // Get chapter documents, and make sure we didn't fail to get some chapter (and if we did, skip this story).
-        System.out.printf(C.DL_CHAPS_FOR, story.getTitle());
-        ArrayList<Chapter> chapters = downloadChapters(story);
-        if (story.getChapterUrls().size() != chapters.size()) {
-            System.out.println(C.SOME_CHAPS_FAILED);
-            return;
-        }
-        // Sanitize the chapters so that they are in the expected xhtml format for ePUB, then add them to the story.
-        System.out.println(C.SANITIZING_CHAPS);
-        chapters.forEach(this::sanitizeChapter);
-        story.setChapters(chapters);
-        // Save the story as an ePUB.
-        System.out.printf(C.SAVING_STORY);
-        new EpubGen(story).makeEpub(FictionDL.dirPath);
-        System.out.println(C.DONE + "\n"); // Add an empty line.
-    }
-
-    /**
      * Download the chapters for a story.
      * @param story Story to download chapters for.
      * @return ArrayList of Chapter objects.
      */
-    private ArrayList<Chapter> downloadChapters(SiyeStory story) {
-        // Download chapter HTML Documents.
-        ArrayList<Document> htmls = FictionDL.getDocuments(story.getChapterUrls());
-        // Parse chapter titles from chapters.
-        ArrayList<String> titles = htmls.stream()
-                .map(html -> html.select("div[style=\"text-align: center; font-weight: bold;\"]").first().text())
-                .collect(Collectors.toCollection(ArrayList::new));
-        // Create Chapter models.
-        ArrayList<Chapter> chapters = new ArrayList<>();
-        for (int i = 0; i < htmls.size(); i++) chapters.add(new Chapter(titles.get(i), htmls.get(i)));
+    @Override
+    protected ArrayList<Chapter> downloadChapters(Story story) {
+        ArrayList<Chapter> chapters = super.downloadChapters(story);
+        // Parse chapter titles from chapter HTMLs.
+        for (Chapter chapter : chapters) {
+            // Try to find a <select> element on the page that has chapter titles.
+            Element titleElement = chapter.html.select("select[name=\"chapter\"] option[selected]").first();
+            // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
+            // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
+            chapter.title = titleElement != null ? Pattern.compile(C.SIYE_CHAP_TITLE_REGEX).matcher(
+                    titleElement.html().trim()).group(2) : "Chapter 1";
+        }
         return chapters;
+    }
+
+    /**
+     * "Why is this method overridden?" you ask? Oh, right, it's because trying to parse stuff from SIYE is literally a
+     * giant pain in the ass :)
+     * @param chapter Chapter object.
+     * @return Chapter content HTML, extracted from original chapter HTML.
+     */
+    @Override
+    protected String extractChapText(Chapter chapter) {
+        StringBuilder chapterText = new StringBuilder();
+        // So, we need to get a number of things here. First off, we must grab the author's notes (if there are any).
+        Element anElement = chapter.html.select("div#notes").first();
+        if (anElement != null) chapterText.append(anElement.html());
+        // Then, we have to get the actual chapter text itself.
+        chapterText.append(chapter.html.select("td[colspan=\"2\"] span").first().html());
+        return chapterText.toString();
     }
 
     /**
      * Takes chapter HTML from a SIYE chapter and cleans it up, before putting it into the xhtml format required for an
      * ePUB.
-     * @param chapter Chapter object containing HTML for a SIYE story chapter.
+     * @param chapterString Chapter's text content HTML for a FictionHunt story chapter.
+     * @return Cleaned HTML.
      */
-    private void sanitizeChapter(Chapter chapter) {
-        // Get the chapter's text, keeping all HTML formatting intact
-        String chapterText = chapter.html.select("span span").first().html();
-        // Create the new chapter HTML which is ready to be used in an ePUB.
-        String cleanedHtml = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText);
-        // Make sure that all <br> and <hr> tags are closed.
-        cleanedHtml = cleanedHtml.replaceAll("<br>", "<br />");
-        cleanedHtml = cleanedHtml.replaceAll("<hr>", "<hr />");
-        // Store the new HTML string in the chapter.
-        chapter.cleanedHtml = cleanedHtml;
+    @Override
+    protected String sanitizeChapter(String chapterString) {
+        // TODO strip extra <br>s first!
+        return chapterString;
     }
 }

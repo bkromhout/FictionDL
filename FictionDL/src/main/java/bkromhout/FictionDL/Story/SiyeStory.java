@@ -2,16 +2,13 @@ package bkromhout.FictionDL.Story;
 
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Downloader.SiyeDL;
-import bkromhout.FictionDL.FictionDL;
+import bkromhout.FictionDL.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.TextNode;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Model object for a SIYE story. Despite the word "model", this is not an object with a light initialization cost, as
@@ -33,15 +30,22 @@ public class SiyeStory extends Story {
      * @throws IOException Thrown if there are issues connecting to SIYE
      */
     private void populateInfo(String url) throws IOException {
-        // Figure out the SIYE story ID and author ID link.
-        String authorIdLink = findAuthorIdLink(url);
-        // Get the HTML at the info url.
-        Document doc = FictionDL.downloadHtml(String.format(C.SIYE_AUTHOR_URL, authorIdLink));
+        // Get chapter 1 HTML first.
+        Document infoDoc = getInfoPage(url);
+        // Get summary.
+
+        // Get characters.
+
+        // Figure out the SIYE story ID and author ID link, because we'll get the rest of the general details from
+        // there.
+        String authorIdLink = findAuthorIdLink(infoDoc);
+        // Get the HTML at the author URL.
+        Document doc = Util.downloadHtml(String.format(C.SIYE_AUTHOR_URL, authorIdLink));
         if (doc == null) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
         // Get the story row from on the author's page.
         Element storyRow = doc.select(String.format("td tr td:has(a[href=\"viewstory.php?sid=%s\"])", storyId)).last();
         // Get title.
-        title = storyRow.select(String.format("a[href=\"viewstory.php?sid=%s\"]", storyId)).first().text();
+        title = storyRow.select(String.format("a[href=\"viewstory.php?sid=%s\"]", storyId)).first().html();
         // Get author.
         author = storyRow.select(String.format("a[href=\"%s\"]", authorIdLink)).first().text();
         // Due to SIYE's *incredibly* crappy HTML, we need to check to see if the story Element we currently have
@@ -53,41 +57,54 @@ public class SiyeStory extends Story {
             // over to the next immediate sibling <tr> from the parent <tr>, and then into that sibling <tr>'s last
             // <td> child...yes, this *is* complicated sounding and SIYE *should* have properly structured HTML. Ugh.
             storyRow = storyRow.parent().nextElementSibling().children().last();
-            // Oh, and we have to get the summary now too since the index of the TextNode is different.
-            summary = storyRow.ownText().trim();
-        } else {
-            // The <td> we already have has everything, and we can get the summary now.
-            summary = storyRow.textNodes().get(4).text().trim();
         }
         // Get details strings to get other stuff.
-        ArrayList<String> details = storyRow.select("div").first().textNodes().stream().map(TextNode::text)
-                .collect(Collectors.toCollection(ArrayList::new));
+        String[] details = storyRow.select("div").first().text().replace("Completed:", "- Completed:").split(" - ");
         // Get rating.
-        rating = details.get(0).trim().replace(" -", "");
+        rating = details[0].trim();
+        // Get fic type (category).
+        ficType = details[1].trim();
+        // Get genre(s).
+        genres = details[2].trim();
+        // Get warnings.
+        warnings = details[3].replace("Warnings: ", "").trim();
         // Get word count.
-        String temp = details.get(1).trim();
-        wordCount = Integer.parseInt(temp.substring(temp.lastIndexOf(" ") + 1, temp.length()));
-        // Get chapter count.
-        temp = details.get(2).trim();
-        int chapterCount = Integer.parseInt(temp.substring(temp.indexOf("Chapters: ") + 10, temp.indexOf(" - P")));
-        // Generate chapter URLs.
+        wordCount = Integer.parseInt(details[4].replace("Words: ", "").trim());
+        // Get status.
+        status = details[5].replace("Completed: ", "").trim().equals("Yes") ? C.STAT_C : C.STAT_I;
+        // Get chapter count to generate chapter URLs.
+        int chapterCount = Integer.parseInt(details[6].replace("Chapters: ", "").trim());
         for (int i = 0; i < chapterCount; i++) chapterUrls.add(String.format(C.SIYE_CHAP_URL, storyId, i + 1));
+        // Get date published.
+        datePublished = details[7].replace("Published: ", "").trim();
+        // Get date last updated.
+        dateUpdated = details[8].replace("Updated: ", "").trim();
     }
 
     /**
-     * Use a valid SIYE story/chapter URL (not the printable version!) to find the story's Author ID link.
-     * @param url Valid SIYE story/chapter URL (The format must be valid, not what it points to).
-     * @return Author ID link (looks like "viewuser.php?uid=[authorId]").
+     * Get the info page for our story, which in SIYE's case is the normal version of Chapter 1 (though we actually also
+     * pull info from both the author page and the printed version of the chapters).
+     * @param url Story URL, may not be normalized.
+     * @return Chapter 1 HTML Document.
      */
-    private String findAuthorIdLink(String url) throws IOException {
+    private Document getInfoPage(String url) throws IOException {
         // Need to normalize this URL first to be sure we can get the author ID link.
         // Start by getting the story ID from the URL.
         Matcher idMatcher = Pattern.compile(C.SIYE_SID_REGEX).matcher(url);
         idMatcher.find();
         storyId = idMatcher.group(1);
         // Now download the first chapter's HTML.
-        Document chDoc = FictionDL.downloadHtml(String.format(C.SIYE_INFO_URL, storyId));
+        Document chDoc = Util.downloadHtml(String.format(C.SIYE_INFO_URL, storyId));
         if (chDoc == null) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
+        return chDoc;
+    }
+
+    /**
+     * Use a valid SIYE story/chapter URL (not the printable version!) to find the story's Author ID link.
+     * @param chDoc Story's chapter 1 HTML.
+     * @return Author ID link (looks like "viewuser.php?uid=[authorId]").
+     */
+    private String findAuthorIdLink(Document chDoc) throws IOException {
         // Then find the element that lets us get the relative link to the author's page.
         Element aIdElement = chDoc.select("h3 a").first();
         // Throw an exception if we couldn't find the link to the author's page, as it likely means that the URL

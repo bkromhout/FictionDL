@@ -98,6 +98,9 @@ public final class EpubGen {
         // Add the fic type.
         detail = story.getFicType();
         if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.FIC_TYPE, detail));
+        // Add the warnings.
+        detail = story.getWarnings();
+        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.WARNINGS, detail));
         // Add the rating.
         detail = story.getRating();
         if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.RATING, detail));
@@ -124,8 +127,10 @@ public final class EpubGen {
         if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.STATUS, detail));
         // Add the bottom part that closes the HTML.
         titleHtml.append(C.TITLE_PAGE_END);
+        // Escape ampersands, because ugh.
+        String cleanTitleHtml = Util.escapeAmps(titleHtml.toString());
         // Return a new Resource for the title page.
-        return new Resource(titleHtml.toString().getBytes(StandardCharsets.UTF_8), "title.xhtml");
+        return new Resource(cleanTitleHtml.getBytes(StandardCharsets.UTF_8), "title.xhtml");
     }
 
     /**
@@ -145,6 +150,22 @@ public final class EpubGen {
      */
     private Resource createChapter(Chapter chapter, int chapterNum) {
         // Nothing too fancy here either.
-        return new Resource(chapter.getContentBytes(), String.format("Chapter%d.xhtml", chapterNum));
+        return new Resource(cleanChapter(chapter.content).getBytes(StandardCharsets.UTF_8),
+                String.format("Chapter%d.xhtml", chapterNum));
+    }
+
+    /**
+     * Do some common chapter HTML cleaning tasks.
+     * @param chapterContent Chapter HTML.
+     * @return Cleaned chapter HTML.
+     */
+    private String cleanChapter(String chapterContent) {
+        // Make sure <br> and <hr> tags are closed.
+        chapterContent = chapterContent.replaceAll("<br>", "<br />");
+        chapterContent = chapterContent.replaceAll("<hr>", "<hr />");
+        // Escape ampersands which aren't part of code points.
+        chapterContent = Util.escapeAmps(chapterContent);
+        // Squeaky clean!
+        return chapterContent;
     }
 }
