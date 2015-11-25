@@ -62,8 +62,13 @@ public class SiyeDL extends ParsingDL {
             Element titleElement = chapter.html.select("select[name=\"chapter\"] option[selected]").first();
             // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
             // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
-            chapter.title = titleElement != null ? Pattern.compile(C.SIYE_CHAP_TITLE_REGEX).matcher(
-                    titleElement.html().trim()).group(2) : "Chapter 1";
+            if (titleElement != null) {
+                Matcher matcher = Pattern.compile(C.SIYE_CHAP_TITLE_REGEX).matcher(titleElement.html().trim());
+                matcher.matches();
+                chapter.title = matcher.group(2);
+            } else {
+                chapter.title = "Chapter 1";
+            }
         }
         return chapters;
     }

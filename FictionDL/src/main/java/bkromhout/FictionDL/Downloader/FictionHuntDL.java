@@ -54,8 +54,8 @@ public class FictionHuntDL extends ParsingDL {
      */
     @Override
     protected void downloadStory(Story story) {
-        System.out.printf(C.DL_CHAPS_FOR, story.getTitle());
         if (((FictionHuntStory) story).getFfnStoryId() != null) {
+            System.out.printf(C.DL_CHAPS_FOR, story.getTitle());
             // Story is still on Fanfiction.net, which is preferable since we can use p0ody-files to download the ePUB.
             if (ffnDownloader == null) ffnDownloader = new FanfictionNetDL(); // Get a FFN downloader instance.
             System.out.printf(C.FH_STORY_ON_FFN, story.getTitle());
