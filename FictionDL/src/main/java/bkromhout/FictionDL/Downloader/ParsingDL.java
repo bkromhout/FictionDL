@@ -50,7 +50,7 @@ public class ParsingDL {
     /**
      * Extract chapter text content from the chapter.
      * @param chapter Chapter object.
-     * @return Chapter content HTML, extracted from original chapter HTML.
+     * @return Chapter HTML, with chapter text extracted from original and put into template.
      */
     protected String extractChapText(Chapter chapter) {
         // Get the chapter's text, keeping all HTML formatting intact

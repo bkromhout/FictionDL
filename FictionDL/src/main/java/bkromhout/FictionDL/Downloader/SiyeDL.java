@@ -77,7 +77,7 @@ public class SiyeDL extends ParsingDL {
      * "Why is this method overridden?" you ask? Oh, right, it's because trying to parse stuff from SIYE is literally a
      * giant pain in the ass :)
      * @param chapter Chapter object.
-     * @return Chapter content HTML, extracted from original chapter HTML.
+     * @return Chapter HTML, with chapter text extracted from original and put into template.
      */
     @Override
     protected String extractChapText(Chapter chapter) {
@@ -87,7 +87,7 @@ public class SiyeDL extends ParsingDL {
         if (anElement != null) chapterText.append(anElement.html());
         // Then, we have to get the actual chapter text itself.
         chapterText.append(chapter.html.select("td[colspan=\"2\"] span").first().html());
-        return chapterText.toString();
+        return String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText.toString());
     }
 
     /**
