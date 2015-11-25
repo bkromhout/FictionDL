@@ -87,9 +87,8 @@ public class Util {
      * @return The escaped string.
      */
     public static String convertWin1252Chars(String in) {
-        return escapeAmps(in).replaceAll("\u0096", "&#x2013").replaceAll("\u0097", "&#x2014").replaceAll("\u0091",
-                "&#x2018").replaceAll("\u0092", "&#x2019").replaceAll("\u0097", "&#x2014").replaceAll("\u0093",
-                "&#x201C").replaceAll("\u0094", "&#x201D").replaceAll("\u0095", "&#x2022").replaceAll("\u0085",
-                "&#x2026");
+        return escapeAmps(in).replaceAll("\u0096", "–").replaceAll("\u0097", "—").replaceAll("\u0091", "‘").replaceAll(
+                "\u0092", "’").replaceAll("\u0093", "“").replaceAll("\u0094", "”").replaceAll("\u0095", "•").replaceAll(
+                "\u0085", "…");
     }
 }

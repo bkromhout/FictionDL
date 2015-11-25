@@ -58,7 +58,6 @@ public class SiyeDL extends ParsingDL {
         ArrayList<Chapter> chapters = super.downloadChapters(story);
         // Parse chapter titles from chapter HTMLs.
         for (Chapter chapter : chapters) {
-            chapter.html.
             // Try to find a <select> element on the page that has chapter titles.
             Element titleElement = chapter.html.select("select[name=\"chapter\"] option[selected]").first();
             // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
