@@ -33,10 +33,11 @@ public class SiyeStory extends Story {
     private void populateInfo(String url) throws IOException {
         // Get chapter 1 HTML first.
         Document infoDoc = getInfoPage(url);
+        Element storyInfoElem = infoDoc.select("td[align=\"left\"][valign=\"top\"]").last();
         // Get summary.
-        summary = ((TextNode) infoDoc.select("b:contains(Summary:)").first().nextSibling()).text().trim();
+        summary = storyInfoElem.textNodes().get(4).text().trim(); // TODO fix this and the characters.
         // Get characters.
-        characters = ((TextNode) infoDoc.select("b:contains(Characters:)").first().nextSibling()).text().trim();
+        characters = storyInfoElem.textNodes().get(0).text().trim();
         // Figure out the SIYE story ID and author ID link, because we'll get the rest of the general details from
         // there.
         String authorIdLink = findAuthorIdLink(infoDoc);

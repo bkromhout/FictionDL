@@ -211,11 +211,11 @@ public class C {
     /**
      * A part of the title page. Has a place for the name and value of a string detail.
      */
-    public static final String TITLE_PAGE_S_PART = "\n<p><strong>%s:</strong> %s</p>\n";
+    public static final String TITLE_PAGE_S_PART = "\n<p style=\"margin: 0.25em 0em\"><strong>%s:</strong> %s</p>\n";
     /**
      * A part of the title page. Has a place for the name and value of a numeric detail.
      */
-    public static final String TITLE_PAGE_D_PART = "\n<p><strong>%s:</strong> %,d</p>\n";
+    public static final String TITLE_PAGE_D_PART = "\n<p style=\"margin: 0.25em 0em\"><strong>%s:</strong> %,d</p>\n";
     /**
      * The end part of the title page.
      */

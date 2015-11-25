@@ -84,7 +84,7 @@ public class SiyeDL extends ParsingDL {
         StringBuilder chapterText = new StringBuilder();
         // So, we need to get a number of things here. First off, we must grab the author's notes (if there are any).
         Element anElement = chapter.html.select("div#notes").first();
-        if (anElement != null) chapterText.append(anElement.html());
+        if (anElement != null) chapterText.append(anElement.html()).append("<hr /><br />");
         // Then, we have to get the actual chapter text itself.
         chapterText.append(chapter.html.select("td[colspan=\"2\"] span").first().html());
         return String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText.toString());
