@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 /**
- * Base class for a downloader that has to parse text (as opposed to just downloading an ePUB file).
+ * Base class for a downloader that has to parse text (as opposed to just downloading an ePUB file, like the
+ * Fanfiction.net downloader for example). Downloaders which have to do parsing will also have a corresponding *Story
+ * class which subclasses the Story class.
  */
 public class ParsingDL {
     // CSS selector to extract chapter text from original HTML.
@@ -59,6 +61,8 @@ public class ParsingDL {
 
     /**
      * Stub, just returns the input. Should be overridden to do anything special.
+     * @param chapterString Input chapter HTML.
+     * @return Same as input (subclasses can override to do site-specific sanitizing).
      */
     protected String sanitizeChapter(String chapterString) {
         return chapterString;
