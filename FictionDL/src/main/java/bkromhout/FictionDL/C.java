@@ -200,22 +200,24 @@ public class C {
             "\n" +
             "<body>\n" +
             "<center>\n" +
-            "  <div id=\"ficTitle\">\n" +
+            "  <div id=\"ficTitle\" style=\"font-size: 200%%;\">\n" +
             "    %s\n" +
             "  </div>\n" +
             "\n" +
-            "  <div id=\"ficAuthor\">\n" +
+            "  <div id=\"ficAuthor\" style=\"font-size: 150%%;\">\n" +
             "    By: %s\n" +
             "  </div>\n" +
             "</center>\n";
     /**
      * A part of the title page. Has a place for the name and value of a string detail.
      */
-    public static final String TITLE_PAGE_S_PART = "\n<p style=\"margin: 0.25em 0em\"><strong>%s:</strong> %s</p>\n";
+    public static final String TITLE_PAGE_S_PART =
+            "\n<p style=\"margin: 0.25em 0em;\"><strong><u>%s</u>:</strong> %s</p>\n";
     /**
      * A part of the title page. Has a place for the name and value of a numeric detail.
      */
-    public static final String TITLE_PAGE_D_PART = "\n<p style=\"margin: 0.25em 0em\"><strong>%s:</strong> %,d</p>\n";
+    public static final String TITLE_PAGE_D_PART =
+            "\n<p style=\"margin: 0.25em 0em;\"><strong><u>%s</u>:</strong> %,d</p>\n";
     /**
      * The end part of the title page.
      */
