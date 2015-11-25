@@ -35,9 +35,12 @@ public class SiyeStory extends Story {
         Document infoDoc = getInfoPage(url);
         Element storyInfoElem = infoDoc.select("td[align=\"left\"][valign=\"top\"]").last();
         // Get summary.
-        summary = storyInfoElem.textNodes().get(4).text().trim(); // TODO fix this and the characters.
+        summary = storyInfoElem.textNodes().get(13).text().trim(); // Incomplete stories.
+        if (summary.isEmpty()) summary = storyInfoElem.textNodes().get(14).text().trim(); // Complete stories.
+        // If we still don't have the summary, then the there isn't a story with this story ID on SIYE.
+        if (summary.isEmpty()) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
         // Get characters.
-        characters = storyInfoElem.textNodes().get(0).text().trim();
+        characters = storyInfoElem.textNodes().get(3).text().trim();
         // Figure out the SIYE story ID and author ID link, because we'll get the rest of the general details from
         // there.
         String authorIdLink = findAuthorIdLink(infoDoc);

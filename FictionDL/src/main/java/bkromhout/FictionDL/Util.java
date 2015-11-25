@@ -59,11 +59,15 @@ public class Util {
     }
 
     /**
-     * Convert any "&" to "&amp;" so long as they aren't part of a character code.
+     * Escapes a number of different characters to their character code formats. Currently these characters are &, — (em
+     * dash), ‘ (left single quote), “ (left double quote), ’ (right single quote), ’ (right double quote), … (ellipses).
+     * Special care is taken with the ampersand to ensure that ampersands that are already part of character codes are
+     * not escaped.
      * @param in The string to escape.
      * @return The escaped string.
      */
-    public static String escapeAmps(String in) {
-        return in.replaceAll(C.AMP_REGEX, "&amp;");
+    public static String escapeChars(String in) {
+        return in.replaceAll(C.AMP_REGEX, "&#38;").replaceAll("—", "&#8212;").replaceAll("‘", "&#8216;").replaceAll("“",
+                "&#8220;").replaceAll("’", "&#8217;").replaceAll("”", "&#8221;").replaceAll("…", "&#8230;");
     }
 }

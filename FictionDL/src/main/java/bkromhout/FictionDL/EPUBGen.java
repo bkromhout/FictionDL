@@ -77,7 +77,7 @@ public final class EpubGen {
         // Create and add chapter pages.
         ArrayList<Chapter> chapters = story.getChapters();
         for (int i = 0; i < chapters.size(); i++)
-            book.addSection(chapters.get(i).title, createChapter(chapters.get(i), i + 1));
+            book.addSection(Util.escapeChars(chapters.get(i).title), createChapter(chapters.get(i), i + 1));
         // Done, should be ready to save now.
         return book;
     }
@@ -127,8 +127,8 @@ public final class EpubGen {
         if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.STATUS, detail));
         // Add the bottom part that closes the HTML.
         titleHtml.append(C.TITLE_PAGE_END);
-        // Escape ampersands, because ugh.
-        String cleanTitleHtml = Util.escapeAmps(titleHtml.toString());
+        // Escape pesky characters, because ugh.
+        String cleanTitleHtml = Util.escapeChars(titleHtml.toString());
         // Return a new Resource for the title page.
         return new Resource(cleanTitleHtml.getBytes(StandardCharsets.UTF_8), "title.xhtml");
     }
@@ -163,8 +163,8 @@ public final class EpubGen {
         // Make sure <br> and <hr> tags are closed.
         chapterContent = chapterContent.replaceAll("<br>", "<br />");
         chapterContent = chapterContent.replaceAll("<hr>", "<hr />");
-        // Escape ampersands which aren't part of code points.
-        chapterContent = Util.escapeAmps(chapterContent);
+        // Escape pesky characters.
+        chapterContent = Util.escapeChars(chapterContent);
         // Squeaky clean!
         return chapterContent;
     }
