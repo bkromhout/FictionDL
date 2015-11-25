@@ -5,6 +5,7 @@ import bkromhout.FictionDL.Downloader.SiyeDL;
 import bkromhout.FictionDL.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.TextNode;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -33,9 +34,9 @@ public class SiyeStory extends Story {
         // Get chapter 1 HTML first.
         Document infoDoc = getInfoPage(url);
         // Get summary.
-
+        summary = ((TextNode) infoDoc.select("b:contains(Summary:)").first().nextSibling()).text().trim();
         // Get characters.
-
+        characters = ((TextNode) infoDoc.select("b:contains(Characters:)").first().nextSibling()).text().trim();
         // Figure out the SIYE story ID and author ID link, because we'll get the rest of the general details from
         // there.
         String authorIdLink = findAuthorIdLink(infoDoc);
