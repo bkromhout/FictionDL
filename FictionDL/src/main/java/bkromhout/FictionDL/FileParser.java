@@ -24,19 +24,12 @@ public class FileParser {
     /**
      * Parse the file, populating the various URL lists for the different sites.
      */
-    public FileParser(String path) {
-        initialize(path);
+    public FileParser(File storiesFile) {
+        initialize(storiesFile);
     }
 
-    private void initialize(String path) {
-        System.out.printf(C.CHECK_AND_PARSE_FILE);
-        // Make sure the given path is valid, is a file, and can be read.
-        File storiesFile = new File(path);
-        if (!(storiesFile.exists() && storiesFile.isFile() && storiesFile.canRead())) {
-            System.out.println(C.INVALID_PATH);
-            System.exit(1);
-        }
-        FictionDL.dirPath = storiesFile.getParentFile().toPath();
+    private void initialize(File storiesFile) {
+        System.out.printf(C.PARSE_FILE);
         // Try to read lines from file into the url list
         try (BufferedReader br = new BufferedReader(new FileReader(storiesFile))) {
             String line = br.readLine();

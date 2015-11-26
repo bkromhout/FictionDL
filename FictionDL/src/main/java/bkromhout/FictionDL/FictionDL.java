@@ -4,6 +4,7 @@ import bkromhout.FictionDL.Downloader.FanfictionNetDL;
 import bkromhout.FictionDL.Downloader.FictionHuntDL;
 import bkromhout.FictionDL.Downloader.SiyeDL;
 
+import java.io.File;
 import java.nio.file.Path;
 
 /**
@@ -11,24 +12,32 @@ import java.nio.file.Path;
  * <p>
  * Originally only supported FictionHunt, but has been expanded to support other sites now as well.
  * <p>
- * Should be run with one argument, which is a path (absolute or relative from where JVM is started) to a text file
- * which contains a list of supported sites' story URLs.
- * <p>
- * Will download stories as ePUB if possible or will scrape the story and generate xhtml files which can be used to
- * generate an ePUB using the Sigil application.
+ * Will download stories as ePUB if possible or will scrape the story HTML and generate an ePUB using that.
  */
 public class FictionDL {
     // Path to input file.
-    private String inputFilePath;
+    private File inputFile;
     // Path where the input file resides, which is where stories will be saved.
-    public static Path dirPath;
+    public static Path outPath;
 
     /**
      * Create a new FictionDL to execute the program logic.
      * @param inputFilePath Path to input file.
+     * @param outputDirPath Path to output directory.
+     * @throws IllegalArgumentException if either of the paths cannot be resolved.
      */
-    public FictionDL(String inputFilePath) {
-        this.inputFilePath = inputFilePath;
+    public FictionDL(String inputFilePath, String outputDirPath) throws IllegalArgumentException {
+        if (inputFilePath == null) throw new IllegalArgumentException();
+        // Try to get a file from the input file path.
+        inputFile = Util.tryGetFile(inputFilePath);
+        // Figure out the output directory.
+        if (outputDirPath == null) {
+            // If an output directory wasn't specified, use the directory of the input file.
+            outPath = inputFile.getAbsoluteFile().getParentFile().toPath();
+        } else {
+            // An output directory was specified.
+            outPath = Util.tryGetPath(outputDirPath);
+        }
     }
 
     /**
@@ -36,7 +45,7 @@ public class FictionDL {
      */
     public void run() {
         // Create a FileParser to get the story URLs from the input file.
-        FileParser parser = new FileParser(inputFilePath);
+        FileParser parser = new FileParser(inputFile);
         // Download all stories.
         getStories(parser);
         // All done!

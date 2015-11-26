@@ -30,7 +30,7 @@ public class ParsingDL {
         story.setChapters(chapters);
         // Save the story as an ePUB.
         System.out.printf(C.SAVING_STORY);
-        new EpubGen(story).makeEpub(FictionDL.dirPath);
+        new EpubGen(story).makeEpub(FictionDL.outPath);
         System.out.println(C.DONE + "\n"); // Add an empty line.
     }
 

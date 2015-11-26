@@ -3,6 +3,7 @@ package bkromhout.FictionDL;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +14,33 @@ import java.util.stream.Collectors;
  * Utility class.
  */
 public class Util {
+
+    /**
+     * Attempt to verify that a directory path exists (or can be created), then return a Path of it.
+     * @param path String path of a directory.
+     * @return Path of directory if given path is valid or creatable, otherwise prints line and exits. Returns null if
+     * passed null.
+     * @throws IllegalArgumentException if passed null or if there are any exceptions that occur.
+     */
+    public static Path tryGetPath(String path) throws IllegalArgumentException {
+        File dir = new File(path);
+        if ((!dir.exists() && !dir.mkdirs()) || !dir.isDirectory()) throw new IllegalArgumentException();
+        return dir.toPath();
+    }
+
+    /**
+     * Attempt to verify that a file exists and is readable and writable, then return a File of it.
+     * @param path String path of a file.
+     * @return File if file at given path exists and is readable and writable, otherwise prints line and exits. Returns
+     * null if passed null.
+     * @throws IllegalArgumentException if passed null or if there are any exceptions that occur.
+     */
+    public static File tryGetFile(String path) throws IllegalArgumentException {
+        File file = new File(path);
+        if (!file.exists() || !file.isFile() || !file.canRead() || !file.canWrite())
+            throw new IllegalArgumentException();
+        return file;
+    }
 
     /**
      * Download an HTML document from the given URL.

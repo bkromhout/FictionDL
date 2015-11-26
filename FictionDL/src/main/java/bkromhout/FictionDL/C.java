@@ -15,7 +15,7 @@ public class C {
     Log output strings.
      */
     // General
-    public static final String CHECK_AND_PARSE_FILE = "Checking and parsing file...";
+    public static final String PARSE_FILE = "Parsing file...";
 
     // Download Process
     public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n";

@@ -114,7 +114,7 @@ public class FanfictionNetDL {
             }
             // Open an input stream from the URL and an output stream to the file, then download the file.
             ReadableByteChannel pfStream = Channels.newChannel(pfConnection.getInputStream());
-            FileOutputStream pfFile = new FileOutputStream(FictionDL.dirPath.resolve(pfFilename).toFile());
+            FileOutputStream pfFile = new FileOutputStream(FictionDL.outPath.resolve(pfFilename).toFile());
             pfFile.getChannel().transferFrom(pfStream, 0, Long.MAX_VALUE);
         } catch (MalformedURLException e) {
             // This really shouldn't happen, but if it does, skip this story.
