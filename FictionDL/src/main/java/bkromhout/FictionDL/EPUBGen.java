@@ -46,8 +46,8 @@ public final class EpubGen {
      * @return True if ePUB generated successfully, otherwise false (and an error message will have been printed).
      */
     public boolean makeEpub(Path saveDir, String fileName) {
-        // Generate and save the ePUB.
-        File file = saveDir.resolve(fileName).toFile();
+        // Generate and save the ePUB, making sure that the file name is legal for any OS.
+        File file = saveDir.resolve(Util.ensureLegalFilename(fileName)).toFile();
         try {
             new EpubWriter().write(generateEpub(), new FileOutputStream(file));
         } catch (IOException e) {

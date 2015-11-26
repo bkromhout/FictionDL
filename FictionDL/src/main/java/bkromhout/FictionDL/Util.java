@@ -96,27 +96,31 @@ public class Util {
     }
 
     /**
-     * Escapes a number of different characters to their character code formats. Currently these characters are &, — (em
-     * dash), ‘ (left single quote), “ (left double quote), ’ (right single quote), ’ (right double quote), …
-     * (ellipses). Special care is taken with the ampersand to ensure that ampersands that are already part of character
-     * codes are not escaped.
-     * @param in The string to escape.
-     * @return The escaped string.
-     */
-    public static String escapeChars(String in) {
-        return escapeAmps(in).replaceAll("—", "&#x2014;").replaceAll("‘", "&#x2018;").replaceAll("“", "&#x201C;")
-                .replaceAll("’", "&#x2019;").replaceAll("”", "&#x201D;").replaceAll("…", "&#x2026;");
-    }
-
-    /**
      * Converts characters that, while valid in Windows-1252 are control characters in Unicode, to their corresponding
      * Unicode representations. Also escaptes any ampersands not already part of a character code.
      * @param in The string to escape.
      * @return The escaped string.
      */
     public static String convertWin1252Chars(String in) {
-        return escapeAmps(in).replaceAll("\u0096", "–").replaceAll("\u0097", "—").replaceAll("\u0091", "‘").replaceAll(
-                "\u0092", "’").replaceAll("\u0093", "“").replaceAll("\u0094", "”").replaceAll("\u0095", "•").replaceAll(
-                "\u0085", "…");
+        return escapeAmps(in).replace("\u0096", "–").replace("\u0097", "—").replace("\u0091", "‘").replace("\u0092",
+                "’").replace("\u0093", "“").replace("\u0094", "”").replace("\u0095", "•").replace("\u0085", "…");
+    }
+
+    /**
+     * Removes or replaces characters which could potentially be illegal, and does a few other things.
+     * @param in The file name to fix.
+     * @return The fixed file name.
+     */
+    public static String ensureLegalFilename(String in) {
+        // Remove problematic characters.
+        String out = in.replace("<", "").replace(">", "").replace(":", "-").replace("\"", "").replace("/", "").replace(
+                "\\", "").replace("|", "-").replace("?", "").replace("*", "").replace("\0", "");
+        // Ensure that the end of the filename isn't a space or period for Windows' sake.
+        out = out.trim();
+        while (out.charAt(out.length() - 1) == '.') out = out.substring(0, out.length() - 2);
+        // Let's make sure that the file doesn't start with a period either, or it'll be hidden on Linux-based OSs.
+        while (out.charAt(0) == '.') out = out.replaceFirst("\\.", "");
+        // Okay, we should be good now.
+        return out;
     }
 }
