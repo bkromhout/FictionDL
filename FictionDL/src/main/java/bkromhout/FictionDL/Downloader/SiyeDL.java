@@ -33,6 +33,7 @@ public class SiyeDL extends ParsingDL {
      */
     public void download() {
         System.out.printf(C.STARTING_SITE_DL_PROCESS, SITE);
+        System.out.println(C.SIYE_SLOW);
         // Create story models from URLs.
         System.out.printf(C.FETCH_BUILD_MODELS, SITE);
         ArrayList<SiyeStory> stories = new ArrayList<>();

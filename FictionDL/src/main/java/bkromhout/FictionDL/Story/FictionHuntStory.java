@@ -49,14 +49,24 @@ public class FictionHuntStory extends Story {
         // the search results. We sort by relevancy, but if the story still doesn't show up on the first page then we
         // just give up and use an apology message as the summary :)
         summary = findSummary();
-        // Get details string to extract other bits of information from that. TODO use regex for this bc yay.
+        // Get details string to extract other bits of information from that.
         String[] details = doc.select("div.details").first().ownText().split(" - ");
+        // Get characters.
+        characters = details[0].trim();
         // Get word count.
-        wordCount = Integer.parseInt(details[1].replace("Words: ", "").replaceAll(",", ""));
+        wordCount = Integer.parseInt(details[1].trim().replace("Words: ", "").replaceAll(",", ""));
         // Get rating.
-        rating = details[2].replace("Rated: ", "");
+        rating = details[2].replace("Rated: ", "").trim();
+        // Get genre(s).
+        genres = details[4].trim();
         // Get number of chapters.
-        int numChapters = Integer.parseInt(details[5].replace("Chapters: ", ""));
+        int numChapters = Integer.parseInt(details[5].trim().replace("Chapters: ", ""));
+        // Get last updated date.
+        dateUpdated = details[7].trim().replace("Updated: ", "");
+        // Get published date.
+        datePublished = details[8].trim().replace("Published: ", "");
+        // Get status (it isn't listed if it's incomplete, so just check the length of the details array).
+        status = details.length > 9 ? C.STAT_C : C.STAT_I;
         // Generate chapter URLs.
         String baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
         for (int i = 0; i < numChapters; i++) chapterUrls.add(baseUrl + String.valueOf(i + 1));
