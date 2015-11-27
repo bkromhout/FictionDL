@@ -1,8 +1,11 @@
 package bkromhout.FictionDL.Story;
 
+import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Chapter;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Base Story class.
@@ -39,6 +42,26 @@ public class Story {
     // List of chapters.
     protected ArrayList<Chapter> chapters = new ArrayList<>();
 
+    /**
+     * Parse the storyId of a story from its URL using regex.
+     * @param url URL of story.
+     * @param regex Regex that will help extract the story ID.
+     * @param group Number of the group from the regex that will contain the story ID.
+     * @return Story ID.
+     */
+    protected String parseStoryId(String url, String regex, int group) {
+        Matcher matcher = Pattern.compile(regex).matcher(url);
+        matcher.find();
+        return matcher.group(group);
+    }
+
+    /**
+     * Get this story's ID
+     * @return Story ID.
+     */
+    public String getStoryId() {
+        return storyId;
+    }
 
     /**
      * Get this story's title.

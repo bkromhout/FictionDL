@@ -27,7 +27,7 @@ public class SiyeStory extends Story {
 
     /**
      * Populate this model's fields.
-     * @param url An SIYE story/chapter URL.
+     * @param url A SIYE story/chapter URL.
      * @throws IOException Thrown if there are issues connecting to SIYE
      */
     private void populateInfo(String url) throws IOException {
@@ -95,9 +95,7 @@ public class SiyeStory extends Story {
     private Document getInfoPage(String url) throws IOException {
         // Need to normalize this URL first to be sure we can get the author ID link.
         // Start by getting the story ID from the URL.
-        Matcher idMatcher = Pattern.compile(C.SIYE_SID_REGEX).matcher(url);
-        idMatcher.find();
-        storyId = idMatcher.group(1);
+        storyId = parseStoryId(url, C.SIYE_SID_REGEX, 1);
         // Now download the first chapter's HTML.
         Document chDoc = Util.downloadHtml(String.format(C.SIYE_INFO_URL, storyId));
         if (chDoc == null) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));

@@ -3,7 +3,6 @@ package bkromhout.FictionDL.Downloader;
 import bkromhout.FictionDL.*;
 import bkromhout.FictionDL.Story.FictionHuntStory;
 import bkromhout.FictionDL.Story.Story;
-import org.jsoup.nodes.Document;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -13,18 +12,13 @@ import java.util.ArrayList;
  */
 public class FictionHuntDL extends ParsingDL {
     public static final String SITE = "FictionHunt";
-    // List of story URLs
-    private ArrayList<String> urls;
-    // Instance of an FFN downloader, created the first time it's needed, to easily download FFN stories.
-    private FanfictionNetDL ffnDownloader = null;
 
     /**
      * Create a new FictionHunt downloader.
      * @param urls List of FictionHunt URLs.
      */
     public FictionHuntDL(ArrayList<String> urls) {
-        this.urls = urls;
-        this.chapTextSelector = "div.text";
+        super(urls, "div.text");
     }
 
     /**
@@ -35,7 +29,7 @@ public class FictionHuntDL extends ParsingDL {
         // Create story models from URLs.
         System.out.printf(C.FETCH_BUILD_MODELS, SITE);
         ArrayList<FictionHuntStory> stories = new ArrayList<>();
-        for (String url : urls) {
+        for (String url : storyUrls) {
             try {
                 stories.add(new FictionHuntStory(url));
             } catch (IOException e) {
@@ -48,37 +42,22 @@ public class FictionHuntDL extends ParsingDL {
     }
 
     /**
-     * Download the chapters of a story. If the story is still active on Fanfiction.net, an ePUB file will be downloaded
-     * from p0ody-files. If not, it will be downloaded from FictionHunt by scraping and sanitizing the chapters.
+     * Overridden because if this FictionHunt story is still available on FanFiction.net, we'd prefer to download it
+     * from there for a number of reasons. If the story isn't available on FanFiction.net anymore, fall back to the
+     * regular behavior and parse it from FictionHunt.
      * @param story Story to download.
      */
     @Override
     protected void downloadStory(Story story) {
-        if (((FictionHuntStory) story).getFfnStoryId() != null) {
-            System.out.printf(C.DL_CHAPS_FOR, story.getTitle());
-            // Story is still on Fanfiction.net, which is preferable since we can use p0ody-files to download the ePUB.
-            if (ffnDownloader == null) ffnDownloader = new FanfictionNetDL(); // Get a FFN downloader instance.
+        if (((FictionHuntStory) story).isOnFfn()) {
+            // Story still on FanFiction.net, which is preferable, so we'll add a FFN URL so it gets downloaded later.
             System.out.printf(C.FH_STORY_ON_FFN, story.getTitle());
-            ffnDownloader.downloadByStoryId(((FictionHuntStory) story).getFfnStoryId(), story.getTitle());
+            FictionDL.parser.addFfnUrl(String.format(C.FFN_URL, story.getStoryId()));
         } else {
             // Just do the normal thing.
             super.downloadStory(story);
         }
     }
-
-    /**
-     * Download the chapters for a story.
-     * @param story Story to download chapters for.
-     * @return ArrayList of Chapter objects.
-     */
-    @Override
-    protected ArrayList<Chapter> downloadChapters(Story story) {
-        ArrayList<Chapter> chapters = super.downloadChapters(story);
-        // Generate chapter titles generically.
-        for (int i = 0; i < chapters.size(); i++) chapters.get(i).title = String.format("Chapter %d", i + 1);
-        return chapters;
-    }
-
 
     /**
      * Takes chapter HTML from a FictionHunt chapter and cleans it up, before putting it into the xhtml format required

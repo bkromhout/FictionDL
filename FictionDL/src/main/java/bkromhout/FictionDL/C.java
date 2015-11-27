@@ -34,7 +34,7 @@ public class C {
     // Stories
     public static final String DL_SAVE_EPUB_FOR_STORY = "Downloading and saving ePUB file for: \"%s\"...";
     public static final String SAVING_STORY = "Saving Story...";
-    public static final String FH_STORY_ON_FFN = "\"%s\" is still available on Fanfiction.net; will download from " +
+    public static final String FH_STORY_ON_FFN = "\"%s\" is still available on FanFiction.net; will download from " +
             "there.\n";
 
     // Chapters
@@ -49,7 +49,7 @@ public class C {
     public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it.";
     public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n";
     public static final String SAVE_FILE_FAILED = "Failed to save file: %s\n";
-    public static final String NO_URLS_FFNDL = "No URLs were passed to this FanfictionNetDL when it was created. " +
+    public static final String NO_URLS_FFNDL = "No URLs were passed to this FanFictionDL when it was created. " +
             "Perhaps another downloader is using it?";
     public static final String FH_FFN_CHECK_FAILED = "Failed to check if story is still active on FFN. Oh well, " +
             "never hurts to try!";
@@ -62,10 +62,10 @@ public class C {
      */
     public static final String FH_SEARCH_URL = "http://fictionhunt.com/5/0/0/0/0/0/0/0/0/0/0/%s/1";
     /**
-     * Fanfiction.net story link, just needs the story ID string substituted into it. We use the mobile site because
+     * FanFiction.net story link, just needs the story ID string substituted into it. We use the mobile site because
      * it's easier to parse.
      */
-    public static final String FFN_URL = "https://m.fanfiction.net/s/%s";
+    public static final String FFN_URL = "https://www.fanfiction.net/s/%s";
     /**
      * p0ody-files.com download link, just needs the FFN story ID substituted into it.
      */
@@ -97,11 +97,11 @@ public class C {
     /**
      * Regex to extract storyId from FictionHunt URL. Use .find() then .group(1).
      */
-    public static final String FICTIONHUNT_REGEX = "\\/read\\/(\\d*)";
+    public static final String FH_SID_REGEX = "\\/read\\/(\\d*)";
     /**
-     * Regex to extract story ID from Fanfiction.net URL. Use .find() then .group(1).
+     * Regex to extract story ID from FanFiction.net URL. Use .find() then .group(1).
      */
-    public static final String FFN_REGEX = "\\/s\\/(\\d*)";
+    public static final String FFN_SID_REGEX = "\\/s\\/(\\d*)";
     /**
      * Regex to extract the story ID. Use .find() then .group(1).
      */
@@ -110,6 +110,10 @@ public class C {
      * Regex to extract SIYE chapter title without the leading "#. " part. Group 2 is the chapter title.
      */
     public static final String SIYE_CHAP_TITLE_REGEX = "(\\d+\\.\\s)(.*)";
+    /**
+     * Regex to extract FFN chapter title without the leading "#. " part. Group 2 is the chapter title.
+     */
+    public static final String FFN_CHAP_TITLE_REGEX = SIYE_CHAP_TITLE_REGEX;
     /**
      * Regex to find all ampersands in a piece of HTML which are actual ampersands and not part of a character code.
      */

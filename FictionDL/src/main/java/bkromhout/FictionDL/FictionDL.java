@@ -1,6 +1,6 @@
 package bkromhout.FictionDL;
 
-import bkromhout.FictionDL.Downloader.FanfictionNetDL;
+import bkromhout.FictionDL.Downloader.FanFictionDL;
 import bkromhout.FictionDL.Downloader.FictionHuntDL;
 import bkromhout.FictionDL.Downloader.SiyeDL;
 
@@ -19,6 +19,8 @@ public class FictionDL {
     private File inputFile;
     // Path where the input file resides, which is where stories will be saved.
     public static Path outPath;
+    // File parser.
+    public static FileParser parser;
 
     /**
      * Create a new FictionDL to execute the program logic.
@@ -45,7 +47,7 @@ public class FictionDL {
      */
     public void run() {
         // Create a FileParser to get the story URLs from the input file.
-        FileParser parser = new FileParser(inputFile);
+        parser = new FileParser(inputFile);
         // Download all stories.
         getStories(parser);
         // All done!
@@ -66,12 +68,12 @@ public class FictionDL {
             System.out.printf(C.FINISHED_WITH_SITE, FictionHuntDL.SITE);
         }
         /*
-        Create a Fanfiction.net downloader and download stories.
+        Create a FanFiction.net downloader and download stories.
           */
         if (!parser.getFfnUrls().isEmpty()) {
-            FanfictionNetDL fanfictionNetDL = new FanfictionNetDL(parser.getFfnUrls());
-            fanfictionNetDL.download();
-            System.out.printf(C.FINISHED_WITH_SITE, FanfictionNetDL.SITE);
+            FanFictionDL fanFictionDL = new FanFictionDL(parser.getFfnUrls());
+            fanFictionDL.download();
+            System.out.printf(C.FINISHED_WITH_SITE, FanFictionDL.SITE);
         }
         /*
         Create a SIYE downloader and download stories.
@@ -82,5 +84,4 @@ public class FictionDL {
             System.out.printf(C.FINISHED_WITH_SITE, SiyeDL.SITE);
         }
     }
-
 }

@@ -1,31 +1,27 @@
 package bkromhout.FictionDL.Downloader;
 
-import bkromhout.FictionDL.*;
+import bkromhout.FictionDL.C;
+import bkromhout.FictionDL.Chapter;
 import bkromhout.FictionDL.Story.SiyeStory;
-import bkromhout.FictionDL.Story.Story;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
- * Downloader for siye.co.uk ("Sink Into Your Eyes").
+ * Downloader for siye.co.uk ("Sink Into Your Eyes") stories.
  */
 public class SiyeDL extends ParsingDL {
     public static final String SITE = "SIYE";
-    // List of SIYE URLs.
-    private ArrayList<String> urls;
 
     /**
      * Create a new SIYE downloader.
      * @param urls List of SIYE URLs.
      */
     public SiyeDL(ArrayList<String> urls) {
-        this.urls = urls;
+        super(urls, null);
     }
 
     /**
@@ -33,11 +29,11 @@ public class SiyeDL extends ParsingDL {
      */
     public void download() {
         System.out.printf(C.STARTING_SITE_DL_PROCESS, SITE);
-        System.out.println(C.SIYE_SLOW);
+        System.out.println(C.SIYE_SLOW); // Inform the user that SIYE is slow and has crappy HTML structure.
         // Create story models from URLs.
         System.out.printf(C.FETCH_BUILD_MODELS, SITE);
         ArrayList<SiyeStory> stories = new ArrayList<>();
-        for (String url : urls) {
+        for (String url : storyUrls) {
             try {
                 stories.add(new SiyeStory(url));
             } catch (IOException e) {
@@ -50,13 +46,11 @@ public class SiyeDL extends ParsingDL {
     }
 
     /**
-     * Download the chapters for a story.
-     * @param story Story to download chapters for.
-     * @return ArrayList of Chapter objects.
+     * Generate chapter titles by parsing real titles from chapter HTML.
+     * @param chapters List of Chapters.
      */
     @Override
-    protected ArrayList<Chapter> downloadChapters(Story story) {
-        ArrayList<Chapter> chapters = super.downloadChapters(story);
+    protected void generateChapTitles(ArrayList<Chapter> chapters) {
         // Parse chapter titles from chapter HTMLs.
         for (Chapter chapter : chapters) {
             // Try to find a <select> element on the page that has chapter titles.
@@ -71,7 +65,6 @@ public class SiyeDL extends ParsingDL {
                 chapter.title = "Chapter 1";
             }
         }
-        return chapters;
     }
 
     /**

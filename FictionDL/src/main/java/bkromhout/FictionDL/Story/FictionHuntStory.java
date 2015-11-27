@@ -7,8 +7,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Model object for a FictionHunt story. Despite the word "model", this is not an object with a light initialization
@@ -17,8 +15,8 @@ import java.util.regex.Pattern;
 public class FictionHuntStory extends Story {
     // Story URL.
     private String url;
-    // If the story is still available on Fanfiction.net, get its story ID and use p0ody-files to download it.
-    private String ffnStoryId = null;
+    // If the story is still available on FanFiction.net, get its story ID and use p0ody-files to download it.
+    private boolean isOnFfn = false;
 
     /**
      * Create a new FictionHuntStory object based off of a URL.
@@ -34,15 +32,15 @@ public class FictionHuntStory extends Story {
      */
     private void populateInfo() throws IOException {
         // Get FictionHunt story ID.
-        storyId = getStoryId();
+        storyId = parseStoryId(url, C.FH_SID_REGEX, 1);
         // Get the HTML at the url we've specified to use as the entry point.
         Document doc = Util.downloadHtml(url);
         if (doc == null) throw new IOException(String.format(C.STORY_DL_FAILED, FictionHuntDL.SITE, storyId));
         // Get title string. Even if the story is on FFN, we want to have this for logging purposes.
         title = doc.select("div.title").first().text();
-        // Check if story is on Fanfiction.net. If so, just get its FFN story ID.
-        ffnStoryId = tryGetFfnStoryId();
-        if (ffnStoryId != null) return; // If the story is on FFN, don't bother with the rest!
+        // Check if story is on FanFiction.net. If so, just get its FFN story ID.
+        isOnFfn = checkIfOnFfn();
+        if (isOnFfn) return; // If the story is on FFN, don't bother with the rest!
         // Get author string.
         author = doc.select("div.details > a").first().text();
         // Get the summary. Note that we do this by trying to search FictionHunt for the story title, then parsing
@@ -73,21 +71,11 @@ public class FictionHuntStory extends Story {
     }
 
     /**
-     * Parses the FictionHunt story ID from the FictionHunt URL.
-     * @return FictionHunt story ID.
-     */
-    private String getStoryId() {
-        Matcher matcher = Pattern.compile(C.FICTIONHUNT_REGEX).matcher(url);
-        matcher.find();
-        return storyId = matcher.group(1);
-    }
-
-    /**
      * Parse the entry point for the link to FFN and download the page at that link. If it's a valid story (i.e., it
      * hasn't been taken down), then return its story ID so that we can use p0ody-files to download it later.
      * @return Story ID if on FFN, or null if not.
      */
-    private String tryGetFfnStoryId() {
+    private boolean checkIfOnFfn() {
         // FictionHunt has done a very handy thing with their URLs, their story IDs correspond to the original FFN
         // story IDs, which makes generating an FFN link easy to do. First, create a FFN link and download the
         // resulting page.
@@ -95,12 +83,12 @@ public class FictionHuntStory extends Story {
         if (ffnDoc == null) {
             // It really doesn't matter if we can't get the page from FFN since we can still get it from FictionHunt.
             System.out.println(C.FH_FFN_CHECK_FAILED);
-            return null;
+            return false;
         }
         // Now check the resulting FFN HTML to see if the warning panel which indicates that the story isn't
         // available is present. If it is present, the story isn't on FFN anymore, so return a null; otherwise, the
         // story is still up, return the real story ID.
-        return ffnDoc.select("span.gui_warning").first() != null ? null : storyId;
+        return ffnDoc.select("span.gui_warning").first() == null;
     }
 
     /**
@@ -119,7 +107,11 @@ public class FictionHuntStory extends Story {
         return summaryElement != null ? summaryElement.text() : C.FH_NO_SUMMARY;
     }
 
-    public String getFfnStoryId() {
-        return ffnStoryId;
+    /**
+     * Is this story still available on FanFiction.net?
+     * @return True if yes, false if no.
+     */
+    public boolean isOnFfn() {
+        return isOnFfn;
     }
 }
