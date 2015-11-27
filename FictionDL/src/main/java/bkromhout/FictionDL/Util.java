@@ -11,10 +11,9 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 /**
- * Utility class.
+ * Utility class with static methods.
  */
 public class Util {
-
     /**
      * Attempt to verify that a directory path exists (or can be created), then return a Path of it.
      * @param path String path of a directory.
@@ -73,7 +72,7 @@ public class Util {
     /**
      * Save a file at the specified path with the specified data. Will create the file if it doesn't exist and overwrite
      * it if it does.
-     * @param filePath Path at which to save the file.
+     * @param filePath Path at which to save the file. It is assumed that the file name is legal.
      * @param data     Data to save to the file.
      */
     public static void saveFile(Path filePath, byte[] data) {
