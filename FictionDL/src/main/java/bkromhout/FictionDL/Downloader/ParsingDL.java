@@ -56,7 +56,7 @@ public abstract class ParsingDL {
         story.setChapters(chapters);
         // Save the story as an ePUB file.
         System.out.printf(C.SAVING_STORY);
-        new EpubGen(story).makeEpub(FictionDL.outPath);
+        new EpubCreator(story).makeEpub(FictionDL.outPath);
         System.out.println(C.DONE + "\n");
     }
 
