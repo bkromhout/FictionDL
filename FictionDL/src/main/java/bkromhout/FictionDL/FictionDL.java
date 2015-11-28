@@ -24,6 +24,10 @@ public class FictionDL {
     public static FileParser parser;
     // Keep a reference to the FictionDLTask if this is being run from the GUI.
     private FictionDLTask task;
+    // Total number of stories which are to be downloaded, across all sites.
+    private long totalNumStories;
+    // Number of stories which have been processed (either have been downloaded or have failed to download).
+    private long numStoriesProcessed = 0;
 
     /**
      * Create a new FictionDL to execute the program logic.
@@ -39,7 +43,6 @@ public class FictionDL {
      * Create a new FictionDL to execute the program logic.
      * @param inputFilePath Path to input file.
      * @param outputDirPath Path to output directory.
-     *
      * @throws IllegalArgumentException if either of the paths cannot be resolved.
      */
     public FictionDL(String inputFilePath, String outputDirPath, FictionDLTask task) throws IllegalArgumentException {
@@ -64,7 +67,8 @@ public class FictionDL {
     public void run() {
         // Create a FileParser to get the story URLs from the input file.
         parser = new FileParser(inputFile);
-        // Download all stories.
+        // Figure out how many stories we're downloading, then download them.
+        totalNumStories = parser.getTotalNumStories();
         getStories(parser);
         // All done!
         System.out.println(C.ALL_FINISHED);
@@ -102,10 +106,12 @@ public class FictionDL {
     }
 
     /**
-     * Called by the downloaders each time a story has finished (or has failed to finish) downloading.
+     * Called by the downloaders each time a story has finished (or has failed to finish) downloading. If this FictionDL
+     * is being run from a FictionDLTask, then the task's updateProgress() method will be called as a result.
      */
     public void incrProgress() {
-        
+        numStoriesProcessed++;
+        if (task != null) task.updateProgress(numStoriesProcessed, totalNumStories);
     }
 
     /**
@@ -127,8 +133,18 @@ public class FictionDL {
 
         @Override
         protected Object call() throws Exception {
-            new FictionDL(inputFilePath, outputDirPath, this);
+            // Do cool stuff.
+            new FictionDL(inputFilePath, outputDirPath, this).run();
             return null;
+        }
+
+        /**
+         * Update the progress of the task.
+         * @param done  Amount done.
+         * @param total Total amount.
+         */
+        public void updateProgress(long done, long total) {
+            super.updateProgress(done, total);
         }
     }
 }

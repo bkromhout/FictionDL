@@ -35,7 +35,7 @@ public class Gui extends Application {
         primaryStage.setMinWidth(C.G_MIN_WIDTH);
         primaryStage.setMinHeight(C.G_MIN_HEIGHT);
         // Get preferences.
-        prefs = Preferences.userNodeForPackage(Gui.class);
+        prefs = Preferences.userNodeForPackage(FictionDL.class);
         // Show the stage.
         primaryStage.show();
     }
@@ -69,11 +69,7 @@ public class Gui extends Application {
             }
         });
         // Do cool stuff.
-        try {
-            new FictionDL(inputFilePath, outputDirPath).run();
-        } catch (IllegalArgumentException e) {
-            System.out.println(C.INVALID_PATH);
-        }
+        fictionDLTask.run();
     }
 
     /**

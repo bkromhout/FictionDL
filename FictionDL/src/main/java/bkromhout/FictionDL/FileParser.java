@@ -99,4 +99,13 @@ public class FileParser {
     public ArrayList<String> getSiyeUrls() {
         return siyeUrls;
     }
+
+    /**
+     * Total number of stories which are to be downloaded across all sites. Note that it is best to find this value
+     * right after this FileParser is initialized since counts in individual lists may change later.
+     * @return Number of stories.
+     */
+    public int getTotalNumStories() {
+        return fictionHuntUrls.size() + ffnUrls.size() + siyeUrls.size();
+    }
 }

@@ -88,6 +88,9 @@ public class FDLGuiController {
         });
         // Set start button action.
         btnStart.setOnAction(event -> {
+            // Store the text field values in the prefs file.
+            gui.putPref(C.KEY_IN_FILE_PATH, tfInFile.getText());
+            gui.putPref(C.KEY_OUT_DIR_PATH, tfOutDir.getText());
             // Reset progress bar, then run FictionDL.
             pbProgress.setProgress(0d);
             gui.runFictionDl(tfInFile.getText(), tfOutDir.getText());

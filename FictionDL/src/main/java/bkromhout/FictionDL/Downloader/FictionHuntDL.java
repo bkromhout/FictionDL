@@ -53,6 +53,8 @@ public class FictionHuntDL extends ParsingDL {
             // Story still on FanFiction.net, which is preferable, so we'll add a FFN URL so it gets downloaded later.
             System.out.printf(C.FH_STORY_ON_FFN, story.getTitle());
             FictionDL.parser.addFfnUrl(String.format(C.FFN_URL, story.getStoryId()));
+            // It isn't appropriate to call .storyProcessed() here since FanFictionDL will download the story and
+            // call it later.
         } else {
             // Just do the normal thing.
             super.downloadStory(story);
