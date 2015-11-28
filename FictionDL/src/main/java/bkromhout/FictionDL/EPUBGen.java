@@ -67,7 +67,7 @@ public final class EpubGen {
         // Set title, author, and description (summary).
         book.getMetadata().addTitle(story.getTitle());
         book.getMetadata().addAuthor(new Author(story.getAuthor()));
-        book.getMetadata().addDescription(story.getSummary());
+        book.getMetadata().addDescription(Util.convertWin1252Chars(story.getSummary()));
         // Create and add CSS file.
         book.addResource(createCss());
         // Create and add title page.
