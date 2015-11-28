@@ -12,7 +12,7 @@ public class C {
     /*
     General Strings.
      */
-    public static final String VER = "1.0";
+    public static final String VER = "1.1";
     public static final String VER_STRING = "FictionDL, Version " + VER;
 
     /*
