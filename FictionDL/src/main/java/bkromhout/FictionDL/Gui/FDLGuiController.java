@@ -2,6 +2,7 @@ package bkromhout.FictionDL.Gui;
 
 import bkromhout.FictionDL.C;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -86,7 +87,11 @@ public class FDLGuiController {
             if (selectedDir != null) tfOutDir.setText(selectedDir.getAbsolutePath());
         });
         // Set start button action.
-        btnStart.setOnAction(event -> gui.runFictionDl(tfInFile.getText(), tfOutDir.getText()));
+        btnStart.setOnAction(event -> {
+            // Reset progress bar, then run FictionDL.
+            pbProgress.setProgress(0d);
+            gui.runFictionDl(tfInFile.getText(), tfOutDir.getText());
+        });
     }
 
     /**
@@ -106,7 +111,7 @@ public class FDLGuiController {
         tfInFile.setText(gui.getPref(C.KEY_IN_FILE_PATH));
         tfOutDir.setText(gui.getPref(C.KEY_OUT_DIR_PATH));
         // Set the Start button as focused, that way the user can just hit enter.
-        btnStart.requestFocus();
+        btnStart.setDefaultButton(true);
     }
 
     /**
@@ -115,5 +120,18 @@ public class FDLGuiController {
      */
     public void appendLogText(String text) {
         Platform.runLater(() -> taLog.appendText(text));
+    }
+
+    /**
+     * Set certain controls as disabled or enabled.
+     * @param areEnabled True if controls should be enabled, otherwise false.
+     */
+    protected void setControlsEnabled(boolean areEnabled) {
+        tfInFile.setEditable(areEnabled);
+        tfOutDir.setEditable(areEnabled);
+        btnChooseInFile.setDisable(!areEnabled);
+        btnChooseOutDir.setDisable(!areEnabled);
+        btnDefaultOutDir.setDisable(!areEnabled);
+        btnStart.setDisable(!areEnabled);
     }
 }

@@ -37,7 +37,7 @@ public class Main {
         try {
             new FictionDL(line.getOptionValue("i"), line.getOptionValue("o")).run();
         } catch (IllegalArgumentException e) {
-            System.out.println(C.INVALID_PATH);
+            System.out.printf(C.INVALID_PATH, e.getMessage());
         }
     }
 

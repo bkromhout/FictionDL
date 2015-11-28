@@ -3,6 +3,7 @@ package bkromhout.FictionDL;
 import bkromhout.FictionDL.Downloader.FanFictionDL;
 import bkromhout.FictionDL.Downloader.FictionHuntDL;
 import bkromhout.FictionDL.Downloader.SiyeDL;
+import javafx.concurrent.Task;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -21,6 +22,8 @@ public class FictionDL {
     public static Path outPath;
     // File parser.
     public static FileParser parser;
+    // Keep a reference to the FictionDLTask if this is being run from the GUI.
+    private FictionDLTask task;
 
     /**
      * Create a new FictionDL to execute the program logic.
@@ -29,7 +32,20 @@ public class FictionDL {
      * @throws IllegalArgumentException if either of the paths cannot be resolved.
      */
     public FictionDL(String inputFilePath, String outputDirPath) throws IllegalArgumentException {
-        if (inputFilePath == null) throw new IllegalArgumentException();
+        this(inputFilePath, outputDirPath, null);
+    }
+
+    /**
+     * Create a new FictionDL to execute the program logic.
+     * @param inputFilePath Path to input file.
+     * @param outputDirPath Path to output directory.
+     *
+     * @throws IllegalArgumentException if either of the paths cannot be resolved.
+     */
+    public FictionDL(String inputFilePath, String outputDirPath, FictionDLTask task) throws IllegalArgumentException {
+        if (inputFilePath == null) throw new IllegalArgumentException("[No input file path!]");
+        // Store this task for later.
+        this.task = task;
         // Try to get a file from the input file path.
         inputFile = Util.tryGetFile(inputFilePath);
         // Figure out the output directory.
@@ -82,6 +98,37 @@ public class FictionDL {
             SiyeDL siyeDL = new SiyeDL(parser.getSiyeUrls());
             siyeDL.download();
             System.out.printf(C.FINISHED_WITH_SITE, SiyeDL.SITE);
+        }
+    }
+
+    /**
+     * Called by the downloaders each time a story has finished (or has failed to finish) downloading.
+     */
+    public void incrProgress() {
+        
+    }
+
+    /**
+     * Subclass of Task so that FictionDL can be used by a JavaFX GUI app.
+     */
+    public static class FictionDLTask extends Task {
+        private String inputFilePath;
+        private String outputDirPath;
+
+        /**
+         * Create a new FictionDLTask.
+         * @param inputFilePath Path to input file.
+         * @param outputDirPath Path to output directory.
+         */
+        public FictionDLTask(String inputFilePath, String outputDirPath) {
+            this.inputFilePath = inputFilePath;
+            this.outputDirPath = outputDirPath;
+        }
+
+        @Override
+        protected Object call() throws Exception {
+            new FictionDL(inputFilePath, outputDirPath, this);
+            return null;
         }
     }
 }

@@ -30,7 +30,8 @@ public class Util {
      */
     public static Path tryGetPath(String path) throws IllegalArgumentException {
         File dir = new File(path);
-        if ((!dir.exists() && !dir.mkdirs()) || !dir.isDirectory()) throw new IllegalArgumentException();
+        if ((!dir.exists() && !dir.mkdirs()) || !dir.isDirectory())
+            throw new IllegalArgumentException(dir.getAbsolutePath());
         return dir.toPath();
     }
 
@@ -44,7 +45,7 @@ public class Util {
     public static File tryGetFile(String path) throws IllegalArgumentException {
         File file = new File(path);
         if (!file.exists() || !file.isFile() || !file.canRead() || !file.canWrite())
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(file.getAbsolutePath());
         return file;
     }
 

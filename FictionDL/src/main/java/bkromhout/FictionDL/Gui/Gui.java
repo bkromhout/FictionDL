@@ -3,6 +3,9 @@ package bkromhout.FictionDL.Gui;
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.FictionDL;
 import javafx.application.Application;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -13,13 +16,17 @@ import java.util.prefs.Preferences;
 public class Gui extends Application {
     // Preferences object for persisting things across runs.
     Preferences prefs;
+    // GUI Controller.
+    FDLGuiController controller;
+    // Current task for running FictionDL.
+    FictionDL.FictionDLTask fictionDLTask = null;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Do first tasks for getting the GUI ready.
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FictionDLGui.fxml"));
         Parent root = loader.load();
-        FDLGuiController controller = loader.getController();
+        controller = loader.getController();
         // Tell the controller we own it.
         controller.setGui(this);
         // Configure the stage.
@@ -39,6 +46,28 @@ public class Gui extends Application {
      * @param outputDirPath Path to output directory.
      */
     protected void runFictionDl(String inputFilePath, String outputDirPath) {
+        fictionDLTask = new FictionDL.FictionDLTask(inputFilePath, outputDirPath);
+        // Set the task's handlers.
+        fictionDLTask.setOnScheduled(handler -> {
+            controller.pbProgress.setProgress(0d);
+            controller.pbProgress.progressProperty().bind(fictionDLTask.progressProperty());
+            controller.taLog.clear();
+            controller.setControlsEnabled(false);
+        });
+        fictionDLTask.setOnSucceeded(handler -> {
+            controller.pbProgress.progressProperty().unbind();
+            controller.setControlsEnabled(true);
+        });
+        fictionDLTask.setOnCancelled(handler -> {
+            controller.pbProgress.progressProperty().unbind();
+            controller.pbProgress.setProgress(0d);
+            controller.setControlsEnabled(true);
+            if (handler.getSource().getException() != null) {
+                // FictionDL should only allow an exception to be thrown if one of the paths it was supplied was
+                // invalid, so we only print this message in that case.
+                System.out.printf(C.INVALID_PATH, handler.getSource().getException().getMessage());
+            }
+        });
         // Do cool stuff.
         try {
             new FictionDL(inputFilePath, outputDirPath).run();
@@ -49,7 +78,7 @@ public class Gui extends Application {
 
     /**
      * Save a string preference.
-     * @param key Preference key.
+     * @param key   Preference key.
      * @param value Preference value.
      */
     protected void putPref(String key, String value) {

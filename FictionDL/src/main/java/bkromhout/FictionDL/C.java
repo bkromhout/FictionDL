@@ -55,7 +55,7 @@ public class C {
     public static final String SANITIZING_CHAPS = "Sanitizing chapters...";
 
     // Errors and Warnings
-    public static final String INVALID_PATH = "Invalid path.";
+    public static final String INVALID_PATH = "Invalid path: \"%s\"\n.";
     public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the file: \"%s\"\n";
     public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"\n";
     public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it.";
