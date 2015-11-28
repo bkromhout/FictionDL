@@ -77,7 +77,8 @@ public final class EpubGen {
         // Create and add chapter pages.
         ArrayList<Chapter> chapters = story.getChapters();
         for (int i = 0; i < chapters.size(); i++)
-            book.addSection(Util.convertWin1252Chars(chapters.get(i).title), createChapter(chapters.get(i), i + 1));
+            book.addSection(Util.unEscapeAmps(Util.convertWin1252Chars(chapters.get(i).title)),
+                    createChapter(chapters.get(i), i + 1));
         // Done, should be ready to save now.
         return book;
     }
