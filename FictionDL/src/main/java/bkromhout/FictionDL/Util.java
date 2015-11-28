@@ -7,7 +7,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +43,25 @@ public class Util {
         if (!file.exists() || !file.isFile() || !file.canRead() || !file.canWrite())
             throw new IllegalArgumentException();
         return file;
+    }
+
+    /**
+     * Takes a long time value that was parsed from FanFiction.net, multiplies it by 1000 to make it match the Java long
+     * time format, then returns a string with it printed in the format MMM dd, yyyy.
+     * @param ffnTime String long value from an FFN data-xutime attribute.
+     * @return Date string.
+     */
+    public static String dateFromFfnTime(String ffnTime) {
+        // Add some zeros to make it like a Java long.
+        long longFfnTime = Long.parseLong(ffnTime);
+        longFfnTime *= 1000;
+        // Create a Date object.
+        Date date = new Date(longFfnTime);
+        // Create the formatter.
+        DateFormat df = DateFormat.getDateInstance();
+        df.setTimeZone(TimeZone.getTimeZone("US/Pacific"));
+        // Return string.
+        return df.format(date);
     }
 
     /**

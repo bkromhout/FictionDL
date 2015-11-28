@@ -34,21 +34,21 @@ public class FictionHuntStory extends Story {
         // Get FictionHunt story ID.
         storyId = parseStoryId(url, C.FH_SID_REGEX, 1);
         // Get the HTML at the url we've specified to use as the entry point.
-        Document doc = Util.downloadHtml(url);
-        if (doc == null) throw new IOException(String.format(C.STORY_DL_FAILED, FictionHuntDL.SITE, storyId));
+        Document infoDoc = Util.downloadHtml(url);
+        if (infoDoc == null) throw new IOException(String.format(C.STORY_DL_FAILED, FictionHuntDL.SITE, storyId));
         // Get title string. Even if the story is on FFN, we want to have this for logging purposes.
-        title = doc.select("div.title").first().text();
+        title = infoDoc.select("div.title").first().text();
         // Check if story is on FanFiction.net. If so, just get its FFN story ID.
         isOnFfn = checkIfOnFfn();
         if (isOnFfn) return; // If the story is on FFN, don't bother with the rest!
         // Get author string.
-        author = doc.select("div.details > a").first().text();
+        author = infoDoc.select("div.details > a").first().text();
         // Get the summary. Note that we do this by trying to search FictionHunt for the story title, then parsing
         // the search results. We sort by relevancy, but if the story still doesn't show up on the first page then we
         // just give up and use an apology message as the summary :)
         summary = findSummary();
         // Get details string to extract other bits of information from that.
-        String[] details = doc.select("div.details").first().ownText().split(" - ");
+        String[] details = infoDoc.select("div.details").first().ownText().split(" - ");
         // Get characters.
         characters = details[0].trim();
         // Get word count.
@@ -58,7 +58,7 @@ public class FictionHuntStory extends Story {
         // Get genre(s).
         genres = details[4].trim();
         // Get number of chapters.
-        int numChapters = Integer.parseInt(details[5].trim().replace("Chapters: ", ""));
+        int chapCount = Integer.parseInt(details[5].trim().replace("Chapters: ", ""));
         // Get last updated date.
         dateUpdated = details[7].trim().replace("Updated: ", "");
         // Get published date.
@@ -66,8 +66,7 @@ public class FictionHuntStory extends Story {
         // Get status (it isn't listed if it's incomplete, so just check the length of the details array).
         status = details.length > 9 ? C.STAT_C : C.STAT_I;
         // Generate chapter URLs.
-        String baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
-        for (int i = 0; i < numChapters; i++) chapterUrls.add(baseUrl + String.valueOf(i + 1));
+        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.FH_CHAP_URL, storyId, i + 1));
     }
 
     /**

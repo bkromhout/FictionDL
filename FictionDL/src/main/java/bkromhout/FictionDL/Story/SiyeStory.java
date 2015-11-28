@@ -78,12 +78,13 @@ public class SiyeStory extends Story {
         // Get status.
         status = details[5].replace("Completed: ", "").trim().equals("Yes") ? C.STAT_C : C.STAT_I;
         // Get chapter count to generate chapter URLs.
-        int chapterCount = Integer.parseInt(details[6].replace("Chapters: ", "").trim());
-        for (int i = 0; i < chapterCount; i++) chapterUrls.add(String.format(C.SIYE_CHAP_URL, storyId, i + 1));
+        int chapCount = Integer.parseInt(details[6].replace("Chapters: ", "").trim());
         // Get date published.
         datePublished = details[7].replace("Published: ", "").trim();
         // Get date last updated.
         dateUpdated = details[8].replace("Updated: ", "").trim();
+        // Generate chapter URLs.
+        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.SIYE_CHAP_URL, storyId, i + 1));
     }
 
     /**
