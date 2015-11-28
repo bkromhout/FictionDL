@@ -60,7 +60,13 @@ public class SiyeDL extends ParsingDL {
             if (titleElement != null) {
                 Matcher matcher = Pattern.compile(C.SIYE_CHAP_TITLE_REGEX).matcher(titleElement.html().trim());
                 matcher.matches();
-                chapter.title = matcher.group(2);
+                try {
+                    chapter.title = matcher.group(2);
+                } catch (IllegalStateException e) {
+                    // Apparently, it's possible for there to *not* be a title for a chapter, so the title string may
+                    // look like "24. " or something. If that happens, title the chapter "Chapter #".
+                    chapter.title = String.format("Chapter %d", chapters.indexOf(chapter) + 1);
+                }
             } else {
                 chapter.title = "Chapter 1";
             }

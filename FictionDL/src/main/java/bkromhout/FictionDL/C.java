@@ -34,7 +34,7 @@ public class C {
     // Stories
     public static final String SAVING_STORY = "Saving Story...";
     public static final String FH_STORY_ON_FFN = "\"%s\" is still available on FanFiction.net; will download from " +
-            "there.\n";
+            "there.\n\n";
 
     // Chapters
     public static final String DL_CHAPS_FOR = "Downloading: \"%s\"\n";

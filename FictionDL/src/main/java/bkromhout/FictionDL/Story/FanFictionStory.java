@@ -49,7 +49,7 @@ public class FanFictionStory extends Story {
         // Get the fic type.
         ficType = parseFicType(infoDoc);
         // Get the details string and split it up to help get the other details.
-        Element detailElem = infoDoc.select("").last();
+        Element detailElem = infoDoc.select("div#profile_top > span").last();
         String[] details = detailElem.text().split(" - ");
         // Get the rating.
         rating = details[0].replace("Rating: ", "").trim();
@@ -65,7 +65,7 @@ public class FanFictionStory extends Story {
         // Get the characters.
         characters = details[genres.equals(C.NO_GENRE) ? 2 : 3].trim();
         // Get the dates.
-        Elements dates = detailElem.select("div#profile_top > span > span");
+        Elements dates = detailElem.select("span > span");
         // Get the date published.
         datePublished = Util.dateFromFfnTime(dates.last().attr("data-xutime"));
         // Get the date last updated. If there isn't one, use the date published.
