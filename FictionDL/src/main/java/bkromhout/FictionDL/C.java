@@ -129,7 +129,18 @@ public class C {
     /**
      * Regex to find all ampersands in a piece of HTML which are actual ampersands and not part of a character code.
      */
-    public static final String AMP_REGEX = "[\\&](?=[^#])";
+    public static final String AMP_REGEX = "[\\&](?!(#|amp;|gt;|lt;|quot;))";
+
+    /**
+     * Regex to find all unclosed tags, where the tag type is substituted in, no matter their attributes. Used with
+     * TAG_REGEX_REPL.
+     */
+    public static final String TAG_REGEX_FIND = "(\\<%s[^>]*?(?<!\\/))(\\>)";
+
+    /**
+     * Used with TAG_REGEX_FIND to replace all > with /> for unclosed tags.
+     */
+    public static final String TAG_REGEX_REPL = "$1/>";
 
     /*
     Title Page Part Names (AKA, details for a fic)

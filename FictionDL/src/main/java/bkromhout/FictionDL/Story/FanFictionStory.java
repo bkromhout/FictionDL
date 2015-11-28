@@ -52,7 +52,7 @@ public class FanFictionStory extends Story {
         Element detailElem = infoDoc.select("div#profile_top > span").last();
         String[] details = detailElem.text().split(" - ");
         // Get the rating.
-        rating = details[0].replace("Rating: ", "").trim();
+        rating = details[0].replace("Rated: ", "").trim();
         // Get the chapter count, remember its index for later.
         int chapCntIdx = findDetailsStringIdx(details, "Chapters: ");
         int chapCount = chapCntIdx == -1 ? 1 : Integer.parseInt(details[chapCntIdx].replace("Chapters: ", "")

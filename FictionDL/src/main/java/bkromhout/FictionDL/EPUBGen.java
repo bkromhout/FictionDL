@@ -161,8 +161,8 @@ public final class EpubGen {
      */
     private String cleanChapter(String chapterContent) {
         // Make sure <br> and <hr> tags are closed.
-        chapterContent = chapterContent.replaceAll("<br>", "<br />");
-        chapterContent = chapterContent.replaceAll("<hr>", "<hr />");
+        chapterContent = Util.closeTags(chapterContent, "br");
+        chapterContent = Util.closeTags(chapterContent, "hr");
         // Escape pesky characters.
         chapterContent = Util.convertWin1252Chars(chapterContent);
         // Squeaky clean!

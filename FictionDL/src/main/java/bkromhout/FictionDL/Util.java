@@ -2,6 +2,7 @@ package bkromhout.FictionDL;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Entities;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +13,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -109,12 +112,31 @@ public class Util {
     }
 
     /**
+     * Closes any of the given tags in the given html string.
+     * @param tag The type of tag, such as hr, or br.
+     * @return A string with all of the given tags closed.
+     */
+    public static String closeTags(String in, String tag) {
+        return in.replaceAll(String.format(C.TAG_REGEX_FIND, tag), C.TAG_REGEX_REPL);
+    }
+
+    /**
      * Escape ampersands that aren't part of code points.
      * @param in The string to escape.
      * @return The escaped string.
      */
     public static String escapeAmps(String in) {
         return in.replaceAll(C.AMP_REGEX, "&#x26;");
+    }
+
+    /**
+     * Un-Esacpe ampersands, because epublib is completely idiotic and doesn't check to see if an ampersand is part of a
+     * character code, it just escapes it again.
+     * @param in String to un-escape.
+     * @return Un-escaped string.
+     */
+    public static String unEscapeAmps(String in) {
+        return in.replace("&amp;", "&").replace("&#x26;", "&");
     }
 
     /**

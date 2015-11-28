@@ -81,6 +81,7 @@ public class FanFictionDL extends ParsingDL {
     @Override
     protected String sanitizeChapter(String chapterString) {
         // Do some FanFiction.net specific cleaning.
-        return chapterString.replaceAll("<hr size=\"1\" noshade>", "<hr size=\"1\" noshade=\"noshade\" />");
+        chapterString = chapterString.replace("noshade", "noshade=\"noshade\"");
+        return chapterString;
     }
 }
