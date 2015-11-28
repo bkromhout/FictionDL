@@ -10,10 +10,24 @@ public class C {
     public static final String THUMBS_UP = "\uD83D\uDC4D";
 
     /*
-    General Strings.
+    General constants.
      */
     public static final String VER = "1.1";
     public static final String VER_STRING = "FictionDL, Version " + VER;
+
+    /*
+    GUI Constants.
+     */
+    public static final double G_MIN_WIDTH = 525.0;
+    public static final double G_MIN_HEIGHT = 300.0;
+    public static final String F_CHOOSE_TITLE = "Choose Input File:";
+    public static final String D_CHOOSE_TITLE = "Choose Output Directory:";
+
+    /*
+    Preference Keys.
+     */
+    public static final String KEY_IN_FILE_PATH = "key_in_file_path";
+    public static final String KEY_OUT_DIR_PATH = "key_out_dir_path";
 
     /*
     Log output strings.

@@ -1,6 +1,6 @@
 package bkromhout.FictionDL;
 
-import bkromhout.FictionDL.Gui.GuiMain;
+import bkromhout.FictionDL.Gui.Gui;
 import javafx.application.Application;
 import org.apache.commons.cli.*;
 
@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args) {
         // Check for GUI argument.
         if (args.length == 1 && args[0].equals("-gui")) {
-            Application.launch(GuiMain.class);
+            Application.launch(Gui.class);
             return;
         }
         // If it's not there, precede as normal.
