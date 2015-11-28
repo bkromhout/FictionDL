@@ -2,38 +2,21 @@ package bkromhout.FictionDL.Story;
 
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Downloader.FictionHuntDL;
-import bkromhout.FictionDL.Main;
+import bkromhout.FictionDL.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Model object for a FictionHunt story. Despite the word "model", this is not an object with a light initialization
  * cost, as it accesses the internet to retrieve story information.
  */
-public class FictionHuntStory {
+public class FictionHuntStory extends Story {
     // Story URL.
     private String url;
-    // Story ID (FictionHunt).
-    private String storyId;
-    // Story title.
-    private String title;
-    // Story author.
-    private String author;
-    // Story Summary.
-    private String summary;
-    // Story word count.
-    private int wordCount;
-    // Story rating.
-    private String rating;
-    // List of chapter URLs.
-    private ArrayList<String> chapterUrls = new ArrayList<>();
-    // If the story is still available on Fanfiction.net, get its story ID and use p0ody-files to download it.
-    private String ffnStoryId = null;
+    // If the story is still available on FanFiction.net, get its story ID and use p0ody-files to download it.
+    private boolean isOnFfn = false;
 
     /**
      * Create a new FictionHuntStory object based off of a URL.
@@ -49,42 +32,41 @@ public class FictionHuntStory {
      */
     private void populateInfo() throws IOException {
         // Get FictionHunt story ID.
-        storyId = getStoryId();
+        storyId = parseStoryId(url, C.FH_SID_REGEX, 1);
         // Get the HTML at the url we've specified to use as the entry point.
-        Document doc = Main.downloadHtml(url);
-        if (doc == null) throw new IOException(String.format(C.STORY_DL_FAILED, FictionHuntDL.SITE, storyId));
+        Document infoDoc = Util.downloadHtml(url);
+        if (infoDoc == null) throw new IOException(String.format(C.STORY_DL_FAILED, FictionHuntDL.SITE, storyId));
         // Get title string. Even if the story is on FFN, we want to have this for logging purposes.
-        title = doc.select("div.title").first().text();
-        // Check if story is on Fanfiction.net. If so, just get its FFN story ID.
-        ffnStoryId = tryGetFfnStoryId();
-        if (ffnStoryId != null) return; // If the story is on FFN, don't bother with the rest!
+        title = infoDoc.select("div.title").first().text();
+        // Check if story is on FanFiction.net. If so, just get its FFN story ID.
+        isOnFfn = checkIfOnFfn();
+        if (isOnFfn) return; // If the story is on FFN, don't bother with the rest!
         // Get author string.
-        author = doc.select("div.details > a").first().text();
+        author = infoDoc.select("div.details > a").first().text();
         // Get the summary. Note that we do this by trying to search FictionHunt for the story title, then parsing
         // the search results. We sort by relevancy, but if the story still doesn't show up on the first page then we
         // just give up and use an apology message as the summary :)
         summary = findSummary();
-        // Get details string to extract other bits of information from that. TODO use regex for this bc yay.
-        String[] details = doc.select("div.details").first().ownText().split(" - ");
+        // Get details string to extract other bits of information from that.
+        String[] details = infoDoc.select("div.details").first().ownText().split(" - ");
+        // Get characters.
+        characters = details[0].trim();
         // Get word count.
-        wordCount = Integer.parseInt(details[1].replace("Words: ", "").replaceAll(",", ""));
+        wordCount = Integer.parseInt(details[1].trim().replace("Words: ", "").replaceAll(",", ""));
         // Get rating.
-        rating = details[2].replace("Rated: ", "");
+        rating = details[2].replace("Rated: ", "").trim();
+        // Get genre(s).
+        genres = details[4].trim();
         // Get number of chapters.
-        int numChapters = Integer.parseInt(details[5].replace("Chapters: ", ""));
+        int chapCount = Integer.parseInt(details[5].trim().replace("Chapters: ", ""));
+        // Get last updated date.
+        dateUpdated = details[7].trim().replace("Updated: ", "");
+        // Get published date.
+        datePublished = details[8].trim().replace("Published: ", "");
+        // Get status (it isn't listed if it's incomplete, so just check the length of the details array).
+        status = details.length > 9 ? C.STAT_C : C.STAT_I;
         // Generate chapter URLs.
-        String baseUrl = url.substring(0, url.lastIndexOf('/') + 1);
-        for (int i = 0; i < numChapters; i++) chapterUrls.add(baseUrl + String.valueOf(i + 1));
-    }
-
-    /**
-     * Parses the FictionHunt story ID from the FictionHunt URL.
-     * @return FictionHunt story ID.
-     */
-    private String getStoryId() {
-        Matcher matcher = Pattern.compile(C.FICTIONHUNT_REGEX).matcher(url);
-        matcher.find();
-        return storyId = matcher.group(1);
+        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.FH_CHAP_URL, storyId, i + 1));
     }
 
     /**
@@ -92,20 +74,20 @@ public class FictionHuntStory {
      * hasn't been taken down), then return its story ID so that we can use p0ody-files to download it later.
      * @return Story ID if on FFN, or null if not.
      */
-    private String tryGetFfnStoryId() {
+    private boolean checkIfOnFfn() {
         // FictionHunt has done a very handy thing with their URLs, their story IDs correspond to the original FFN
         // story IDs, which makes generating an FFN link easy to do. First, create a FFN link and download the
         // resulting page.
-        Document ffnDoc = Main.downloadHtml(String.format(C.FFN_URL, storyId));
+        Document ffnDoc = Util.downloadHtml(String.format(C.FFN_URL, storyId));
         if (ffnDoc == null) {
             // It really doesn't matter if we can't get the page from FFN since we can still get it from FictionHunt.
             System.out.println(C.FH_FFN_CHECK_FAILED);
-            return null;
+            return false;
         }
         // Now check the resulting FFN HTML to see if the warning panel which indicates that the story isn't
         // available is present. If it is present, the story isn't on FFN anymore, so return a null; otherwise, the
         // story is still up, return the real story ID.
-        return ffnDoc.select("span.gui_warning").first() != null ? null : storyId;
+        return ffnDoc.select("span.gui_warning").first() == null;
     }
 
     /**
@@ -116,7 +98,7 @@ public class FictionHuntStory {
         // Generate a FictionHunt search URL using the title.
         String fhSearchUrl = String.format(C.FH_SEARCH_URL, title);
         // Download search page.
-        Document fhSearch = Main.downloadHtml(fhSearchUrl);
+        Document fhSearch = Util.downloadHtml(fhSearchUrl);
         if (fhSearch == null) return C.FH_NO_SUMMARY;
         // Get summary.
         Element summaryElement = fhSearch.select(
@@ -124,31 +106,11 @@ public class FictionHuntStory {
         return summaryElement != null ? summaryElement.text() : C.FH_NO_SUMMARY;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public int getWordCount() {
-        return wordCount;
-    }
-
-    public String getRating() {
-        return rating;
-    }
-
-    public ArrayList<String> getChapterUrls() {
-        return chapterUrls;
-    }
-
-    public String getFfnStoryId() {
-        return ffnStoryId;
+    /**
+     * Is this story still available on FanFiction.net?
+     * @return True if yes, false if no.
+     */
+    public boolean isOnFfn() {
+        return isOnFfn;
     }
 }

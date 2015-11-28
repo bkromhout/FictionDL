@@ -2,6 +2,8 @@ package bkromhout.FictionDL;
 
 import org.jsoup.nodes.Document;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * Chapter model. Very simple, just holds the chapter title and content.
  */
@@ -10,6 +12,8 @@ public class Chapter {
     public String title;
     // Chapter HTML.
     public Document html;
+    // The chapter's actual content.
+    public String content;
 
     /**
      * Create a new Chapter model (just for convenience, since instance members are public).

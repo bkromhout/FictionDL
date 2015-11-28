@@ -16,7 +16,7 @@ public class FileParser {
     private Pattern hostRegex = Pattern.compile(C.HOST_REGEX);
     // FictionHunt URLs.
     private ArrayList<String> fictionHuntUrls = new ArrayList<>();
-    // Fanfiction.net URLs.
+    // FanFiction.net URLs.
     private ArrayList<String> ffnUrls = new ArrayList<>();
     // SIYE URLs.
     private ArrayList<String> siyeUrls = new ArrayList<>();
@@ -24,19 +24,12 @@ public class FileParser {
     /**
      * Parse the file, populating the various URL lists for the different sites.
      */
-    public FileParser(String path) {
-        initialize(path);
+    public FileParser(File storiesFile) {
+        initialize(storiesFile);
     }
 
-    private void initialize(String path) {
-        System.out.printf(C.CHECK_AND_PARSE_FILE);
-        // Make sure the given path is valid, is a file, and can be read.
-        File storiesFile = new File(path);
-        if (!(storiesFile.exists() && storiesFile.isFile() && storiesFile.canRead())) {
-            System.out.println(C.INVALID_PATH);
-            System.exit(1);
-        }
-        Main.dirPath = storiesFile.getParentFile().toPath();
+    private void initialize(File storiesFile) {
+        System.out.printf(C.PARSE_FILE);
         // Try to read lines from file into the url list
         try (BufferedReader br = new BufferedReader(new FileReader(storiesFile))) {
             String line = br.readLine();
@@ -58,8 +51,8 @@ public class FileParser {
     }
 
     /**
-     * Processes a line from the input file, attempting to parse a story site URL and assign it to one of the URL
-     * lists. Won't put any invalid or repeat lines in the URL lists.
+     * Processes a line from the input file, attempting to parse a story site URL and assign it to one of the URL lists.
+     * Won't put any invalid or repeat lines in the URL lists.
      * @param line Line from the input file.
      */
     private void processLine(String line) throws IllegalStateException {
@@ -71,7 +64,16 @@ public class FileParser {
         // it's totally possible for the same story to get added twice. Maybe I'll add some normalization code later.)
         if (hostString.contains("fictionhunt.com") && !fictionHuntUrls.contains(line)) fictionHuntUrls.add(line);
         else if (hostString.contains("fanfiction.net") && !ffnUrls.contains(line)) ffnUrls.add(line);
-        else if (hostString.contains("siye.co.uk") && ! siyeUrls.contains(line)) siyeUrls.add(line);
+        else if (hostString.contains("siye.co.uk") && !siyeUrls.contains(line)) siyeUrls.add(line);
+    }
+
+    /**
+     * Adds a FanFiction.net URL to that list. Useful for when we decide to download a FictionHunt story from
+     * FanFiction.net instead.
+     * @param ffnUrl FanFiction.net URL.
+     */
+    public void addFfnUrl(String ffnUrl) {
+        if (!ffnUrls.contains(ffnUrl)) ffnUrls.add(ffnUrl);
     }
 
     /**
@@ -83,8 +85,8 @@ public class FileParser {
     }
 
     /**
-     * Get the list of Fanfiction.net URLs that were parsed.
-     * @return Fanfiction.net URLs.
+     * Get the list of FanFiction.net URLs that were parsed.
+     * @return FanFiction.net URLs.
      */
     public ArrayList<String> getFfnUrls() {
         return ffnUrls;
