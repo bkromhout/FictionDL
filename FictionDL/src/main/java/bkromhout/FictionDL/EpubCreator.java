@@ -18,15 +18,15 @@ import java.util.ArrayList;
  * Class which leverages epublib to create ePUB files. This class is meant to be used once and then discarded, so is
  * marked final.
  */
-public final class EpubGen {
-    // The Story that this EpubGen was created with.
+public final class EpubCreator {
+    // The Story that this EpubCreator was created with.
     private Story story;
 
     /**
      * Create an ePUB generator for the given story.
      * @param story Story.
      */
-    public EpubGen(Story story) {
+    public EpubCreator(Story story) {
         this.story = story;
     }
 
