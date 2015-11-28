@@ -1,5 +1,7 @@
 package bkromhout.FictionDL;
 
+import bkromhout.FictionDL.Gui.GuiMain;
+import javafx.application.Application;
 import org.apache.commons.cli.*;
 
 /**
@@ -8,6 +10,12 @@ import org.apache.commons.cli.*;
 public class Main {
 
     public static void main(String[] args) {
+        // Check for GUI argument.
+        if (args.length == 1 && args[0].equals("-gui")) {
+            Application.launch(GuiMain.class);
+            return;
+        }
+        // If it's not there, precede as normal.
         System.out.println(C.VER_STRING);
         // Process CLI input.
         Options options = getOptions();
