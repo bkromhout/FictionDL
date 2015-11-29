@@ -5,11 +5,6 @@ package bkromhout.FictionDL;
  */
 public class C {
     /*
-    Emoji ;)
-     */
-    public static final String THUMBS_UP = "\uD83D\uDC4D";
-
-    /*
     General constants.
      */
     public static final String VER = "1.1";
@@ -39,8 +34,7 @@ public class C {
     public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n";
     public static final String FETCH_BUILD_MODELS = "Fetching story info from %s and building story models...\n";
     public static final String DL_STORIES_FROM_SITE = "Downloading stories from %s...\n\n";
-    public static final String SIYE_SLOW =
-            "SIYE's process is slow due to their horrid HTML, please be patient " + THUMBS_UP;
+    public static final String SIYE_SLOW = "SIYE's process is slow due to their horrid HTML, please be patient ;)";
     public static final String DONE = "Done!";
     public static final String FINISHED_WITH_SITE = "Finished with %s.\n\n";
     public static final String ALL_FINISHED = "\nAll Finished! :)";

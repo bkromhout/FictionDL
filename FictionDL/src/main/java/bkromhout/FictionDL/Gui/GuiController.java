@@ -8,6 +8,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.TextFlow;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
@@ -45,6 +46,7 @@ public class GuiController {
 
     // Log.
     public TextArea taLog;
+    public TextFlow flowLog;
 
     @FXML
     private void initialize() {
