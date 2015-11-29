@@ -38,6 +38,7 @@ public class FanFictionDL extends ParsingDL {
             try {
                 stories.add(new FanFictionStory(url));
             } catch (IOException e) {
+                storyProcessed(); // Call this, since we have "processed" a story by failing to download it.
                 System.out.println(e.getMessage());
             }
         }

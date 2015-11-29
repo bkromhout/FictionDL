@@ -72,7 +72,9 @@ public class Gui extends Application {
             }
         });
         // Do cool stuff.
-        fictionDLTask.run();
+        Thread fictionDLThread = new Thread(fictionDLTask);
+        fictionDLThread.setDaemon(true);
+        fictionDLThread.start();
     }
 
     /**
