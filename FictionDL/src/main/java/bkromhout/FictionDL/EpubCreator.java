@@ -51,7 +51,7 @@ public final class EpubCreator {
         try {
             new EpubWriter().write(generateEpub(), new FileOutputStream(file));
         } catch (IOException e) {
-            System.out.printf(C.SAVE_FILE_FAILED, file.getAbsolutePath());
+            Util.logf(C.SAVE_FILE_FAILED, file.getAbsolutePath());
             return false;
         }
         return true;

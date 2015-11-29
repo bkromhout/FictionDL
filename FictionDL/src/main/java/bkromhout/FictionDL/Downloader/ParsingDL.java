@@ -57,24 +57,24 @@ public abstract class ParsingDL {
      * @param story Story to download and save.
      */
     protected void downloadStory(Story story) {
-        System.out.printf(C.DL_CHAPS_FOR, story.getTitle());
+        Util.logf(C.DL_CHAPS_FOR, story.getTitle());
         // Download the chapters and fill in their titles.
         ArrayList<Chapter> chapters = downloadChapters(story);
         // Make sure we got all of the chapters. If we didn't we won't continue.
         if (story.getChapterUrls().size() != chapters.size()) {
-            System.out.println(C.SOME_CHAPS_FAILED);
+            Util.log(C.SOME_CHAPS_FAILED);
             storyProcessed(); // Update progress.
             return;
         }
         // Extract the chapter text and sanitize it so that the chapters are in the expected xhtml format for ePUB.
-        System.out.println(C.SANITIZING_CHAPS);
+        Util.log(C.SANITIZING_CHAPS);
         for (Chapter chapter : chapters) chapter.content = sanitizeChapter(extractChapText(chapter));
         // Associate the chapters with the story.
         story.setChapters(chapters);
         // Save the story as an ePUB file.
-        System.out.printf(C.SAVING_STORY);
+        Util.logf(C.SAVING_STORY);
         new EpubCreator(story).makeEpub(FictionDL.outPath);
-        System.out.println(C.DONE + "\n");
+        Util.log(C.DONE + "\n");
         storyProcessed(); // Update progress.
     }
 

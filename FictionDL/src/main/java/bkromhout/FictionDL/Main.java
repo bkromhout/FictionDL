@@ -10,7 +10,7 @@ import org.apache.commons.cli.*;
  */
 public class Main {
     // Are we running with a GUI?
-    private static boolean isGui = false;
+    public static boolean isGui = false;
 
     public static void main(String[] args) {
         // Check for GUI argument.
@@ -20,7 +20,7 @@ public class Main {
             return;
         }
         // If it's not there, precede as normal.
-        System.out.println(C.VER_STRING);
+        Util.log(C.VER_STRING);
         // Process CLI input.
         Options options = getOptions();
         CommandLineParser parser = new DefaultParser();
@@ -28,7 +28,7 @@ public class Main {
         try {
             line = parser.parse(options, args);
         } catch (ParseException e) {
-            System.out.println("Bad arguments.");
+            Util.log("Bad arguments.");
             printHelp(options);
             return;
         }
@@ -41,7 +41,7 @@ public class Main {
         try {
             new FictionDL(line.getOptionValue("i"), line.getOptionValue("o")).run();
         } catch (IllegalArgumentException e) {
-            System.out.printf(C.INVALID_PATH, e.getMessage());
+            Util.logf(C.INVALID_PATH, e.getMessage());
         }
     }
 

@@ -75,7 +75,7 @@ public class FictionDL {
         totalNumStories = parser.getTotalNumStories();
         getStories(parser);
         // All done!
-        System.out.println(C.ALL_FINISHED);
+        Util.log(C.ALL_FINISHED);
     }
 
     /**
@@ -91,7 +91,7 @@ public class FictionDL {
         if (!parser.getFictionHuntUrls().isEmpty()) {
             FictionHuntDL fictionHuntDL = new FictionHuntDL(this, parser.getFictionHuntUrls());
             fictionHuntDL.download();
-            System.out.printf(C.FINISHED_WITH_SITE, FictionHuntDL.SITE);
+            Util.logf(C.FINISHED_WITH_SITE, FictionHuntDL.SITE);
         }
         /*
         Create a FanFiction.net downloader and download stories.
@@ -99,7 +99,7 @@ public class FictionDL {
         if (!parser.getFfnUrls().isEmpty()) {
             FanFictionDL fanFictionDL = new FanFictionDL(this, parser.getFfnUrls());
             fanFictionDL.download();
-            System.out.printf(C.FINISHED_WITH_SITE, FanFictionDL.SITE);
+            Util.logf(C.FINISHED_WITH_SITE, FanFictionDL.SITE);
         }
         /*
         Create a SIYE downloader and download stories.
@@ -107,7 +107,7 @@ public class FictionDL {
         if (!parser.getSiyeUrls().isEmpty()) {
             SiyeDL siyeDL = new SiyeDL(this, parser.getSiyeUrls());
             siyeDL.download();
-            System.out.printf(C.FINISHED_WITH_SITE, SiyeDL.SITE);
+            Util.logf(C.FINISHED_WITH_SITE, SiyeDL.SITE);
         }
     }
 

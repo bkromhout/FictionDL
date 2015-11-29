@@ -1,20 +1,20 @@
 package bkromhout.FictionDL;
 
+import bkromhout.FictionDL.Gui.GuiController;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.Text;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Entities;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -79,7 +79,7 @@ public class Util {
             doc = Jsoup.connect(url).get();
         } catch (IOException e) {
             // We're just ignoring the exception really.
-            System.out.printf(C.HTML_DL_FAILED, url);
+            logf(C.HTML_DL_FAILED, url);
         }
         return doc;
     }
@@ -151,5 +151,50 @@ public class Util {
         while (out.charAt(0) == '.') out = out.replaceFirst("\\.", "");
         // Okay, we should be good now.
         return out;
+    }
+
+    /**
+     * Log a string. If running from the CLI, goes to System.out. If running from the GUI, goes to the log TextFlow.
+     * @param str String to log.
+     */
+    public static void log(String str) {
+        if (Main.isGui) logString(str + "\n");
+        else System.out.println(stripLogStyleTags(str));
+    }
+
+    /**
+     * Log a formatted string. If running from the CLI, goes to System.out. If running from the GUI, goes to the log
+     * TextFlow.
+     * @param format Format string.
+     * @param args   Objects to substitute into format string.
+     */
+    public static void logf(String format, Object... args) {
+        if (Main.isGui) logString(String.format(format, args));
+        else System.out.printf(stripLogStyleTags(format), args);
+    }
+
+    /**
+     * Log a string to a GUI TextFlow, making sure to process any log color indicators (See near the top of the C.java
+     * file).
+     * @param s String to log.
+     */
+    private static void logString(String s) {
+        Text text = new Text();
+        // Process any log color style tags, in order of priority.
+        if (s.contains(C.LOG_RED)) text.setFill(Color.ORANGERED);
+        else if (s.contains(C.LOG_BLUE)) text.setFill(Color.ROYALBLUE);
+        else if (s.contains(C.LOG_GREEN)) text.setFill(Color.FORESTGREEN);
+        text.setText(stripLogStyleTags(s));
+        // Send to the TextFlow.
+        GuiController.appendLogText(text);
+    }
+
+    /**
+     * String log color indicators from a string.
+     * @param in String to strip
+     * @return Stripped string.
+     */
+    public static String stripLogStyleTags(String in) {
+        return in.replace(C.LOG_RED, "").replace(C.LOG_BLUE, "").replace(C.LOG_GREEN, "");
     }
 }

@@ -2,11 +2,12 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane fx:id="rootView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300.0" minWidth="525.0"
+<?import javafx.scene.text.TextFlow?>
+<AnchorPane id="rootView" fx:id="rootView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300.0" minWidth="525.0"
             prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.40"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="bkromhout.FictionDL.Gui.GuiController">
     <children>
-        <AnchorPane fx:id="optsView" minHeight="0.0" minWidth="0.0" prefHeight="120.0" prefWidth="800.0"
+        <AnchorPane id="optsView" fx:id="optsView" minHeight="0.0" minWidth="0.0" prefHeight="120.0" prefWidth="800.0"
                     AnchorPane.bottomAnchor="480.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                     AnchorPane.topAnchor="0.0">
             <children>
@@ -37,11 +38,15 @@
                         prefWidth="65.0" text="Start" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="82.0"/>
             </children>
         </AnchorPane>
-        <TitledPane fx:id="logView" collapsible="false" layoutX="1.0" layoutY="120.0" prefHeight="380.0"
+        <TitledPane id="logView" fx:id="logView" collapsible="false" layoutX="1.0" layoutY="120.0" prefHeight="380.0"
                     prefWidth="800.0" text="Log" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
                     AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="120.0">
             <content>
-                <TextArea fx:id="taLog" editable="false" prefHeight="385.0" prefWidth="798.0" wrapText="true"/>
+                <ScrollPane id="spLogCont" fx:id="spLogCont" fitToWidth="true">
+                    <content>
+                        <TextFlow id="flowLog" fx:id="flowLog"/>
+                    </content>
+                </ScrollPane>
             </content>
         </TitledPane>
     </children>

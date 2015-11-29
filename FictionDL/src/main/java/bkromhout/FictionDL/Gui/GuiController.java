@@ -2,12 +2,14 @@ package bkromhout.FictionDL.Gui;
 
 import bkromhout.FictionDL.C;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -45,19 +47,19 @@ public class GuiController {
     public ProgressBar pbProgress;
 
     // Log.
-    public TextArea taLog;
-    public TextFlow flowLog;
+    public ScrollPane spLogCont;
+    public static TextFlow flowLog;
 
     @FXML
     private void initialize() {
-        // Redirect System.out to the text area log.
-        OutputStream out = new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                appendLogText(String.valueOf((char) b));
-            }
-        };
-        System.setOut(new PrintStream(out, true));
+        // Specifically set the log TextFlow, since it's static.
+        flowLog = (TextFlow) spLogCont.getContent();
+        // Set up the log TextFlow's ScrollPane to always scroll to the bottom when a new line is added.
+        flowLog.getChildren().addListener((ListChangeListener<Node>) listener -> {
+            flowLog.layout();
+            spLogCont.layout();
+            spLogCont.setVvalue(1.0d);
+        });
         // Set default button to clear dir text field.
         btnDefaultOutDir.setOnAction(event1 -> tfOutDir.clear());
         // Set choose in file button's action.
@@ -123,8 +125,8 @@ public class GuiController {
      * Append text to the log area.
      * @param text The text to append.
      */
-    public void appendLogText(String text) {
-        Platform.runLater(() -> taLog.appendText(text));
+    public static void appendLogText(Text text) {
+        Platform.runLater(() -> flowLog.getChildren().add(text));
     }
 
     /**

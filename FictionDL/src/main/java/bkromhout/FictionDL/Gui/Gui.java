@@ -2,8 +2,8 @@ package bkromhout.FictionDL.Gui;
 
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.FictionDL;
+import bkromhout.FictionDL.Util;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -54,7 +54,7 @@ public class Gui extends Application {
         fictionDLTask.setOnScheduled(handler -> {
             controller.pbProgress.setProgress(0d);
             controller.pbProgress.progressProperty().bind(fictionDLTask.progressProperty());
-            controller.taLog.clear();
+            GuiController.flowLog.getChildren().clear();
             controller.setControlsEnabled(false);
         });
         fictionDLTask.setOnSucceeded(handler -> {
@@ -68,7 +68,7 @@ public class Gui extends Application {
             if (fictionDLTask.getException() != null) {
                 // FictionDL should only allow an exception to be thrown if one of the paths it was supplied was
                 // invalid, so we only print this message in that case.
-                System.out.printf(C.INVALID_PATH, fictionDLTask.getException().getMessage());
+                Util.logf(C.INVALID_PATH, fictionDLTask.getException().getMessage());
             }
         });
         // Do cool stuff.
