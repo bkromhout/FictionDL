@@ -1,20 +1,20 @@
 package bkromhout.FictionDL;
 
+import bkromhout.FictionDL.Gui.GuiController;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.Text;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Entities;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -30,7 +30,8 @@ public class Util {
      */
     public static Path tryGetPath(String path) throws IllegalArgumentException {
         File dir = new File(path);
-        if ((!dir.exists() && !dir.mkdirs()) || !dir.isDirectory()) throw new IllegalArgumentException();
+        if ((!dir.exists() && !dir.mkdirs()) || !dir.isDirectory())
+            throw new IllegalArgumentException(dir.getAbsolutePath());
         return dir.toPath();
     }
 
@@ -44,7 +45,7 @@ public class Util {
     public static File tryGetFile(String path) throws IllegalArgumentException {
         File file = new File(path);
         if (!file.exists() || !file.isFile() || !file.canRead() || !file.canWrite())
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(file.getAbsolutePath());
         return file;
     }
 
@@ -78,7 +79,7 @@ public class Util {
             doc = Jsoup.connect(url).get();
         } catch (IOException e) {
             // We're just ignoring the exception really.
-            System.out.printf(C.HTML_DL_FAILED, url);
+            logf(C.HTML_DL_FAILED, url);
         }
         return doc;
     }
@@ -93,22 +94,6 @@ public class Util {
         // Loop through the URL list and download from each. Obviously filter out any null elements.
         return new ArrayList<>(urlList.stream().map(Util::downloadHtml).filter(out -> out != null)
                 .collect(Collectors.toList()));
-    }
-
-    /**
-     * Save a file at the specified path with the specified data. Will create the file if it doesn't exist and overwrite
-     * it if it does.
-     * @param filePath Path at which to save the file. It is assumed that the file name is legal.
-     * @param data     Data to save to the file.
-     */
-    public static void saveFile(Path filePath, byte[] data) {
-        try {
-            Files.write(filePath, data);
-        } catch (IOException e) {
-            System.out.printf(C.SAVE_FILE_FAILED, filePath.toString());
-            e.printStackTrace();
-            System.exit(1);
-        }
     }
 
     /**
@@ -166,5 +151,50 @@ public class Util {
         while (out.charAt(0) == '.') out = out.replaceFirst("\\.", "");
         // Okay, we should be good now.
         return out;
+    }
+
+    /**
+     * Log a string. If running from the CLI, goes to System.out. If running from the GUI, goes to the log TextFlow.
+     * @param str String to log.
+     */
+    public static void log(String str) {
+        if (Main.isGui) logString(str + "\n");
+        else System.out.println(stripLogStyleTags(str));
+    }
+
+    /**
+     * Log a formatted string. If running from the CLI, goes to System.out. If running from the GUI, goes to the log
+     * TextFlow.
+     * @param format Format string.
+     * @param args   Objects to substitute into format string.
+     */
+    public static void logf(String format, Object... args) {
+        if (Main.isGui) logString(String.format(format, args));
+        else System.out.printf(stripLogStyleTags(format), args);
+    }
+
+    /**
+     * Log a string to a GUI TextFlow, making sure to process any log color indicators (See near the top of the C.java
+     * file).
+     * @param s String to log.
+     */
+    private static void logString(String s) {
+        Text text = new Text();
+        // Process any log color style tags, in order of priority.
+        if (s.contains(C.LOG_RED)) text.setFill(Color.ORANGERED);
+        else if (s.contains(C.LOG_BLUE)) text.setFill(Color.ROYALBLUE);
+        else if (s.contains(C.LOG_GREEN)) text.setFill(Color.FORESTGREEN);
+        text.setText(stripLogStyleTags(s));
+        // Send to the TextFlow.
+        GuiController.appendLogText(text);
+    }
+
+    /**
+     * String log color indicators from a string.
+     * @param in String to strip
+     * @return Stripped string.
+     */
+    public static String stripLogStyleTags(String in) {
+        return in.replace(C.LOG_RED, "").replace(C.LOG_BLUE, "").replace(C.LOG_GREEN, "");
     }
 }

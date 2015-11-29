@@ -81,7 +81,7 @@ public class FictionHuntStory extends Story {
         Document ffnDoc = Util.downloadHtml(String.format(C.FFN_URL, storyId));
         if (ffnDoc == null) {
             // It really doesn't matter if we can't get the page from FFN since we can still get it from FictionHunt.
-            System.out.println(C.FH_FFN_CHECK_FAILED);
+            Util.log(C.FH_FFN_CHECK_FAILED);
             return false;
         }
         // Now check the resulting FFN HTML to see if the warning panel which indicates that the story isn't

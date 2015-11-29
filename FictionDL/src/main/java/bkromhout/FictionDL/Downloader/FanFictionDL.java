@@ -1,7 +1,6 @@
 package bkromhout.FictionDL.Downloader;
 
-import bkromhout.FictionDL.C;
-import bkromhout.FictionDL.Chapter;
+import bkromhout.FictionDL.*;
 import bkromhout.FictionDL.Story.FanFictionStory;
 import org.jsoup.nodes.Element;
 
@@ -18,29 +17,31 @@ public class FanFictionDL extends ParsingDL {
 
     /**
      * Create a new FanFiction.net downloader.
-     * @param urls List of FanFiction.net URLs.
+     * @param fictionDL FictionDL object which owns this downloader.
+     * @param urls      List of FanFiction.net URLs.
      */
-    public FanFictionDL(ArrayList<String> urls) {
-        super(urls, "div#storytext");
+    public FanFictionDL(FictionDL fictionDL, ArrayList<String> urls) {
+        super(fictionDL, urls, "div#storytext");
     }
 
     /**
      * Download the stories whose URLs were passed to this instance of the downloader upon creation.
      */
     public void download() {
-        System.out.printf(C.STARTING_SITE_DL_PROCESS, SITE);
+        Util.logf(C.STARTING_SITE_DL_PROCESS, SITE);
         // Create story models from URLs.
-        System.out.printf(C.FETCH_BUILD_MODELS, SITE);
+        Util.logf(C.FETCH_BUILD_MODELS, SITE);
         ArrayList<FanFictionStory> stories = new ArrayList<>();
         for (String url : storyUrls) {
             try {
                 stories.add(new FanFictionStory(url));
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                storyProcessed(); // Call this, since we have "processed" a story by failing to download it.
+                Util.log(e.getMessage());
             }
         }
         // Download and save the stories.
-        System.out.printf(C.DL_STORIES_FROM_SITE, SITE);
+        Util.logf(C.DL_STORIES_FROM_SITE, SITE);
         stories.forEach(this::downloadStory);
     }
 

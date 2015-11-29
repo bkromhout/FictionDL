@@ -5,15 +5,33 @@ package bkromhout.FictionDL;
  */
 public class C {
     /*
-    Emoji ;)
-     */
-    public static final String THUMBS_UP = "\uD83D\uDC4D";
-
-    /*
-    General Strings.
+    General constants.
      */
     public static final String VER = "1.1";
     public static final String VER_STRING = "FictionDL, Version " + VER;
+
+    /*
+    Log style tags. Putting these anywhere within a log string will cause the string to be formatted accordingly if
+    it's printed to the TextFlow log in the GUI. The tags are stripped before the string is printed. One color and
+    multiple styles can apply, and apply to the *whole* string.
+     */
+    public static final String LOG_RED = "!red!";
+    public static final String LOG_BLUE = "!blue!";
+    public static final String LOG_GREEN = "!green!";
+
+    /*
+    GUI Constants.
+     */
+    public static final double G_MIN_WIDTH = 525.0;
+    public static final double G_MIN_HEIGHT = 300.0;
+    public static final String F_CHOOSE_TITLE = "Choose Input File:";
+    public static final String D_CHOOSE_TITLE = "Choose Output Directory:";
+
+    /*
+    Preference Keys.
+     */
+    public static final String KEY_IN_FILE_PATH = "key_in_file_path";
+    public static final String KEY_OUT_DIR_PATH = "key_out_dir_path";
 
     /*
     Log output strings.
@@ -22,14 +40,14 @@ public class C {
     public static final String PARSE_FILE = "Parsing file...";
 
     // Download Process
-    public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n";
+    public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n" + LOG_BLUE;
     public static final String FETCH_BUILD_MODELS = "Fetching story info from %s and building story models...\n";
     public static final String DL_STORIES_FROM_SITE = "Downloading stories from %s...\n\n";
-    public static final String SIYE_SLOW =
-            "SIYE's process is slow due to their horrid HTML, please be patient " + THUMBS_UP;
-    public static final String DONE = "Done!";
-    public static final String FINISHED_WITH_SITE = "Finished with %s.\n\n";
-    public static final String ALL_FINISHED = "\nAll Finished! :)";
+    public static final String SIYE_SLOW = "SIYE's process is *very slow* due to their horrid HTML structure, please " +
+            "be patient ;)";
+    public static final String DONE = "Done!" + LOG_GREEN;
+    public static final String FINISHED_WITH_SITE = "Finished with %s.\n\n" + LOG_BLUE;
+    public static final String ALL_FINISHED = "\nAll Finished! :)" + LOG_GREEN;
 
     // Stories
     public static final String SAVING_STORY = "Saving Story...";
@@ -41,14 +59,14 @@ public class C {
     public static final String SANITIZING_CHAPS = "Sanitizing chapters...";
 
     // Errors and Warnings
-    public static final String INVALID_PATH = "Invalid path.";
-    public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the file: \"%s\"\n";
-    public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"\n";
-    public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it.";
-    public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n";
-    public static final String SAVE_FILE_FAILED = "Failed to save file: %s\n";
+    public static final String INVALID_PATH = "Invalid path: \"%s\"\n." + LOG_RED;
+    public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the file: \"%s\"\n" + LOG_RED;
+    public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"\n" + LOG_RED;
+    public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it." + LOG_RED;
+    public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n" + LOG_RED;
+    public static final String SAVE_FILE_FAILED = "Failed to save file: %s\n" + LOG_RED;
     public static final String FH_FFN_CHECK_FAILED = "Failed to check if story is still active on FFN. Oh well, " +
-            "never hurts to try!";
+            "never hurts to try!" + LOG_RED;
 
     /*
     Link template strings.

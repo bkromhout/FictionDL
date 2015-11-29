@@ -15,29 +15,31 @@ public class FictionHuntDL extends ParsingDL {
 
     /**
      * Create a new FictionHunt downloader.
-     * @param urls List of FictionHunt URLs.
+     * @param fictionDL FictionDL object which owns this downloader.
+     * @param urls      List of FictionHunt URLs.
      */
-    public FictionHuntDL(ArrayList<String> urls) {
-        super(urls, "div.text");
+    public FictionHuntDL(FictionDL fictionDL, ArrayList<String> urls) {
+        super(fictionDL, urls, "div.text");
     }
 
     /**
      * Download the stories whose URLs were passed to this instance of the downloader upon creation.
      */
     public void download() {
-        System.out.printf(C.STARTING_SITE_DL_PROCESS, SITE);
+        Util.logf(C.STARTING_SITE_DL_PROCESS, SITE);
         // Create story models from URLs.
-        System.out.printf(C.FETCH_BUILD_MODELS, SITE);
+        Util.logf(C.FETCH_BUILD_MODELS, SITE);
         ArrayList<FictionHuntStory> stories = new ArrayList<>();
         for (String url : storyUrls) {
             try {
                 stories.add(new FictionHuntStory(url));
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                storyProcessed(); // Call this, since we have "processed" a story by failing to download it.
+                Util.log(e.getMessage());
             }
         }
         // Download and save the stories.
-        System.out.printf(C.DL_STORIES_FROM_SITE, SITE);
+        Util.logf(C.DL_STORIES_FROM_SITE, SITE);
         stories.forEach(this::downloadStory);
     }
 
@@ -51,8 +53,10 @@ public class FictionHuntDL extends ParsingDL {
     protected void downloadStory(Story story) {
         if (((FictionHuntStory) story).isOnFfn()) {
             // Story still on FanFiction.net, which is preferable, so we'll add a FFN URL so it gets downloaded later.
-            System.out.printf(C.FH_STORY_ON_FFN, story.getTitle());
+            Util.logf(C.FH_STORY_ON_FFN, story.getTitle());
             FictionDL.parser.addFfnUrl(String.format(C.FFN_URL, story.getStoryId()));
+            // It isn't appropriate to call .storyProcessed() here since FanFictionDL will download the story and
+            // call it later.
         } else {
             // Just do the normal thing.
             super.downloadStory(story);

@@ -17,17 +17,29 @@ public abstract class ParsingDL {
     protected ArrayList<String> storyUrls;
     // CSS selector to extract chapter text from original HTML.
     protected String chapTextSelector;
+    // The FictionDL instance which owns this downloader.
+    private FictionDL fictionDL;
 
     /**
      * Create a new ParsingDL.
+     * @param fictionDL        FictionDL object which owns this downloader.
      * @param storyUrls        List of story URLs to be downloaded
      * @param chapTextSelector CSS selector used to extract chapter text from original chapter HTMLs. (If all of the
      *                         chapter's text cannot be extracted with one CSS selector, the subclass will need to pass
      *                         null for this and override the extractChapText() method.)
      */
-    protected ParsingDL(ArrayList<String> storyUrls, String chapTextSelector) {
+    protected ParsingDL(FictionDL fictionDL, ArrayList<String> storyUrls, String chapTextSelector) {
+        this.fictionDL = fictionDL;
         this.storyUrls = storyUrls;
         this.chapTextSelector = chapTextSelector;
+    }
+
+    /**
+     * Called each time a story has finished being processed (either has finished downloading or has failed to be
+     * downloaded).
+     */
+    protected final void storyProcessed() {
+        fictionDL.incrProgress();
     }
 
     /**
@@ -38,26 +50,32 @@ public abstract class ParsingDL {
     /**
      * Download the chapters of a story, get their titles, extract their content, then process everything and save the
      * story as an ePUB file.
+     * <p>
+     * For subclasses which choose to override this method: Make sure that if a story has been processed to the point
+     * where it won't be touched again, the .storyProcessed() method is called. This call would not be necessary if, for
+     * example, a story is passed to a different downloader which would call .storyProcessed() itself.
      * @param story Story to download and save.
      */
     protected void downloadStory(Story story) {
-        System.out.printf(C.DL_CHAPS_FOR, story.getTitle());
+        Util.logf(C.DL_CHAPS_FOR, story.getTitle());
         // Download the chapters and fill in their titles.
         ArrayList<Chapter> chapters = downloadChapters(story);
         // Make sure we got all of the chapters. If we didn't we won't continue.
         if (story.getChapterUrls().size() != chapters.size()) {
-            System.out.println(C.SOME_CHAPS_FAILED);
+            Util.log(C.SOME_CHAPS_FAILED);
+            storyProcessed(); // Update progress.
             return;
         }
         // Extract the chapter text and sanitize it so that the chapters are in the expected xhtml format for ePUB.
-        System.out.println(C.SANITIZING_CHAPS);
+        Util.log(C.SANITIZING_CHAPS);
         for (Chapter chapter : chapters) chapter.content = sanitizeChapter(extractChapText(chapter));
         // Associate the chapters with the story.
         story.setChapters(chapters);
         // Save the story as an ePUB file.
-        System.out.printf(C.SAVING_STORY);
+        Util.logf(C.SAVING_STORY);
         new EpubCreator(story).makeEpub(FictionDL.outPath);
-        System.out.println(C.DONE + "\n");
+        Util.log(C.DONE + "\n");
+        storyProcessed(); // Update progress.
     }
 
     /**

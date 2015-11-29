@@ -29,7 +29,7 @@ public class FileParser {
     }
 
     private void initialize(File storiesFile) {
-        System.out.printf(C.PARSE_FILE);
+        Util.logf(C.PARSE_FILE);
         // Try to read lines from file into the url list
         try (BufferedReader br = new BufferedReader(new FileReader(storiesFile))) {
             String line = br.readLine();
@@ -40,14 +40,14 @@ public class FileParser {
                 } catch (IllegalStateException e) {
                     // If we couldn't match one of the lines, just say which one in the output (or silently skip it if
                     // it's a blank line.
-                    if (!line.trim().isEmpty()) System.out.printf(C.PROCESS_LINE_FAILED, line);
+                    if (!line.trim().isEmpty()) Util.logf(C.PROCESS_LINE_FAILED, line);
                 }
                 line = br.readLine();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(C.DONE);
+        Util.log(C.DONE);
     }
 
     /**
@@ -98,5 +98,14 @@ public class FileParser {
      */
     public ArrayList<String> getSiyeUrls() {
         return siyeUrls;
+    }
+
+    /**
+     * Total number of stories which are to be downloaded across all sites. Note that it is best to find this value
+     * right after this FileParser is initialized since counts in individual lists may change later.
+     * @return Number of stories.
+     */
+    public int getTotalNumStories() {
+        return fictionHuntUrls.size() + ffnUrls.size() + siyeUrls.size();
     }
 }
