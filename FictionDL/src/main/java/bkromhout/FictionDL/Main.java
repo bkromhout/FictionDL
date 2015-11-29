@@ -2,16 +2,20 @@ package bkromhout.FictionDL;
 
 import bkromhout.FictionDL.Gui.Gui;
 import javafx.application.Application;
+import javafx.application.Platform;
 import org.apache.commons.cli.*;
 
 /**
  * Just a simple entry point class for the command line app.
  */
 public class Main {
+    // Are we running with a GUI?
+    private static boolean isGui = false;
 
     public static void main(String[] args) {
         // Check for GUI argument.
         if (args.length == 1 && args[0].equals("-gui")) {
+            isGui = true;
             Application.launch(Gui.class);
             return;
         }
@@ -39,6 +43,15 @@ public class Main {
         } catch (IllegalArgumentException e) {
             System.out.printf(C.INVALID_PATH, e.getMessage());
         }
+    }
+
+    /**
+     * Exit the program, using System.exit() if running in CLI mode and Platform.exit() if running in GUI mode.
+     * @param returnCode The return code to use.
+     */
+    public static void exit(int returnCode) {
+        if (isGui) Platform.exit();
+        else System.exit(returnCode);
     }
 
     /**

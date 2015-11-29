@@ -19,7 +19,7 @@ import java.io.PrintStream;
 /**
  * Controller class for the GUI.
  */
-public class FDLGuiController {
+public class GuiController {
     // The gui which owns this controller.
     private Gui gui;
 

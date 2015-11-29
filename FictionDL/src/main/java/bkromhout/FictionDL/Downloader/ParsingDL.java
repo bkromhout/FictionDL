@@ -22,12 +22,14 @@ public abstract class ParsingDL {
 
     /**
      * Create a new ParsingDL.
+     * @param fictionDL        FictionDL object which owns this downloader.
      * @param storyUrls        List of story URLs to be downloaded
      * @param chapTextSelector CSS selector used to extract chapter text from original chapter HTMLs. (If all of the
      *                         chapter's text cannot be extracted with one CSS selector, the subclass will need to pass
      *                         null for this and override the extractChapText() method.)
      */
-    protected ParsingDL(ArrayList<String> storyUrls, String chapTextSelector) {
+    protected ParsingDL(FictionDL fictionDL, ArrayList<String> storyUrls, String chapTextSelector) {
+        this.fictionDL = fictionDL;
         this.storyUrls = storyUrls;
         this.chapTextSelector = chapTextSelector;
     }

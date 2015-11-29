@@ -15,10 +15,11 @@ public class FictionHuntDL extends ParsingDL {
 
     /**
      * Create a new FictionHunt downloader.
-     * @param urls List of FictionHunt URLs.
+     * @param fictionDL FictionDL object which owns this downloader.
+     * @param urls      List of FictionHunt URLs.
      */
-    public FictionHuntDL(ArrayList<String> urls) {
-        super(urls, "div.text");
+    public FictionHuntDL(FictionDL fictionDL, ArrayList<String> urls) {
+        super(fictionDL, urls, "div.text");
     }
 
     /**

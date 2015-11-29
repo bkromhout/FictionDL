@@ -2,6 +2,7 @@ package bkromhout.FictionDL.Downloader;
 
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Chapter;
+import bkromhout.FictionDL.FictionDL;
 import bkromhout.FictionDL.Story.SiyeStory;
 import org.jsoup.nodes.Element;
 
@@ -18,10 +19,11 @@ public class SiyeDL extends ParsingDL {
 
     /**
      * Create a new SIYE downloader.
-     * @param urls List of SIYE URLs.
+     * @param fictionDL FictionDL object which owns this downloader.
+     * @param urls      List of SIYE URLs.
      */
-    public SiyeDL(ArrayList<String> urls) {
-        super(urls, null);
+    public SiyeDL(FictionDL fictionDL, ArrayList<String> urls) {
+        super(fictionDL, urls, null);
     }
 
     /**

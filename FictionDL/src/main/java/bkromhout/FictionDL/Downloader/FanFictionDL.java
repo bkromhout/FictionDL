@@ -2,6 +2,7 @@ package bkromhout.FictionDL.Downloader;
 
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Chapter;
+import bkromhout.FictionDL.FictionDL;
 import bkromhout.FictionDL.Story.FanFictionStory;
 import org.jsoup.nodes.Element;
 
@@ -18,10 +19,11 @@ public class FanFictionDL extends ParsingDL {
 
     /**
      * Create a new FanFiction.net downloader.
-     * @param urls List of FanFiction.net URLs.
+     * @param fictionDL FictionDL object which owns this downloader.
+     * @param urls      List of FanFiction.net URLs.
      */
-    public FanFictionDL(ArrayList<String> urls) {
-        super(urls, "div#storytext");
+    public FanFictionDL(FictionDL fictionDL, ArrayList<String> urls) {
+        super(fictionDL, urls, "div#storytext");
     }
 
     /**

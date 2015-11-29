@@ -43,12 +43,16 @@ public class FictionDL {
      * Create a new FictionDL to execute the program logic.
      * @param inputFilePath Path to input file.
      * @param outputDirPath Path to output directory.
+     * @param task          FictionDLTask, which won't be null if this FictionDL is being run from a GUI.
      * @throws IllegalArgumentException if either of the paths cannot be resolved.
      */
     public FictionDL(String inputFilePath, String outputDirPath, FictionDLTask task) throws IllegalArgumentException {
-        if (inputFilePath == null) throw new IllegalArgumentException("[No input file path!]");
-        // Store this task for later.
+        // Store the task (it might be null, that's fine).
         this.task = task;
+        // If we're running from a GUI, go ahead and set the progress bar to indeterminate.
+        if (task != null) task.updateProgress(-1, 0);
+        // Make sure we have an input path.
+        if (inputFilePath == null) throw new IllegalArgumentException("[No input file path!]");
         // Try to get a file from the input file path.
         inputFile = Util.tryGetFile(inputFilePath);
         // Figure out the output directory.
@@ -79,11 +83,13 @@ public class FictionDL {
      * @param parser FileParser which has successfully parsed input file.
      */
     private void getStories(FileParser parser) {
+        // Set progress bar to 0.
+        if (task != null) task.updateProgress(numStoriesProcessed, totalNumStories);
         /*
         Create a FictionHunt downloader and download stories.
           */
         if (!parser.getFictionHuntUrls().isEmpty()) {
-            FictionHuntDL fictionHuntDL = new FictionHuntDL(parser.getFictionHuntUrls());
+            FictionHuntDL fictionHuntDL = new FictionHuntDL(this, parser.getFictionHuntUrls());
             fictionHuntDL.download();
             System.out.printf(C.FINISHED_WITH_SITE, FictionHuntDL.SITE);
         }
@@ -91,7 +97,7 @@ public class FictionDL {
         Create a FanFiction.net downloader and download stories.
           */
         if (!parser.getFfnUrls().isEmpty()) {
-            FanFictionDL fanFictionDL = new FanFictionDL(parser.getFfnUrls());
+            FanFictionDL fanFictionDL = new FanFictionDL(this, parser.getFfnUrls());
             fanFictionDL.download();
             System.out.printf(C.FINISHED_WITH_SITE, FanFictionDL.SITE);
         }
@@ -99,7 +105,7 @@ public class FictionDL {
         Create a SIYE downloader and download stories.
           */
         if (!parser.getSiyeUrls().isEmpty()) {
-            SiyeDL siyeDL = new SiyeDL(parser.getSiyeUrls());
+            SiyeDL siyeDL = new SiyeDL(this, parser.getSiyeUrls());
             siyeDL.download();
             System.out.printf(C.FINISHED_WITH_SITE, SiyeDL.SITE);
         }

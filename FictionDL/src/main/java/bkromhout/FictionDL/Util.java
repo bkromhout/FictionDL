@@ -97,22 +97,6 @@ public class Util {
     }
 
     /**
-     * Save a file at the specified path with the specified data. Will create the file if it doesn't exist and overwrite
-     * it if it does.
-     * @param filePath Path at which to save the file. It is assumed that the file name is legal.
-     * @param data     Data to save to the file.
-     */
-    public static void saveFile(Path filePath, byte[] data) {
-        try {
-            Files.write(filePath, data);
-        } catch (IOException e) {
-            System.out.printf(C.SAVE_FILE_FAILED, filePath.toString());
-            e.printStackTrace();
-            System.exit(1);
-        }
-    }
-
-    /**
      * Closes any of the given tags in the given html string.
      * @param tag The type of tag, such as hr, or br.
      * @return A string with all of the given tags closed.
