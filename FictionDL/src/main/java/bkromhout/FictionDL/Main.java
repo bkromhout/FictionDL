@@ -14,7 +14,7 @@ public class Main {
 
     public static void main(String[] args) {
         // Check for GUI argument.
-        if (args.length == 1 && args[0].equals("-gui")) {
+        if (args.length == 0 || (args.length == 1 && args[0].equals("-gui"))) {
             isGui = true;
             Application.launch(Gui.class);
             return;

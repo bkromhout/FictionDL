@@ -12,7 +12,7 @@ jar.deleteAllActions()
 shadowJar {
     classifier = ''
     manifest {
-        attributes 'Gui-Class': 'bkromhout.FictionDL.Main',
+        attributes 'Main-Class': 'bkromhout.FictionDL.Main',
                    'Implementation-Title': 'FictionDL',
                    'Implementation-Version': version
     }
