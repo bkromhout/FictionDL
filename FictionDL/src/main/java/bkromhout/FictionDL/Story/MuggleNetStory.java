@@ -1,6 +1,16 @@
 package bkromhout.FictionDL.Story;
 
+import bkromhout.FictionDL.C;
+import bkromhout.FictionDL.Downloader.MuggleNetDL;
+import bkromhout.FictionDL.Util;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.parser.Tag;
+import org.jsoup.select.Elements;
+
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Model object for a MuggleNet story. Despite the word "model", this is not an object with a light initialization cost,
@@ -17,9 +27,81 @@ public class MuggleNetStory extends Story {
     }
 
     /**
-     * Populate fields.
+     * Populate this model's fields.
+     * @param url A story/chapter URL.
+     * @throws IOException Throw for many reasons, but the net result is that we can't build a story model for this.
      */
     private void populateInfo(String url) throws IOException {
-        
+        // Get story ID first.
+        storyId = parseStoryId(url, C.MN_SID_REGEX, 1);
+        // Normalize the URL, since there are many valid MN URL formats.
+        url = String.format(C.MN_S_URL, storyId);
+        // Get the story page in order to parse the story info.
+        Document infoDoc = Util.downloadHtml(url);
+        // Make sure that we got a Document and that this is a valid story.
+        if (infoDoc == null || infoDoc.select("div.errorText").first() != null)
+            throw new IOException(String.format(C.STORY_DL_FAILED, MuggleNetDL.SITE, storyId));
+        // Get the element that has the title and author of the story in it.
+        Elements taElem = infoDoc.select("div#pagetitle a");
+        if (taElem == null) throw new IOException(String.format(C.STORY_DL_FAILED, MuggleNetDL.SITE, storyId));
+        // Get the title.
+        title = taElem.first().html().trim();
+        // Get the author.
+        author = taElem.last().html().trim();
+        // Get the element that has the details in it, and the detail label span element.
+        Element details = infoDoc.select("div.content").first();
+        if (details == null) throw new IOException(String.format(C.STORY_DL_FAILED, MuggleNetDL.SITE, storyId));
+        Elements labels = details.select("span.label");
+        // Get summary.
+        summary = makeDetailDivForLabel(details, labels, 0).html().trim();
+        // Get rating.
+
+        // Get fic type (categories).
+
+        // Get characters. Ignore if "None".
+
+        // Get warnings.
+
+        // Get series. Ignore if "None".
+
+        // Get chapter count to generate chapter URLs.
+
+        // Get status.
+
+        // Get word count.
+
+        // Get date published.
+
+        // Get date last updated.
+    }
+
+    /**
+     * Return a new div element which contains the child nodes from the parent that correspond to a particular label
+     * element.
+     * @param parent   Element to copy nodes from.
+     * @param labels   List of label elements from the parent.
+     * @param labelIdx Index of label (in labels, not parent!!) which we want to make a div for.
+     * @return A new div element, or null if the parameters passed aren't valid.
+     */
+    private Element makeDetailDivForLabel(Element parent, Elements labels, int labelIdx) {
+        // Parameter checks.
+        if (parent == null || labelIdx < 0 || labelIdx >= labels.size()) return null;
+        // Copy parent's child nodes.
+        List<Node> nodeCopies = parent.childNodesCopy();
+        // Figure out start and end indices for copying nodes from parent based on the index of labels[labelIdx] in
+        // the parent.
+        // Start index should be
+        int startIdx = nodeCopies.indexOf(labels.get(labelIdx)) + 1;
+        int endIdx = labelIdx != labels.size() - 1 ? nodeCopies.indexOf(labels.get(labelIdx + 1)) : nodeCopies.size();
+        // Create the new div.
+        Element newDiv = new Element(Tag.valueOf("div"), "");
+        // Loop through the copied nodes, starting at the startIdx and up to but not including the endIdx, and append
+        // those nodes to the new div.
+        for (int i = startIdx; i < endIdx; i++) {
+            // TODO don't append br's!!
+            newDiv.appendChild(nodeCopies.get(i));
+        }
+        // Return the new div.
+        return newDiv;
     }
 }

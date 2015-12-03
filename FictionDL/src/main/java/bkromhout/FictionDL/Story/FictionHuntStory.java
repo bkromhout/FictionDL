@@ -13,8 +13,6 @@ import java.io.IOException;
  * cost, as it accesses the internet to retrieve story information.
  */
 public class FictionHuntStory extends Story {
-    // Story URL.
-    private String url;
     // If the story is still available on FanFiction.net, get its story ID and use p0ody-files to download it.
     private boolean isOnFfn = false;
 
@@ -23,14 +21,15 @@ public class FictionHuntStory extends Story {
      * @param url URL of the story this model represents.
      */
     public FictionHuntStory(String url) throws IOException {
-        this.url = url;
-        populateInfo();
+        populateInfo(url);
     }
 
     /**
-     * Populate fields.
+     * Populate this model's fields.
+     * @param url A story/chapter URL.
+     * @throws IOException Throw for many reasons, but the net result is that we can't build a story model for this.
      */
-    private void populateInfo() throws IOException {
+    private void populateInfo(String url) throws IOException {
         // Get FictionHunt story ID.
         storyId = parseStoryId(url, C.FH_SID_REGEX, 1);
         // Get the HTML at the url we've specified to use as the entry point.
@@ -66,7 +65,7 @@ public class FictionHuntStory extends Story {
         // Get status (it isn't listed if it's incomplete, so just check the length of the details array).
         status = details.length > 9 ? C.STAT_C : C.STAT_I;
         // Generate chapter URLs.
-        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.FH_CHAP_URL, storyId, i + 1));
+        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.FH_C_URL, storyId, i + 1));
     }
 
     /**
@@ -78,7 +77,7 @@ public class FictionHuntStory extends Story {
         // FictionHunt has done a very handy thing with their URLs, their story IDs correspond to the original FFN
         // story IDs, which makes generating an FFN link easy to do. First, create a FFN link and download the
         // resulting page.
-        Document ffnDoc = Util.downloadHtml(String.format(C.FFN_URL, storyId));
+        Document ffnDoc = Util.downloadHtml(String.format(C.FFN_S_URL, storyId));
         if (ffnDoc == null) {
             // It really doesn't matter if we can't get the page from FFN since we can still get it from FictionHunt.
             Util.log(C.FH_FFN_CHECK_FAILED);

@@ -69,6 +69,14 @@ public class C {
             "never hurts to try!" + LOG_RED;
 
     /*
+    Supported site domains.
+     */
+    public static final String HOST_FFN = "fanfiction.net";
+    public static final String HOST_FH = "fictionhunt.com";
+    public static final String HOST_SIYE = "siye.co.uk";
+    public static final String HOST_MN = "fanfiction.mugglenet.com";
+
+    /*
     Link template strings.
      */
     /**
@@ -79,32 +87,37 @@ public class C {
     /**
      * FictionHunt story chapter link, just needs the story ID and chapter number substituted into it.
      */
-    public static final String FH_CHAP_URL = "http://fictionhunt.com/read/%s/%d";
+    public static final String FH_C_URL = "http://fictionhunt.com/read/%s/%d";
 
     /**
-     * FanFiction.net story link, just needs the story ID string substituted into it.
+     * FFN story link, just needs the story ID string substituted into it.
      */
-    public static final String FFN_URL = "https://www.fanfiction.net/s/%s/1";
+    public static final String FFN_S_URL = "https://www.fanfiction.net/s/%s/1";
 
     /**
      * FFN story chapter link, just needs the story ID string and chapter number substituted into it.
      */
-    public static final String FFN_CHAP_URL = "https://www.fanfiction.net/s/%s/%d";
-
-    /**
-     * SIYE first chapter link, used as an entry point, just needs the story ID string substituted into it.
-     */
-    public static final String SIYE_INFO_URL = "http://siye.co.uk/viewstory.php?sid=%s&chapter=1";
+    public static final String FFN_C_URL = "https://www.fanfiction.net/s/%s/%d";
 
     /**
      * SIYE author page link, just needs relative author link string substituted into it.
      */
-    public static final String SIYE_AUTHOR_URL = "http://siye.co.uk/%s";
+    public static final String SIYE_A_URL = "http://siye.co.uk/%s";
 
     /**
      * SIYE story chapter link, just needs the story ID string and chapter number substituted into it.
      */
-    public static final String SIYE_CHAP_URL = "http://siye.co.uk/viewstory.php?sid=%s&chapter=%d";
+    public static final String SIYE_C_URL = "http://siye.co.uk/viewstory.php?sid=%s&chapter=%d";
+
+    /**
+     * MuggleNet story info link, just needs story ID substituted into it.
+     */
+    public static final String MN_S_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s&warning=5";
+
+    /**
+     * MuggleNet chapter link, needs story ID and chapter number substituted into it.
+     */
+    public static final String MN_C_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s&chapter=%d&warning=5";
 
     /*
     RegEx Strings
@@ -120,16 +133,6 @@ public class C {
     public static final String FH_SID_REGEX = "\\/read\\/(\\d*)";
 
     /**
-     * Regex to extract story ID from FanFiction.net URL. Use .find() then .group(1).
-     */
-    public static final String FFN_SID_REGEX = "\\/s\\/(\\d*)";
-
-    /**
-     * Regex that matches a FanFiction.net author link of the format "/u/[whatever]"
-     */
-    public static final String FFN_AUTHOR_LINK_REGEX = "\\/u\\/.*";
-
-    /**
      * Regex to extract the story ID. Use .find() then .group(1).
      */
     public static final String SIYE_SID_REGEX = "sid=(\\d*)";
@@ -140,14 +143,29 @@ public class C {
     public static final String SIYE_CHAP_TITLE_REGEX = "(\\d+\\.\\s)(.*)";
 
     /**
+     * Regex to extract story ID from FanFiction.net URL. Use .find() then .group(1).
+     */
+    public static final String FFN_SID_REGEX = "\\/s\\/(\\d*)";
+
+    /**
+     * Regex that matches a FanFiction.net author link of the format "/u/[whatever]"
+     */
+    public static final String FFN_AUTHOR_LINK_REGEX = "\\/u\\/.*";
+
+    /**
      * Regex to extract FFN chapter title without the leading "#. " part. Group 2 is the chapter title.
      */
     public static final String FFN_CHAP_TITLE_REGEX = SIYE_CHAP_TITLE_REGEX;
 
     /**
-     * Regex to extract MuggleNet chapter title... TODO this.
+     * Regex to extract MuggleNet story ID from a MuggleNet URL. Use .find() then .group(1).
      */
-    public static final String MN_CHAP_TITLE_REGEX = ;
+    public static final String MN_SID_REGEX = SIYE_SID_REGEX;
+
+    /**
+     * Regex to extract MuggleNet chapter title without the leading "#. " part. Group 2 is the chapter title.
+     */
+    public static final String MN_CHAP_TITLE_REGEX = SIYE_CHAP_TITLE_REGEX;
 
     /**
      * Regex to find all ampersands in a piece of HTML which are actual ampersands and not part of a character code.
@@ -169,6 +187,7 @@ public class C {
     Title Page Part Names (AKA, details for a fic)
      */
     public static final String SUMMARY = "Summary";
+    public static final String SERIES = "Series";
     public static final String FIC_TYPE = "Fic Type";
     public static final String WARNINGS = "Warnings";
     public static final String RATING = "Rated";
@@ -197,11 +216,6 @@ public class C {
      * Used for incomplete stories.
      */
     public static final String STAT_I = "Incomplete";
-
-    /**
-     * Used for abandoned stories.
-     */
-    public static final String STAT_A = "Abandoned";
 
     /**
      * For FictionHunt stories, used in place of a summary if we can't find the story on the first page of search

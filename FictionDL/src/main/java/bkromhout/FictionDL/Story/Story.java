@@ -1,6 +1,5 @@
 package bkromhout.FictionDL.Story;
 
-import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Chapter;
 
 import java.util.ArrayList;
@@ -19,6 +18,8 @@ public class Story {
     protected String author;
     // Story summary.
     protected String summary;
+    // Story series.
+    protected String series;
     // Story type.
     protected String ficType;
     // Story warnings.
@@ -85,6 +86,14 @@ public class Story {
      */
     public String getSummary() {
         return summary;
+    }
+
+    /**
+     * Get this story's series.
+     * @return Story series.
+     */
+    public String getSeries() {
+        return series;
     }
 
     /**
@@ -162,7 +171,7 @@ public class Story {
     }
 
     /**
-     * Get this story's status ("Complete", "Incomplete", "Abandoned", etc.).
+     * Get this story's status ("Complete", "Incomplete", etc.).
      * @return Story status.
      */
     public String getStatus() {

@@ -27,6 +27,7 @@ public class SiyeDL extends ParsingDL {
     /**
      * Download the stories whose URLs were passed to this instance of the downloader upon creation..
      */
+    @Override
     public void download() {
         Util.logf(C.STARTING_SITE_DL_PROCESS, SITE);
         Util.log(C.SIYE_SLOW); // Inform the user that SIYE is slow and has crappy HTML structure.
@@ -55,7 +56,7 @@ public class SiyeDL extends ParsingDL {
         // Parse chapter titles from chapter HTMLs.
         for (Chapter chapter : chapters) {
             // Try to find a <select> element on the page that has chapter titles.
-            Element titleElement = chapter.html.select("select[name=\"chapter\"] option[selected]").first();
+            Element titleElement = chapter.html.select("select[name=\"chapter\"] > option[selected]").first();
             // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
             // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
             if (titleElement != null) {
@@ -89,17 +90,5 @@ public class SiyeDL extends ParsingDL {
         // Then, we have to get the actual chapter text itself.
         chapterText.append(chapter.html.select("td[colspan=\"2\"] span").first().html());
         return String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText.toString());
-    }
-
-    /**
-     * Takes chapter HTML from a SIYE chapter and cleans it up, before putting it into the xhtml format required for an
-     * ePUB.
-     * @param chapterString Chapter's text content HTML for a FictionHunt story chapter.
-     * @return Cleaned HTML.
-     */
-    @Override
-    protected String sanitizeChapter(String chapterString) {
-        // TODO strip extra <br>s first!
-        return chapterString;
     }
 }

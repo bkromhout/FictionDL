@@ -115,7 +115,7 @@ public class Util {
     }
 
     /**
-     * Un-Esacpe ampersands, because epublib is completely idiotic and doesn't check to see if an ampersand is part of a
+     * Un-Escape ampersands, because epublib is completely idiotic and doesn't check to see if an ampersand is part of a
      * character code, it just escapes it again.
      * @param in String to un-escape.
      * @return Un-escaped string.
@@ -125,14 +125,29 @@ public class Util {
     }
 
     /**
+     * Removes any instance of the Unicode replacement character, U+FFFD. Sadly, some sites appear to be littered with
+     * this character, indicating that the author's original content was likely not correctly converted from their
+     * original character encoding to the site's character encoding :( I think the best choice here is usually to
+     * replace it with a non-breaking space, U+00A0.
+     * @param in String to fix.
+     * @return Fixed string.
+     */
+    public static String removeFFFDChars(String in) {
+        return in.replace('\uFFFD', '\u00A0');
+    }
+
+    /**
      * Converts characters that, while valid in Windows-1252 are control characters in Unicode, to their corresponding
-     * Unicode representations. Also escaptes any ampersands not already part of a character code.
+     * Unicode representations. Also escapes any ampersands not already part of a character code, and converts any
+     * Unicode replacement characters to non-breaking spaces.
      * @param in The string to escape.
      * @return The escaped string.
      */
     public static String convertWin1252Chars(String in) {
-        return escapeAmps(in).replace("\u0096", "–").replace("\u0097", "—").replace("\u0091", "‘").replace("\u0092",
-                "’").replace("\u0093", "“").replace("\u0094", "”").replace("\u0095", "•").replace("\u0085", "…");
+        in = removeFFFDChars(in);
+        in = escapeAmps(in);
+        return in.replace('\u0096', '–').replace('\u0097', '—').replace('\u0091', '‘').replace('\u0092', '’').replace(
+                '\u0093', '“').replace('\u0094', '”').replace('\u0095', '•').replace('\u0085', '…');
     }
 
     /**
@@ -142,7 +157,7 @@ public class Util {
      */
     public static String ensureLegalFilename(String in) {
         // Remove problematic characters.
-        String out = in.replace("<", "").replace(">", "").replace(":", "-").replace("\"", "").replace("/", "").replace(
+        String out = in.replace("<", "").replace(">", "").replace(":", " -").replace("\"", "").replace("/", "").replace(
                 "\\", "").replace("|", "-").replace("?", "").replace("*", "").replace("\0", "");
         // Ensure that the end of the filename isn't a space or period for Windows' sake.
         out = out.trim();

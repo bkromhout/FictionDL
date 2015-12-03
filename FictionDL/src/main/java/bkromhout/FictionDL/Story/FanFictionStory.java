@@ -14,27 +14,25 @@ import java.io.IOException;
  * cost, as it accesses the internet to retrieve story information.
  */
 public class FanFictionStory extends Story {
-    // Story URL.
-    private String url;
 
     /**
      * Create a new FanFictionStory object based off of a URL.
      * @param url URL of the story this model represents.
      */
     public FanFictionStory(String url) throws IOException {
-        this.url = url;
-        populateInfo();
+        populateInfo(url);
     }
 
     /**
      * Populate this model's fields.
+     * @param url A story/chapter URL.
      * @throws IOException Throw for many reasons, but the net result is that we can't build a story model for this.
      */
-    private void populateInfo() throws IOException {
+    private void populateInfo(String url) throws IOException {
         // Get story ID first.
         storyId = parseStoryId(url, C.FFN_SID_REGEX, 1);
         // Normalize the URL, since there are many valid FFN URL formats.
-        url = String.format(C.FFN_URL, storyId);
+        url = String.format(C.FFN_S_URL, storyId);
         // Get the first chapter in order to parse the story info.
         Document infoDoc = Util.downloadHtml(url);
         // Make sure that we got a Document and that this is a valid story.
@@ -73,7 +71,7 @@ public class FanFictionStory extends Story {
         // Get the status.
         status = findDetailsStringIdx(details, "Status: Complete") != -1 ? C.STAT_C : C.STAT_I;
         // Generate chapter URLs.
-        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.FFN_CHAP_URL, storyId, i + 1));
+        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.FFN_C_URL, storyId, i + 1));
     }
 
     /**

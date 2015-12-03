@@ -96,6 +96,9 @@ public final class EpubCreator {
         // Add the summary.
         String detail = story.getSummary();
         if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.SUMMARY, detail));
+        // Add the series.
+        detail = story.getSeries();
+        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.SERIES, detail));
         // Add the fic type.
         detail = story.getFicType();
         if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.FIC_TYPE, detail));

@@ -25,6 +25,7 @@ public class FictionHuntDL extends ParsingDL {
     /**
      * Download the stories whose URLs were passed to this instance of the downloader upon creation.
      */
+    @Override
     public void download() {
         Util.logf(C.STARTING_SITE_DL_PROCESS, SITE);
         // Create story models from URLs.
@@ -54,7 +55,7 @@ public class FictionHuntDL extends ParsingDL {
         if (((FictionHuntStory) story).isOnFfn()) {
             // Story still on FanFiction.net, which is preferable, so we'll add a FFN URL so it gets downloaded later.
             Util.logf(C.FH_STORY_ON_FFN, story.getTitle());
-            FictionDL.parser.addFfnUrl(String.format(C.FFN_URL, story.getStoryId()));
+            FictionDL.parser.addFfnUrl(String.format(C.FFN_S_URL, story.getStoryId()));
             // It isn't appropriate to call .storyProcessed() here since FanFictionDL will download the story and
             // call it later.
         } else {

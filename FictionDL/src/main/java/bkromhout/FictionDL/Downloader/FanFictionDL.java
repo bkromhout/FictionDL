@@ -27,6 +27,7 @@ public class FanFictionDL extends ParsingDL {
     /**
      * Download the stories whose URLs were passed to this instance of the downloader upon creation.
      */
+    @Override
     public void download() {
         Util.logf(C.STARTING_SITE_DL_PROCESS, SITE);
         // Create story models from URLs.

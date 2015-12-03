@@ -2,6 +2,7 @@ package bkromhout.FictionDL;
 
 import bkromhout.FictionDL.Downloader.FanFictionDL;
 import bkromhout.FictionDL.Downloader.FictionHuntDL;
+import bkromhout.FictionDL.Downloader.MuggleNetDL;
 import bkromhout.FictionDL.Downloader.SiyeDL;
 import javafx.concurrent.Task;
 
@@ -13,7 +14,7 @@ import java.nio.file.Path;
  * <p>
  * Originally only supported FictionHunt, but has been expanded to support other sites now as well.
  * <p>
- * Will download stories as ePUB if possible or will scrape the story HTML and generate an ePUB using that.
+ * Scrapes the story HTML and generates an ePUB using that.
  */
 public class FictionDL {
     // Path to input file.
@@ -86,7 +87,7 @@ public class FictionDL {
         // Set progress bar to 0.
         if (task != null) task.updateProgress(numStoriesProcessed, totalNumStories);
         /*
-        Create a FictionHunt downloader and download stories.
+        Download FictionHunt stories.
           */
         if (!parser.getFictionHuntUrls().isEmpty()) {
             FictionHuntDL fictionHuntDL = new FictionHuntDL(this, parser.getFictionHuntUrls());
@@ -94,7 +95,7 @@ public class FictionDL {
             Util.logf(C.FINISHED_WITH_SITE, FictionHuntDL.SITE);
         }
         /*
-        Create a FanFiction.net downloader and download stories.
+        Download FanFiction.net stories.
           */
         if (!parser.getFfnUrls().isEmpty()) {
             FanFictionDL fanFictionDL = new FanFictionDL(this, parser.getFfnUrls());
@@ -102,12 +103,20 @@ public class FictionDL {
             Util.logf(C.FINISHED_WITH_SITE, FanFictionDL.SITE);
         }
         /*
-        Create a SIYE downloader and download stories.
+        Download SIYE stories.
           */
         if (!parser.getSiyeUrls().isEmpty()) {
             SiyeDL siyeDL = new SiyeDL(this, parser.getSiyeUrls());
             siyeDL.download();
             Util.logf(C.FINISHED_WITH_SITE, SiyeDL.SITE);
+        }
+        /*
+        Download MuggleNet stories.
+         */
+        if (!parser.getMnUrls().isEmpty()) {
+            MuggleNetDL muggleNetDL = new MuggleNetDL(this, parser.getMnUrls());
+            muggleNetDL.download();
+            Util.logf(C.FINISHED_WITH_SITE, MuggleNetDL.SITE);
         }
     }
 

@@ -20,6 +20,8 @@ public class FileParser {
     private ArrayList<String> ffnUrls = new ArrayList<>();
     // SIYE URLs.
     private ArrayList<String> siyeUrls = new ArrayList<>();
+    // MuggleNet URLs.
+    private ArrayList<String> mnUrls = new ArrayList<>();
 
     /**
      * Parse the file, populating the various URL lists for the different sites.
@@ -62,9 +64,10 @@ public class FileParser {
         String hostString = hostMatcher.group(2).toLowerCase();
         // ...then add it to it, so long as it isn't a repeat. (Note that since FFN has so many different link styles,
         // it's totally possible for the same story to get added twice. Maybe I'll add some normalization code later.)
-        if (hostString.contains("fictionhunt.com") && !fictionHuntUrls.contains(line)) fictionHuntUrls.add(line);
-        else if (hostString.contains("fanfiction.net") && !ffnUrls.contains(line)) ffnUrls.add(line);
-        else if (hostString.contains("siye.co.uk") && !siyeUrls.contains(line)) siyeUrls.add(line);
+        if (hostString.contains(C.HOST_FH) && !fictionHuntUrls.contains(line)) fictionHuntUrls.add(line);
+        else if (hostString.contains(C.HOST_FFN) && !ffnUrls.contains(line)) ffnUrls.add(line);
+        else if (hostString.contains(C.HOST_SIYE) && !siyeUrls.contains(line)) siyeUrls.add(line);
+        else if (hostString.contains(C.HOST_MN) && !mnUrls.contains(line)) mnUrls.add(line);
     }
 
     /**
@@ -101,11 +104,19 @@ public class FileParser {
     }
 
     /**
+     * Get the list of MuggleNet URLs that were parsed.
+     * @return MuggleNet URLs.
+     */
+    public ArrayList<String> getMnUrls() {
+        return mnUrls;
+    }
+
+    /**
      * Total number of stories which are to be downloaded across all sites. Note that it is best to find this value
      * right after this FileParser is initialized since counts in individual lists may change later.
      * @return Number of stories.
      */
     public int getTotalNumStories() {
-        return fictionHuntUrls.size() + ffnUrls.size() + siyeUrls.size();
+        return fictionHuntUrls.size() + ffnUrls.size() + siyeUrls.size() + mnUrls.size();
     }
 }

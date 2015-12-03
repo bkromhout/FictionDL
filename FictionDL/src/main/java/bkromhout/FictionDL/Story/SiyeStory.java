@@ -5,11 +5,8 @@ import bkromhout.FictionDL.Downloader.SiyeDL;
 import bkromhout.FictionDL.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.TextNode;
 
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Model object for a SIYE story. Despite the word "model", this is not an object with a light initialization cost, as
@@ -27,8 +24,8 @@ public class SiyeStory extends Story {
 
     /**
      * Populate this model's fields.
-     * @param url A SIYE story/chapter URL.
-     * @throws IOException Thrown if there are issues connecting to SIYE
+     * @param url A story/chapter URL.
+     * @throws IOException Throw for many reasons, but the net result is that we can't build a story model for this.
      */
     private void populateInfo(String url) throws IOException {
         // Get chapter 1 HTML first.
@@ -45,7 +42,7 @@ public class SiyeStory extends Story {
         // there.
         String authorIdLink = findAuthorIdLink(infoDoc);
         // Get the HTML at the author URL.
-        Document doc = Util.downloadHtml(String.format(C.SIYE_AUTHOR_URL, authorIdLink));
+        Document doc = Util.downloadHtml(String.format(C.SIYE_A_URL, authorIdLink));
         if (doc == null) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
         // Get the story row from on the author's page.
         Element storyRow = doc.select(String.format("td tr td:has(a[href=\"viewstory.php?sid=%s\"])", storyId)).last();
@@ -84,7 +81,7 @@ public class SiyeStory extends Story {
         // Get date last updated.
         dateUpdated = details[8].replace("Updated: ", "").trim();
         // Generate chapter URLs.
-        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.SIYE_CHAP_URL, storyId, i + 1));
+        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.SIYE_C_URL, storyId, i + 1));
     }
 
     /**
@@ -98,7 +95,7 @@ public class SiyeStory extends Story {
         // Start by getting the story ID from the URL.
         storyId = parseStoryId(url, C.SIYE_SID_REGEX, 1);
         // Now download the first chapter's HTML.
-        Document chDoc = Util.downloadHtml(String.format(C.SIYE_INFO_URL, storyId));
+        Document chDoc = Util.downloadHtml(String.format(C.SIYE_C_URL, storyId, 1));
         if (chDoc == null) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
         return chDoc;
     }
