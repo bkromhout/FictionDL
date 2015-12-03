@@ -145,6 +145,11 @@ public class C {
     public static final String FFN_CHAP_TITLE_REGEX = SIYE_CHAP_TITLE_REGEX;
 
     /**
+     * Regex to extract MuggleNet chapter title... TODO this.
+     */
+    public static final String MN_CHAP_TITLE_REGEX = ;
+
+    /**
      * Regex to find all ampersands in a piece of HTML which are actual ampersands and not part of a character code.
      */
     public static final String AMP_REGEX = "[\\&](?!(#|amp;|gt;|lt;|quot;))";
