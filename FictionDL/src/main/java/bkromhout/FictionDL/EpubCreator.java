@@ -153,22 +153,7 @@ public final class EpubCreator {
      */
     private Resource createChapter(Chapter chapter, int chapterNum) {
         // Nothing too fancy here either.
-        return new Resource(cleanChapter(chapter.content).getBytes(StandardCharsets.UTF_8),
+        return new Resource(Util.cleanHtmlString(chapter.content).getBytes(StandardCharsets.UTF_8),
                 String.format("Chapter%d.xhtml", chapterNum));
-    }
-
-    /**
-     * Do some common chapter HTML cleaning tasks.
-     * @param chapterContent Chapter HTML.
-     * @return Cleaned chapter HTML.
-     */
-    private String cleanChapter(String chapterContent) {
-        // Make sure <br> and <hr> tags are closed.
-        chapterContent = Util.closeTags(chapterContent, "br");
-        chapterContent = Util.closeTags(chapterContent, "hr");
-        // Escape pesky characters.
-        chapterContent = Util.convertWin1252Chars(chapterContent);
-        // Squeaky clean!
-        return chapterContent;
     }
 }

@@ -97,6 +97,21 @@ public class Util {
     }
 
     /**
+     * Do some common chapter HTML cleaning tasks.
+     * @param chapterContent HTML string.
+     * @return Cleaned HTML string.
+     */
+    public static String cleanHtmlString(String chapterContent) {
+        // Make sure <br> and <hr> tags are closed.
+        chapterContent = closeTags(chapterContent, "br");
+        chapterContent = closeTags(chapterContent, "hr");
+        // Escape pesky characters.
+        chapterContent = convertWin1252Chars(chapterContent);
+        // Squeaky clean!
+        return chapterContent;
+    }
+
+    /**
      * Closes any of the given tags in the given html string.
      * @param tag The type of tag, such as hr, or br.
      * @return A string with all of the given tags closed.

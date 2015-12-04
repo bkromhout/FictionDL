@@ -55,7 +55,7 @@ public class MuggleNetStory extends Story {
         if (details == null) throw new IOException(String.format(C.STORY_DL_FAILED, MuggleNetDL.SITE, storyId));
         Elements labels = details.select("span.label");
         // Get summary.
-        summary = makeDetailDivForLabel(details, labels, 0).html().trim();
+        summary = Util.cleanHtmlString(makeDetailDivForLabel(details, labels, 0).html().trim());
         // Get rating.
         rating = makeDetailDivForLabel(details, labels, 1).text().trim();
         // Get fic type (categories).
