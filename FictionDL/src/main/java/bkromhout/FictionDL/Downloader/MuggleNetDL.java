@@ -91,21 +91,11 @@ public class MuggleNetDL extends ParsingDL {
         StringBuilder chapterText = new StringBuilder();
         // First off, we need to drill down to just the div.contentLeft element.
         Element content = chapter.html.select(chapTextSelector).first();
-        // Now, we want to strip out any children of div.contentLeft which are not div.notes or div#story.
-        Elements divs = content.select("div.contentLeft > div");
-        ListIterator<Element> iterator = divs.listIterator();
-        while (iterator.hasNext()) {
-            Element div = iterator.next();
-            // Remove this element if it isn't a div, or if it is a div but isn't div.notes or div#story.
-            if (!div.tagName().equals("div") || (!div.className().equals("notes") && !div.id().equals("story")))
-                iterator.remove();
-        }
+        // Now, we want to strip out any children of div.contentLeft which are not div.notes or div#story, so select
+        // all of those and remove them.
+        content.select("div.contentLeft > *:not(div.notes, div#story)").remove();
         // Now, we want to insert <hr /> tags between any remaining divs.
-        iterator = divs.listIterator(); // Reset iterator.
-        while (iterator.hasNext()) {
-            iterator.next(); // We don't actually care about what this is, we just want to advance past it.
-            if (iterator.hasNext()) iterator.add(new Element(Tag.valueOf("hr"), ""));
-        }
+        content.children().after("<hr />").last().remove();
         // Now we can finally output the html.
         chapterText.append(content.html());
         return String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText.toString());
