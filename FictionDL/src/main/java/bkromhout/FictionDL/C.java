@@ -187,7 +187,7 @@ public class C {
     Title Page Part Names (AKA, details for a fic)
      */
     public static final String SUMMARY = "Summary";
-    public static final String SERIES = "Seriess";
+    public static final String SERIES = "Series";
     public static final String FIC_TYPE = "Fic Type";
     public static final String WARNINGS = "Warnings";
     public static final String RATING = "Rated";
