@@ -19,15 +19,17 @@ public class SiyeStory extends Story {
      * @param url URL of the story this model represents.
      */
     public SiyeStory(String url) throws IOException {
-        populateInfo(url);
+        this.url = url;
+        populateInfo();
     }
 
     /**
      * Populate this model's fields.
-     * @param url A story/chapter URL.
      * @throws IOException Throw for many reasons, but the net result is that we can't build a story model for this.
      */
-    private void populateInfo(String url) throws IOException {
+    private void populateInfo() throws IOException {
+        // Set site.
+        site = C.HOST_SIYE;
         // Get chapter 1 HTML first.
         Document infoDoc = getInfoPage(url);
         Element storyInfoElem = infoDoc.select("td[align=\"left\"][valign=\"top\"]").last();

@@ -20,15 +20,17 @@ public class FanFictionStory extends Story {
      * @param url URL of the story this model represents.
      */
     public FanFictionStory(String url) throws IOException {
-        populateInfo(url);
+        this.url = url;
+        populateInfo();
     }
 
     /**
      * Populate this model's fields.
-     * @param url A story/chapter URL.
      * @throws IOException Throw for many reasons, but the net result is that we can't build a story model for this.
      */
-    private void populateInfo(String url) throws IOException {
+    private void populateInfo() throws IOException {
+        // Set site.
+        site = C.HOST_FFN;
         // Get story ID first.
         storyId = parseStoryId(url, C.FFN_SID_REGEX, 1);
         // Normalize the URL, since there are many valid FFN URL formats.

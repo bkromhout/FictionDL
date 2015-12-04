@@ -10,12 +10,16 @@ import java.util.regex.Pattern;
  * Base Story class.
  */
 public class Story {
+    // Story URL.
+    protected String url;
     // Story ID.
     protected String storyId;
     // Story title.
     protected String title;
     // Story author.
     protected String author;
+    // Site story is from (will be used as "Publisher" metadata).
+    protected String site;
     // Story summary.
     protected String summary;
     // Story series.
@@ -57,6 +61,14 @@ public class Story {
     }
 
     /**
+     * Get story's URL.
+     * @return Story URL.
+     */
+    public String getUrl() {
+        return url;
+    }
+
+    /**
      * Get this story's ID
      * @return Story ID.
      */
@@ -78,6 +90,14 @@ public class Story {
      */
     public String getAuthor() {
         return author;
+    }
+
+    /**
+     * Get story's origin site.
+     * @return Story site.
+     */
+    public String getSite() {
+        return site;
     }
 
     /**

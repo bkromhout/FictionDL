@@ -1,10 +1,7 @@
 package bkromhout.FictionDL;
 
 import bkromhout.FictionDL.Story.Story;
-import nl.siegmann.epublib.domain.Author;
-import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.GuideReference;
-import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubWriter;
 
 import java.io.File;
@@ -64,10 +61,12 @@ public final class EpubCreator {
     private Book generateEpub() {
         // Create Book.
         Book book = new Book();
-        // Set title, author, and description (summary).
+        // Set title, author, description (summary), identifier (story URL), and publisher (story site).
         book.getMetadata().addTitle(story.getTitle());
         book.getMetadata().addAuthor(new Author(story.getAuthor()));
         book.getMetadata().addDescription(Util.convertWin1252Chars(story.getSummary()));
+        book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.URL, story.getUrl()));
+        book.getMetadata().addPublisher(story.getSite());
         // Create and add CSS file.
         book.addResource(createCss());
         // Create and add title page.
