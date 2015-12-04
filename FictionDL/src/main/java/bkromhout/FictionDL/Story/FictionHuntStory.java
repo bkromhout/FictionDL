@@ -3,10 +3,9 @@ package bkromhout.FictionDL.Story;
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Downloader.FictionHuntDL;
 import bkromhout.FictionDL.Util;
+import bkromhout.FictionDL.ex.InitStoryException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
-import java.io.IOException;
 
 /**
  * Model object for a FictionHunt story. Despite the word "model", this is not an object with a light initialization
@@ -20,23 +19,23 @@ public class FictionHuntStory extends Story {
      * Create a new FictionHuntStory object based off of a URL.
      * @param url URL of the story this model represents.
      */
-    public FictionHuntStory(String url) throws IOException {
+    public FictionHuntStory(String url) throws InitStoryException {
         this.url = url;
         populateInfo();
     }
 
     /**
      * Populate this model's fields.
-     * @throws IOException Throw for many reasons, but the net result is that we can't build a story model for this.
+     * @throws InitStoryException Throw for many reasons, but the net result is that we can't build a story model for this.
      */
-    private void populateInfo() throws IOException {
+    private void populateInfo() throws InitStoryException {
         // Set site.
         site = C.HOST_FH;
         // Get FictionHunt story ID.
         storyId = parseStoryId(url, C.FH_SID_REGEX, 1);
         // Get the HTML at the url we've specified to use as the entry point.
         Document infoDoc = Util.downloadHtml(url);
-        if (infoDoc == null) throw new IOException(String.format(C.STORY_DL_FAILED, FictionHuntDL.SITE, storyId));
+        if (infoDoc == null) throw new InitStoryException(String.format(C.STORY_DL_FAILED, FictionHuntDL.SITE, storyId));
         // Get title string. Even if the story is on FFN, we want to have this for logging purposes.
         title = infoDoc.select("div.title").first().text();
         // Check if story is on FanFiction.net. If so, just get its FFN story ID.

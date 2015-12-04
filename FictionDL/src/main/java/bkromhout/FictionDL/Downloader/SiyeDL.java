@@ -1,10 +1,13 @@
 package bkromhout.FictionDL.Downloader;
 
-import bkromhout.FictionDL.*;
+import bkromhout.FictionDL.C;
+import bkromhout.FictionDL.Chapter;
+import bkromhout.FictionDL.FictionDL;
 import bkromhout.FictionDL.Story.SiyeStory;
+import bkromhout.FictionDL.Util;
+import bkromhout.FictionDL.ex.InitStoryException;
 import org.jsoup.nodes.Element;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,7 +40,7 @@ public class SiyeDL extends ParsingDL {
         for (String url : storyUrls) {
             try {
                 stories.add(new SiyeStory(url));
-            } catch (IOException e) {
+            } catch (InitStoryException e) {
                 storyProcessed(); // Call this, since we have "processed" a story by failing to download it.
                 Util.log(e.getMessage());
             }

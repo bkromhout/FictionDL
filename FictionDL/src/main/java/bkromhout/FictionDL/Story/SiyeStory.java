@@ -3,10 +3,9 @@ package bkromhout.FictionDL.Story;
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Downloader.SiyeDL;
 import bkromhout.FictionDL.Util;
+import bkromhout.FictionDL.ex.InitStoryException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
-import java.io.IOException;
 
 /**
  * Model object for a SIYE story. Despite the word "model", this is not an object with a light initialization cost, as
@@ -18,16 +17,16 @@ public class SiyeStory extends Story {
      * Create a new SiyeStory object based off of a URL.
      * @param url URL of the story this model represents.
      */
-    public SiyeStory(String url) throws IOException {
+    public SiyeStory(String url) throws InitStoryException {
         this.url = url;
         populateInfo();
     }
 
     /**
      * Populate this model's fields.
-     * @throws IOException Throw for many reasons, but the net result is that we can't build a story model for this.
+     * @throws InitStoryException Throw for many reasons, but the net result is that we can't build a story model for this.
      */
-    private void populateInfo() throws IOException {
+    private void populateInfo() throws InitStoryException {
         // Set site.
         site = C.HOST_SIYE;
         // Get chapter 1 HTML first.
@@ -37,7 +36,7 @@ public class SiyeStory extends Story {
         summary = storyInfoElem.textNodes().get(13).text().trim(); // Incomplete stories.
         if (summary.isEmpty()) summary = storyInfoElem.textNodes().get(14).text().trim(); // Complete stories.
         // If we still don't have the summary, then the there isn't a story with this story ID on SIYE.
-        if (summary.isEmpty()) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
+        if (summary.isEmpty()) throw new InitStoryException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
         // Get characters.
         characters = storyInfoElem.textNodes().get(3).text().trim();
         // Figure out the SIYE story ID and author ID link, because we'll get the rest of the general details from
@@ -45,7 +44,7 @@ public class SiyeStory extends Story {
         String authorIdLink = findAuthorIdLink(infoDoc);
         // Get the HTML at the author URL.
         Document doc = Util.downloadHtml(String.format(C.SIYE_A_URL, authorIdLink));
-        if (doc == null) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
+        if (doc == null) throw new InitStoryException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
         // Get the story row from on the author's page.
         Element storyRow = doc.select(String.format("td tr td:has(a[href=\"viewstory.php?sid=%s\"])", storyId)).last();
         // Get title.
@@ -92,13 +91,13 @@ public class SiyeStory extends Story {
      * @param url Story URL, may not be normalized.
      * @return Chapter 1 HTML Document.
      */
-    private Document getInfoPage(String url) throws IOException {
+    private Document getInfoPage(String url) throws InitStoryException {
         // Need to normalize this URL first to be sure we can get the author ID link.
         // Start by getting the story ID from the URL.
         storyId = parseStoryId(url, C.SIYE_SID_REGEX, 1);
         // Now download the first chapter's HTML.
         Document chDoc = Util.downloadHtml(String.format(C.SIYE_C_URL, storyId, 1));
-        if (chDoc == null) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
+        if (chDoc == null) throw new InitStoryException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
         return chDoc;
     }
 
@@ -107,12 +106,12 @@ public class SiyeStory extends Story {
      * @param chDoc Story's chapter 1 HTML.
      * @return Author ID link (looks like "viewuser.php?uid=[authorId]").
      */
-    private String findAuthorIdLink(Document chDoc) throws IOException {
+    private String findAuthorIdLink(Document chDoc) throws InitStoryException {
         // Then find the element that lets us get the relative link to the author's page.
         Element aIdElement = chDoc.select("h3 a").first();
         // Throw an exception if we couldn't find the link to the author's page, as it likely means that the URL
         // format was valid but that it doesn't point to a real story/chapter on SIYE.
-        if (aIdElement == null) throw new IOException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
+        if (aIdElement == null) throw new InitStoryException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
         // Now return the author page URL.
         return aIdElement.attr("href");
     }

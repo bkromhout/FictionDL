@@ -59,6 +59,7 @@ public class C {
     public static final String SANITIZING_CHAPS = "Sanitizing chapters...";
 
     // Errors and Warnings
+    public static final String INVALID_URL = "Invalid URL: \"%s\"\n." + LOG_RED;
     public static final String INVALID_PATH = "Invalid path: \"%s\"\n." + LOG_RED;
     public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the file: \"%s\"\n" + LOG_RED;
     public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"\n" + LOG_RED;
@@ -67,6 +68,8 @@ public class C {
     public static final String SAVE_FILE_FAILED = "Failed to save file: %s\n" + LOG_RED;
     public static final String FH_FFN_CHECK_FAILED = "Failed to check if story is still active on FFN. Oh well, " +
             "never hurts to try!" + LOG_RED;
+    public static final String MUST_LOGIN = "You need to provide login info for %s to download story with ID=%s!" +
+            LOG_RED;
 
     /*
     Supported site domains.
@@ -118,6 +121,20 @@ public class C {
      * MuggleNet chapter link, needs story ID and chapter number substituted into it.
      */
     public static final String MN_C_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s&chapter=%d&warning=5";
+
+    /*
+    Site/Comparison strings, usually used to try and determine what type of error is present when the HTML structure
+    by itself doesn't provide enough info.
+     */
+    /**
+     * Indicates a URL is malformed.
+     */
+    public static final String BAD_URL = "BAD_URL";
+
+    /**
+     * Error message displayed by MuggleNet when attempting to access a "Professors" rated story while not logged in.
+     */
+    public static final String MN_REG_USERS_ONLY = "Registered Users Only";
 
     /*
     RegEx Strings

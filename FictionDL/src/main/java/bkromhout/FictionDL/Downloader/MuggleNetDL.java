@@ -5,11 +5,11 @@ import bkromhout.FictionDL.Chapter;
 import bkromhout.FictionDL.FictionDL;
 import bkromhout.FictionDL.Story.MuggleNetStory;
 import bkromhout.FictionDL.Util;
+import bkromhout.FictionDL.ex.InitStoryException;
 import org.jsoup.nodes.Element;
 import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.regex.Matcher;
@@ -42,7 +42,7 @@ public class MuggleNetDL extends ParsingDL {
         for (String url : storyUrls) {
             try {
                 stories.add(new MuggleNetStory(url));
-            } catch (IOException e) {
+            } catch (InitStoryException e) {
                 storyProcessed(); // Call this, since we have "processed" a story by failing to download it.
                 Util.log(e.getMessage());
             }

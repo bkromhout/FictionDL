@@ -1,6 +1,8 @@
 package bkromhout.FictionDL.Story;
 
+import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Chapter;
+import bkromhout.FictionDL.ex.InitStoryException;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -49,15 +51,37 @@ public class Story {
 
     /**
      * Parse the storyId of a story from its URL using regex.
-     * @param url URL of story.
+     * @param url   URL of story.
      * @param regex Regex that will help extract the story ID.
      * @param group Number of the group from the regex that will contain the story ID.
-     * @return Story ID.
+     * @return Story ID, or null.
      */
-    protected String parseStoryId(String url, String regex, int group) {
+    protected String parseStoryId(String url, String regex, int group) throws InitStoryException {
         Matcher matcher = Pattern.compile(regex).matcher(url);
-        matcher.find();
+        if (!matcher.find()) throw initEx(C.BAD_URL, url, null);
         return matcher.group(group);
+    }
+
+    /**
+     * Throw a InitStoryException with some message about why we couldn't create this story.
+     * @param assist  String to help us figure out why we couldn't create this story, and thus what message to put in
+     *                the exception.
+     * @param site    The site whose downloader is throwing this exception.
+     * @param storyId The ID of the story throwing this exception.
+     * @return InitStoryException with the message we figure out.
+     */
+    protected InitStoryException initEx(String assist, String site, String storyId) {
+        switch (assist) {
+            case C.BAD_URL:
+                // URL was bad.
+                return new InitStoryException(String.format(C.INVALID_URL, site));
+            case C.MN_REG_USERS_ONLY:
+                // Need to login to MuggleNet.
+                return new InitStoryException(String.format(C.MUST_LOGIN, site, storyId));
+            default:
+                // Default string.
+                return new InitStoryException(String.format(C.STORY_DL_FAILED, site, storyId));
+        }
     }
 
     /**
@@ -118,8 +142,8 @@ public class Story {
 
     /**
      * Get this story's type. (Ex: FFN's story type is are fandom categories like "Books > Harry Potter", SIYE's are
-     * Harry Potter time period categories such as "Post-Hogwarts". Not all sites may have something worth filling
-     * this in for.)
+     * Harry Potter time period categories such as "Post-Hogwarts". Not all sites may have something worth filling this
+     * in for.)
      * @return Story type.
      */
     public String getFicType() {

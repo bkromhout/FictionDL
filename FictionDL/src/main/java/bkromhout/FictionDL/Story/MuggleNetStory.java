@@ -3,13 +3,13 @@ package bkromhout.FictionDL.Story;
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Downloader.MuggleNetDL;
 import bkromhout.FictionDL.Util;
+import bkromhout.FictionDL.ex.InitStoryException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -22,16 +22,17 @@ public class MuggleNetStory extends Story {
      * Create a new MuggleNetStory object based off of a URL.
      * @param url URL of the story this model represents.
      */
-    public MuggleNetStory(String url) throws IOException {
+    public MuggleNetStory(String url) throws InitStoryException {
         this.url = url;
         populateInfo();
     }
 
     /**
      * Populate this model's fields.
-     * @throws IOException Throw for many reasons, but the net result is that we can't build a story model for this.
+     * @throws InitStoryException Throw for many reasons, but the net result is that we can't build a story model for
+     *                            this.
      */
-    private void populateInfo() throws IOException {
+    private void populateInfo() throws InitStoryException {
         // Set site.
         site = C.HOST_MN;
         // Get story ID first.
@@ -40,19 +41,20 @@ public class MuggleNetStory extends Story {
         url = String.format(C.MN_S_URL, storyId);
         // Get the story page in order to parse the story info.
         Document infoDoc = Util.downloadHtml(url);
-        // Make sure that we got a Document and that this is a valid story.
-        if (infoDoc == null || infoDoc.select("div.errorText").first() != null)
-            throw new IOException(String.format(C.STORY_DL_FAILED, MuggleNetDL.SITE, storyId));
+        // Make sure that we got a Document, that this is a valid story, and that we don't need to login.
+        if (infoDoc == null) throw initEx(null, MuggleNetDL.SITE, storyId);
+        if (infoDoc.select("div.errorText").first() != null)
+            throw initEx(infoDoc.select("div.errorText").first().text().trim(), MuggleNetDL.SITE, storyId);
         // Get the element that has the title and author of the story in it.
         Elements taElem = infoDoc.select("div#pagetitle a");
-        if (taElem == null) throw new IOException(String.format(C.STORY_DL_FAILED, MuggleNetDL.SITE, storyId));
+        if (taElem == null) throw initEx(null, MuggleNetDL.SITE, storyId);
         // Get the title.
         title = taElem.first().html().trim();
         // Get the author.
         author = taElem.last().html().trim();
         // Get the element that has the details in it, and the detail label span element.
         Element details = infoDoc.select("div.content").first();
-        if (details == null) throw new IOException(String.format(C.STORY_DL_FAILED, MuggleNetDL.SITE, storyId));
+        if (details == null) throw initEx(null, MuggleNetDL.SITE, storyId);
         Elements labels = details.select("span.label");
         // Get summary.
         summary = Util.cleanHtmlString(makeDetailDivForLabel(details, labels, 0).html().trim());

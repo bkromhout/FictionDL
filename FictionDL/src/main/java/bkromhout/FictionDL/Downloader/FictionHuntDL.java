@@ -1,10 +1,12 @@
 package bkromhout.FictionDL.Downloader;
 
-import bkromhout.FictionDL.*;
+import bkromhout.FictionDL.C;
+import bkromhout.FictionDL.FictionDL;
 import bkromhout.FictionDL.Story.FictionHuntStory;
 import bkromhout.FictionDL.Story.Story;
+import bkromhout.FictionDL.Util;
+import bkromhout.FictionDL.ex.InitStoryException;
 
-import java.io.*;
 import java.util.ArrayList;
 
 /**
@@ -34,7 +36,7 @@ public class FictionHuntDL extends ParsingDL {
         for (String url : storyUrls) {
             try {
                 stories.add(new FictionHuntStory(url));
-            } catch (IOException e) {
+            } catch (InitStoryException e) {
                 storyProcessed(); // Call this, since we have "processed" a story by failing to download it.
                 Util.log(e.getMessage());
             }
