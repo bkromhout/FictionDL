@@ -8,6 +8,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Model object for a FanFiction.net story. Despite the word "model", this is not an object with a light initialization
@@ -60,10 +62,29 @@ public class FanFictionStory extends Story {
         // Get the word count.
         int wordCntIdx = findDetailsStringIdx(details, "Words: ");
         wordCount = Integer.parseInt(details[wordCntIdx].replace("Words: ", "").replace(",", "").trim());
-        // Get the genre(s).
-        genres = parseGenres(details, chapCntIdx != -1 ? chapCntIdx : wordCntIdx);
-        // Get the characters.
-        characters = details[genres.equals(C.NO_GENRE) ? 2 : 3].trim();
+        // Figure genres and characters, either or both of which may be missing.
+        if (chapCntIdx == 2 || wordCntIdx == 2) {
+            // We don't have genres or characters, set them accordingly.
+            genres = C.NO_GENRE;
+            characters = C.NONE;
+        } else if (chapCntIdx == 3 || (chapCntIdx == -1 && wordCntIdx == 3)) {
+            // We have something at index 2, but we need to figure out if it's a genre or characters. This also means
+            // that we only have one of either genres or characters, not both.
+            Matcher genreMatcher = Pattern.compile(C.FFN_GENRE_REGEX).matcher(details[2]);
+            if (genreMatcher.find()) {
+                // This is the genres string, we don't have characters.
+                genres = details[2].trim();
+                characters = C.NONE;
+            } else {
+                // This is the characters string, we don't have genres.
+                genres = C.NO_GENRE;
+                characters = details[2].trim();
+            }
+        } else {
+            // We have both a genres string and a characters string.
+            genres = details[2].trim();
+            characters = details[3].trim();
+        }
         // Get the dates.
         Elements dates = detailElem.select("span > span");
         // Get the date published.
@@ -94,20 +115,6 @@ public class FanFictionStory extends Story {
             // Crossover fic.
             return element.nextElementSibling().text().trim();
         }
-    }
-
-    /**
-     * Parse the story genre(s).
-     * @param details The details string array.
-     * @param relIdx  Either the index of the chapter count in the details string, or if that doesn't exist, the index
-     *                of the word count.
-     * @return The story genre(s).
-     */
-    private String parseGenres(String[] details, int relIdx) {
-        // If the relative index is 3, then there wasn't a specific genre string. We'll call it "None/Gen"
-        if (relIdx == 3) return C.NO_GENRE;
-        // If the relative index is 4, then we return the details string at index 2.
-        return details[2].trim();
     }
 
     /**

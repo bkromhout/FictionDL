@@ -30,7 +30,7 @@ public class Story {
     protected String warnings;
     // Story rating.
     protected String rating;
-    // Story genre(s) (may be "None/Gen").
+    // Story genres (may be "None/Gen").
     protected String genres;
     // Story characters (and perhaps pairings, if they can be parsed.)
     protected String characters;
@@ -143,8 +143,8 @@ public class Story {
     }
 
     /**
-     * Get this story's genre(s). Might be "None/Gen".
-     * @return Story genre(s).
+     * Get this story's genres. Might be "None/Gen".
+     * @return Story genres.
      */
     public String getGenres() {
         return genres;

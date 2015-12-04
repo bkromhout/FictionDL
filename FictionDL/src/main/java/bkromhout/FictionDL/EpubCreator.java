@@ -107,7 +107,7 @@ public final class EpubCreator {
         // Add the rating.
         detail = story.getRating();
         if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.RATING, detail));
-        // Add the genre(s).
+        // Add the genres.
         detail = story.getGenres();
         if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.GENRES, detail));
         // Add the characters.

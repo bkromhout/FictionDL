@@ -56,7 +56,7 @@ public class FictionHuntStory extends Story {
         wordCount = Integer.parseInt(details[1].trim().replace("Words: ", "").replaceAll(",", ""));
         // Get rating.
         rating = details[2].replace("Rated: ", "").trim();
-        // Get genre(s).
+        // Get genres.
         genres = details[4].trim();
         // Get number of chapters.
         int chapCount = Integer.parseInt(details[5].trim().replace("Chapters: ", ""));

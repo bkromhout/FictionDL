@@ -68,7 +68,7 @@ public class SiyeStory extends Story {
         rating = details[0].trim();
         // Get fic type (category).
         ficType = details[1].trim();
-        // Get genre(s).
+        // Get genres.
         genres = details[2].trim();
         // Get warnings.
         warnings = details[3].replace("Warnings: ", "").trim();

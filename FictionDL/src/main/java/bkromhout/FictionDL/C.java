@@ -158,6 +158,14 @@ public class C {
     public static final String FFN_CHAP_TITLE_REGEX = SIYE_CHAP_TITLE_REGEX;
 
     /**
+     * Regex to determine if a string contains a valid FFN genre. If .find() returns true, it does.
+     */
+    public static final String FFN_GENRE_REGEX = "\\QAdventure\\E|\\QAngst\\E|\\QCrime\\E|\\QDrama\\E|\\QFamily\\E" +
+            "|\\QFantasy\\E|\\QFriendship\\E|\\QGeneral\\E|\\QHorror\\E|\\QHumor\\E|\\QHurt/Comfort\\E|\\QMystery\\E" +
+            "|\\QParody\\E|\\QPoetry\\E|\\QRomance\\E|\\QSci-Fi\\E|\\QSpiritual\\E|\\QSupernatural\\E|\\QSuspense\\E" +
+            "|\\QTragedy\\E|\\QWestern\\E";
+
+    /**
      * Regex to extract MuggleNet story ID from a MuggleNet URL. Use .find() then .group(1).
      */
     public static final String MN_SID_REGEX = SIYE_SID_REGEX;
@@ -202,6 +210,11 @@ public class C {
     /*
     Default/specific detail values.
      */
+    /**
+     * Useful for anything we want to set to None.
+     */
+    public static final String NONE = "None";
+
     /**
      * Used when a story doesn't have a genre.
      */
