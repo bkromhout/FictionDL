@@ -57,24 +57,31 @@ public class MuggleNetStory extends Story {
         // Get summary.
         summary = makeDetailDivForLabel(details, labels, 0).html().trim();
         // Get rating.
-
+        rating = makeDetailDivForLabel(details, labels, 1).text().trim();
         // Get fic type (categories).
-
+        ficType = makeDetailDivForLabel(details, labels, 2).text().trim();
         // Get characters. Ignore if "None".
-
+        String temp = makeDetailDivForLabel(details, labels, 3).text().trim();
+        characters = temp.equals("None") ? null : temp;
         // Get warnings.
-
+        temp = makeDetailDivForLabel(details, labels, 4).text().trim();
+        warnings = temp.equals("None") ? null : temp;
         // Get series. Ignore if "None".
-
+        temp = makeDetailDivForLabel(details, labels, 6).text().trim();
+        series = temp.equals("None") ? null : temp;
         // Get chapter count to generate chapter URLs.
-
+        int chapCount = Integer.parseInt(makeDetailDivForLabel(details, labels, 7).text().trim());
         // Get status.
-
+        temp = makeDetailDivForLabel(details, labels, 8).text().trim();
+        status = temp.equals("Yes") ? C.STAT_C : C.STAT_I;
         // Get word count.
-
+        wordCount = Integer.parseInt(makeDetailDivForLabel(details, labels, 9).text().trim());
         // Get date published.
-
+        datePublished = makeDetailDivForLabel(details, labels, 11).text().trim();
         // Get date last updated.
+        dateUpdated = makeDetailDivForLabel(details, labels, 12).text().trim();
+        // Generate chapter URLs.
+        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.MN_C_URL, storyId, i + 1));
     }
 
     /**
@@ -99,10 +106,7 @@ public class MuggleNetStory extends Story {
         Element newDiv = new Element(Tag.valueOf("div"), "");
         // Loop through the copied nodes, starting at the startIdx and up to but not including the endIdx, and append
         // those nodes to the new div.
-        for (int i = startIdx; i < endIdx; i++) {
-            // TODO don't append br's!!
-            newDiv.appendChild(nodeCopies.get(i));
-        }
+        for (int i = startIdx; i < endIdx; i++) newDiv.appendChild(nodeCopies.get(i));
         // Return the new div.
         return newDiv;
     }
