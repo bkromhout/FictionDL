@@ -195,7 +195,7 @@ public class C {
     /**
      * Regex to find all ampersands in a piece of HTML which are actual ampersands and not part of a character code.
      */
-    public static final String AMP_REGEX = "[\\&](?!(#|amp;|gt;|lt;|quot;))";
+    public static final String AMP_REGEX = "[\\&](?!(#|amp;|gt;|lt;|quot;|nbsp;))";
 
     /**
      * Regex to find all unclosed tags, where the tag type is substituted in, no matter their attributes. Used with

@@ -95,7 +95,8 @@ public class MuggleNetDL extends ParsingDL {
         // all of those and remove them.
         content.select("div.contentLeft > *:not(div.notes, div#story)").remove();
         // Now, we want to insert <hr /> tags between any remaining divs.
-        content.children().after("<hr />").last().remove();
+        content.children().after("<hr />");
+        content.select("hr").last().remove();
         // Now we can finally output the html.
         chapterText.append(content.html());
         return String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText.toString());
