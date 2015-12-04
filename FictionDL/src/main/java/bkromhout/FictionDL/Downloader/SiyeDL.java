@@ -16,15 +16,13 @@ import java.util.regex.Pattern;
  * Downloader for siye.co.uk ("Sink Into Your Eyes") stories.
  */
 public class SiyeDL extends ParsingDL {
-    public static final String SITE = "SIYE";
-
     /**
      * Create a new SIYE downloader.
      * @param fictionDL FictionDL object which owns this downloader.
      * @param urls      List of SIYE URLs.
      */
     public SiyeDL(FictionDL fictionDL, ArrayList<String> urls) {
-        super(fictionDL, urls, null);
+        super(fictionDL, "SIYE", urls, null);
     }
 
     /**
@@ -32,10 +30,10 @@ public class SiyeDL extends ParsingDL {
      */
     @Override
     public void download() {
-        Util.logf(C.STARTING_SITE_DL_PROCESS, SITE);
+        Util.logf(C.STARTING_SITE_DL_PROCESS, site);
         Util.log(C.SIYE_SLOW); // Inform the user that SIYE is slow and has crappy HTML structure.
         // Create story models from URLs.
-        Util.logf(C.FETCH_BUILD_MODELS, SITE);
+        Util.logf(C.FETCH_BUILD_MODELS, site);
         ArrayList<SiyeStory> stories = new ArrayList<>();
         for (String url : storyUrls) {
             try {
@@ -46,7 +44,7 @@ public class SiyeDL extends ParsingDL {
             }
         }
         // Download and save the stories.
-        Util.logf(C.DL_STORIES_FROM_SITE, SITE);
+        Util.logf(C.DL_STORIES_FROM_SITE, site);
         stories.forEach(this::downloadStory);
     }
 

@@ -66,7 +66,7 @@ public final class EpubCreator {
         book.getMetadata().addAuthor(new Author(story.getAuthor()));
         book.getMetadata().addDescription(Util.convertWin1252Chars(story.getSummary()));
         book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.URL, story.getUrl()));
-        book.getMetadata().addPublisher(story.getSite());
+        book.getMetadata().addPublisher(story.getHostSite());
         // Create and add CSS file.
         book.addResource(createCss());
         // Create and add title page.

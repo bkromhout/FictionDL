@@ -13,15 +13,13 @@ import java.util.ArrayList;
  * Downloader for FictionHunt stories.
  */
 public class FictionHuntDL extends ParsingDL {
-    public static final String SITE = "FictionHunt";
-
     /**
      * Create a new FictionHunt downloader.
      * @param fictionDL FictionDL object which owns this downloader.
      * @param urls      List of FictionHunt URLs.
      */
     public FictionHuntDL(FictionDL fictionDL, ArrayList<String> urls) {
-        super(fictionDL, urls, "div.text");
+        super(fictionDL, "FictionHunt", urls, "div.text");
     }
 
     /**
@@ -29,9 +27,9 @@ public class FictionHuntDL extends ParsingDL {
      */
     @Override
     public void download() {
-        Util.logf(C.STARTING_SITE_DL_PROCESS, SITE);
+        Util.logf(C.STARTING_SITE_DL_PROCESS, site);
         // Create story models from URLs.
-        Util.logf(C.FETCH_BUILD_MODELS, SITE);
+        Util.logf(C.FETCH_BUILD_MODELS, site);
         ArrayList<FictionHuntStory> stories = new ArrayList<>();
         for (String url : storyUrls) {
             try {
@@ -42,7 +40,7 @@ public class FictionHuntDL extends ParsingDL {
             }
         }
         // Download and save the stories.
-        Util.logf(C.DL_STORIES_FROM_SITE, SITE);
+        Util.logf(C.DL_STORIES_FROM_SITE, site);
         stories.forEach(this::downloadStory);
     }
 

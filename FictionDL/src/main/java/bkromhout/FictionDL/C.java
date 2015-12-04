@@ -70,6 +70,7 @@ public class C {
             "never hurts to try!" + LOG_RED;
     public static final String MUST_LOGIN = "You need to provide login info for %s to download story with ID=%s!" +
             LOG_RED;
+    public static final String LOGIN_FAILED = "Couldn't log in to %s. Check your login info." + LOG_RED;
 
     /*
     Supported site domains.
@@ -80,7 +81,7 @@ public class C {
     public static final String HOST_MN = "fanfiction.mugglenet.com";
 
     /*
-    Link template strings.
+    Link strings. Some need parts substituted into them.
      */
     /**
      * Used to search FictionHunt for a story in order to get its summary. Just need to substitute in the title.
@@ -121,6 +122,11 @@ public class C {
      * MuggleNet chapter link, needs story ID and chapter number substituted into it.
      */
     public static final String MN_C_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s&chapter=%d&warning=5";
+
+    /**
+     * MuggleNet login page link.
+     */
+    public static final String MN_L_URL = "http://fanfiction.mugglenet.com/user.php?action=login";
 
     /*
     Site/Comparison strings, usually used to try and determine what type of error is present when the HTML structure

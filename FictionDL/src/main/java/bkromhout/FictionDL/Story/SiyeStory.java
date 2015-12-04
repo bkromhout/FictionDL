@@ -1,7 +1,6 @@
 package bkromhout.FictionDL.Story;
 
 import bkromhout.FictionDL.C;
-import bkromhout.FictionDL.Downloader.SiyeDL;
 import bkromhout.FictionDL.Util;
 import bkromhout.FictionDL.ex.InitStoryException;
 import org.jsoup.nodes.Document;
@@ -24,11 +23,12 @@ public class SiyeStory extends Story {
 
     /**
      * Populate this model's fields.
-     * @throws InitStoryException Throw for many reasons, but the net result is that we can't build a story model for this.
+     * @throws InitStoryException Throw for many reasons, but the net result is that we can't build a story model for
+     *                            this.
      */
     private void populateInfo() throws InitStoryException {
         // Set site.
-        site = C.HOST_SIYE;
+        hostSite = C.HOST_SIYE;
         // Get chapter 1 HTML first.
         Document infoDoc = getInfoPage(url);
         Element storyInfoElem = infoDoc.select("td[align=\"left\"][valign=\"top\"]").last();
@@ -36,7 +36,7 @@ public class SiyeStory extends Story {
         summary = storyInfoElem.textNodes().get(13).text().trim(); // Incomplete stories.
         if (summary.isEmpty()) summary = storyInfoElem.textNodes().get(14).text().trim(); // Complete stories.
         // If we still don't have the summary, then the there isn't a story with this story ID on SIYE.
-        if (summary.isEmpty()) throw new InitStoryException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
+        if (summary.isEmpty()) throw initEx();
         // Get characters.
         characters = storyInfoElem.textNodes().get(3).text().trim();
         // Figure out the SIYE story ID and author ID link, because we'll get the rest of the general details from
@@ -44,7 +44,7 @@ public class SiyeStory extends Story {
         String authorIdLink = findAuthorIdLink(infoDoc);
         // Get the HTML at the author URL.
         Document doc = Util.downloadHtml(String.format(C.SIYE_A_URL, authorIdLink));
-        if (doc == null) throw new InitStoryException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
+        if (doc == null) throw initEx();
         // Get the story row from on the author's page.
         Element storyRow = doc.select(String.format("td tr td:has(a[href=\"viewstory.php?sid=%s\"])", storyId)).last();
         // Get title.
@@ -97,7 +97,7 @@ public class SiyeStory extends Story {
         storyId = parseStoryId(url, C.SIYE_SID_REGEX, 1);
         // Now download the first chapter's HTML.
         Document chDoc = Util.downloadHtml(String.format(C.SIYE_C_URL, storyId, 1));
-        if (chDoc == null) throw new InitStoryException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
+        if (chDoc == null) throw initEx();
         return chDoc;
     }
 
@@ -111,7 +111,7 @@ public class SiyeStory extends Story {
         Element aIdElement = chDoc.select("h3 a").first();
         // Throw an exception if we couldn't find the link to the author's page, as it likely means that the URL
         // format was valid but that it doesn't point to a real story/chapter on SIYE.
-        if (aIdElement == null) throw new InitStoryException(String.format(C.STORY_DL_FAILED, SiyeDL.SITE, storyId));
+        if (aIdElement == null) throw initEx();
         // Now return the author page URL.
         return aIdElement.attr("href");
     }

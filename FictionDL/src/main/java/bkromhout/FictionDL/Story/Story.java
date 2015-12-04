@@ -2,6 +2,7 @@ package bkromhout.FictionDL.Story;
 
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Chapter;
+import bkromhout.FictionDL.Downloader.ParsingDL;
 import bkromhout.FictionDL.ex.InitStoryException;
 
 import java.util.ArrayList;
@@ -12,6 +13,8 @@ import java.util.regex.Pattern;
  * Base Story class.
  */
 public class Story {
+    // The downloader which owns this story.
+    protected ParsingDL ownerDl;
     // Story URL.
     protected String url;
     // Story ID.
@@ -21,7 +24,7 @@ public class Story {
     // Story author.
     protected String author;
     // Site story is from (will be used as "Publisher" metadata).
-    protected String site;
+    protected String hostSite;
     // Story summary.
     protected String summary;
     // Story series.
@@ -58,29 +61,46 @@ public class Story {
      */
     protected String parseStoryId(String url, String regex, int group) throws InitStoryException {
         Matcher matcher = Pattern.compile(regex).matcher(url);
-        if (!matcher.find()) throw initEx(C.BAD_URL, url, null);
+        if (!matcher.find()) throw initEx(C.BAD_URL, url);
         return matcher.group(group);
     }
 
     /**
      * Throw a InitStoryException with some message about why we couldn't create this story.
-     * @param assist  String to help us figure out why we couldn't create this story, and thus what message to put in
-     *                the exception.
-     * @param site    The site whose downloader is throwing this exception.
-     * @param storyId The ID of the story throwing this exception.
      * @return InitStoryException with the message we figure out.
      */
-    protected InitStoryException initEx(String assist, String site, String storyId) {
+    protected InitStoryException initEx() {
+        return initEx(null, null);
+    }
+
+    /**
+     * Throw a InitStoryException with some message about why we couldn't create this story.
+     * @param assist String to help us figure out why we couldn't create this story, and thus what message to put in the
+     *               exception.
+     * @return InitStoryException with the message we figure out.
+     */
+    protected InitStoryException initEx(String assist) {
+        return initEx(assist, null);
+    }
+
+    /**
+     * Throw a InitStoryException with some message about why we couldn't create this story.
+     * @param assist String to help us figure out why we couldn't create this story, and thus what message to put in the
+     *               exception.
+     * @param fStr1  The first string to substitute into some message.
+     * @return InitStoryException with the message we figure out.
+     */
+    protected InitStoryException initEx(String assist, String fStr1) {
         switch (assist) {
             case C.BAD_URL:
                 // URL was bad.
-                return new InitStoryException(String.format(C.INVALID_URL, site));
+                return new InitStoryException(String.format(C.INVALID_URL, fStr1));
             case C.MN_REG_USERS_ONLY:
                 // Need to login to MuggleNet.
-                return new InitStoryException(String.format(C.MUST_LOGIN, site, storyId));
+                return new InitStoryException(String.format(C.MUST_LOGIN, ownerDl.getSite(), storyId));
             default:
                 // Default string.
-                return new InitStoryException(String.format(C.STORY_DL_FAILED, site, storyId));
+                return new InitStoryException(String.format(C.STORY_DL_FAILED, ownerDl.getSite(), storyId));
         }
     }
 
@@ -120,8 +140,8 @@ public class Story {
      * Get story's origin site.
      * @return Story site.
      */
-    public String getSite() {
-        return site;
+    public String getHostSite() {
+        return hostSite;
     }
 
     /**

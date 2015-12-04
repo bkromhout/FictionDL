@@ -1,7 +1,6 @@
 package bkromhout.FictionDL.Story;
 
 import bkromhout.FictionDL.C;
-import bkromhout.FictionDL.Downloader.MuggleNetDL;
 import bkromhout.FictionDL.Util;
 import bkromhout.FictionDL.ex.InitStoryException;
 import org.jsoup.nodes.Document;
@@ -34,7 +33,7 @@ public class MuggleNetStory extends Story {
      */
     private void populateInfo() throws InitStoryException {
         // Set site.
-        site = C.HOST_MN;
+        hostSite = C.HOST_MN;
         // Get story ID first.
         storyId = parseStoryId(url, C.MN_SID_REGEX, 1);
         // Normalize the URL, since there are many valid MN URL formats.
@@ -42,19 +41,19 @@ public class MuggleNetStory extends Story {
         // Get the story page in order to parse the story info.
         Document infoDoc = Util.downloadHtml(url);
         // Make sure that we got a Document, that this is a valid story, and that we don't need to login.
-        if (infoDoc == null) throw initEx(null, MuggleNetDL.SITE, storyId);
+        if (infoDoc == null) throw initEx();
         if (infoDoc.select("div.errorText").first() != null)
-            throw initEx(infoDoc.select("div.errorText").first().text().trim(), MuggleNetDL.SITE, storyId);
+            throw initEx(infoDoc.select("div.errorText").first().text().trim());
         // Get the element that has the title and author of the story in it.
         Elements taElem = infoDoc.select("div#pagetitle a");
-        if (taElem == null) throw initEx(null, MuggleNetDL.SITE, storyId);
+        if (taElem == null) throw initEx();
         // Get the title.
         title = taElem.first().html().trim();
         // Get the author.
         author = taElem.last().html().trim();
         // Get the element that has the details in it, and the detail label span element.
         Element details = infoDoc.select("div.content").first();
-        if (details == null) throw initEx(null, MuggleNetDL.SITE, storyId);
+        if (details == null) throw initEx();
         Elements labels = details.select("span.label");
         // Get summary.
         summary = Util.cleanHtmlString(makeDetailDivForLabel(details, labels, 0).html().trim());

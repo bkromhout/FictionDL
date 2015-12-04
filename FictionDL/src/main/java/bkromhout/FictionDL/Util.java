@@ -2,9 +2,8 @@ package bkromhout.FictionDL;
 
 import bkromhout.FictionDL.Gui.GuiController;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import javafx.scene.text.Text;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -14,6 +13,7 @@ import java.nio.file.Path;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
@@ -69,14 +69,49 @@ public class Util {
     }
 
     /**
+     * Log in to a site using form-data and return the cookies so that we can access pages on the site which are
+     * restricted to registered users.
+     * @param loginUrl Login URL.
+     * @param formData form-data elements to post to the login URL.
+     * @return Cookies from response, or null if it failed.
+     * @throws IOException if we failed to login for any reason.
+     */
+    public static Map<String, String> getAuthCookies(String loginUrl, Map<String, String> formData) throws IOException {
+        // Get the login form page
+        Connection.Response form = Jsoup.connect(loginUrl)
+                .method(Connection.Method.GET)
+                .execute();
+        // Now log in.
+        Connection.Response login = Jsoup.connect(loginUrl)
+                .method(Connection.Method.POST)
+                .data(formData)
+                .cookies(form.cookies())
+                .execute();
+        // Then return the cookies.
+        return login.cookies();
+    }
+
+    /**
      * Download an HTML document from the given URL.
      * @param url URL to download.
      * @return A Document object, or null if the url was malformed.
      */
     public static Document downloadHtml(String url) {
+        return downloadHtml(url, null);
+    }
+
+    /**
+     * Download an HTML document from the given URL, sending any given cookies along with the request.
+     * @param url     URL to download.
+     * @param cookies Cookies to send with request, or null for no cookies.
+     * @return A Document object, or null if the url was malformed.
+     */
+    public static Document downloadHtml(String url, Map<String, String> cookies) {
         Document doc = null;
         try {
-            doc = Jsoup.connect(url).get();
+            Connection connection = Jsoup.connect(url);
+            if (cookies != null) connection.cookies(cookies); // Add cookies if we have them
+            doc = connection.get();
         } catch (IOException e) {
             // We're just ignoring the exception really.
             logf(C.HTML_DL_FAILED, url);

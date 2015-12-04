@@ -1,7 +1,6 @@
 package bkromhout.FictionDL.Story;
 
 import bkromhout.FictionDL.C;
-import bkromhout.FictionDL.Downloader.FanFictionDL;
 import bkromhout.FictionDL.Util;
 import bkromhout.FictionDL.ex.InitStoryException;
 import org.jsoup.nodes.Document;
@@ -32,7 +31,7 @@ public class FanFictionStory extends Story {
      */
     private void populateInfo() throws InitStoryException {
         // Set site.
-        site = C.HOST_FFN;
+        hostSite = C.HOST_FFN;
         // Get story ID first.
         storyId = parseStoryId(url, C.FFN_SID_REGEX, 1);
         // Normalize the URL, since there are many valid FFN URL formats.
@@ -40,8 +39,7 @@ public class FanFictionStory extends Story {
         // Get the first chapter in order to parse the story info.
         Document infoDoc = Util.downloadHtml(url);
         // Make sure that we got a Document and that this is a valid story.
-        if (infoDoc == null || infoDoc.select("span.gui_warning").first() != null)
-            throw new InitStoryException(String.format(C.STORY_DL_FAILED, FanFictionDL.SITE, storyId));
+        if (infoDoc == null || infoDoc.select("span.gui_warning").first() != null) throw initEx();
         // Get the title.
         title = infoDoc.select("div#profile_top b").first().html().trim();
         // Get the author.

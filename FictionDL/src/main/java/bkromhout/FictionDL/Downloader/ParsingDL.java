@@ -13,23 +13,35 @@ import java.util.stream.Collectors;
  * class which subclasses the Story class.
  */
 public abstract class ParsingDL {
-    // Story URLs.
+    /**
+     * Human-readable site name for this downloader.
+     */
+    protected String site;
+    /**
+     * Story URLs.
+     */
     protected ArrayList<String> storyUrls;
-    // CSS selector to extract chapter text from original HTML.
+    /**
+     * CSS selector to extract chapter text from original HTML.
+     */
     protected String chapTextSelector;
-    // The FictionDL instance which owns this downloader.
+    /**
+     * The FictionDL instance which owns this downloader.
+     */
     private FictionDL fictionDL;
 
     /**
      * Create a new ParsingDL.
      * @param fictionDL        FictionDL object which owns this downloader.
-     * @param storyUrls        List of story URLs to be downloaded
+     * @param site             Human-readable site name for this downloader.
+     * @param storyUrls        List of story URLs to be downloaded.
      * @param chapTextSelector CSS selector used to extract chapter text from original chapter HTMLs. (If all of the
      *                         chapter's text cannot be extracted with one CSS selector, the subclass will need to pass
      *                         null for this and override the extractChapText() method.)
      */
-    protected ParsingDL(FictionDL fictionDL, ArrayList<String> storyUrls, String chapTextSelector) {
+    protected ParsingDL(FictionDL fictionDL, String site, ArrayList<String> storyUrls, String chapTextSelector) {
         this.fictionDL = fictionDL;
+        this.site = site;
         this.storyUrls = storyUrls;
         this.chapTextSelector = chapTextSelector;
     }
@@ -127,5 +139,13 @@ public abstract class ParsingDL {
      */
     protected String sanitizeChapter(String chapterString) {
         return chapterString;
+    }
+
+    /**
+     * Get the human-readable name for this downloader's site.
+     * @return Site name.
+     */
+    public String getSite() {
+        return site;
     }
 }

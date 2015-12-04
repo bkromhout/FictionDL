@@ -7,11 +7,9 @@ import bkromhout.FictionDL.Story.MuggleNetStory;
 import bkromhout.FictionDL.Util;
 import bkromhout.FictionDL.ex.InitStoryException;
 import org.jsoup.nodes.Element;
-import org.jsoup.parser.Tag;
-import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
-import java.util.ListIterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,7 +17,10 @@ import java.util.regex.Pattern;
  * Downloader for MuggleNet stories.
  */
 public class MuggleNetDL extends ParsingDL {
-    public static final String SITE = "MuggleNet";
+    /**
+     * Cookies that should be sent with any request made to this site.
+     */
+    public static Map<String, String> cookies;
 
     /**
      * Create a new MuggleNet downloader.
@@ -27,7 +28,7 @@ public class MuggleNetDL extends ParsingDL {
      * @param urls      List of MuggleNet URLs.
      */
     public MuggleNetDL(FictionDL fictionDL, ArrayList<String> urls) {
-        super(fictionDL, urls, "div.contentLeft");
+        super(fictionDL, "MuggleNet", urls, "div.contentLeft");
     }
 
     /**
@@ -35,9 +36,9 @@ public class MuggleNetDL extends ParsingDL {
      */
     @Override
     public void download() {
-        Util.logf(C.STARTING_SITE_DL_PROCESS, SITE);
+        Util.logf(C.STARTING_SITE_DL_PROCESS, site);
         // Create story models from URLs.
-        Util.logf(C.FETCH_BUILD_MODELS, SITE);
+        Util.logf(C.FETCH_BUILD_MODELS, site);
         ArrayList<MuggleNetStory> stories = new ArrayList<>();
         for (String url : storyUrls) {
             try {
@@ -48,7 +49,7 @@ public class MuggleNetDL extends ParsingDL {
             }
         }
         // Download and save the stories.
-        Util.logf(C.DL_STORIES_FROM_SITE, SITE);
+        Util.logf(C.DL_STORIES_FROM_SITE, site);
         stories.forEach(this::downloadStory);
     }
 
