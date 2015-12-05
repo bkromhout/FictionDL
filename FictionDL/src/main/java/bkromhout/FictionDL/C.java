@@ -39,6 +39,9 @@ public class C {
     // General
     public static final String PARSE_FILE = "Parsing file...";
 
+    // Auth Process
+    public static final String STARTING_SITE_AUTH_PROCESS = "\nAttempting to log in to %s..." + LOG_BLUE;
+
     // Download Process
     public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n" + LOG_BLUE;
     public static final String FETCH_BUILD_MODELS = "Fetching story info from %s and building story models...\n";
@@ -70,7 +73,7 @@ public class C {
             "never hurts to try!" + LOG_RED;
     public static final String MUST_LOGIN = "You need to provide login info for %s to download story with ID=%s!" +
             LOG_RED;
-    public static final String LOGIN_FAILED = "Couldn't log in to %s. Check your login info." + LOG_RED;
+    public static final String LOGIN_FAILED = "\nCouldn't log in to %s. Check your login info.\n" + LOG_RED;
 
     /*
     Domains and human-readable names for supported sites.
@@ -118,14 +121,24 @@ public class C {
     public static final String SIYE_C_URL = "http://siye.co.uk/viewstory.php?sid=%s&chapter=%d";
 
     /**
-     * MuggleNet story info link, just needs story ID substituted into it.
+     * MuggleNet story info link, just needs story ID and warning bypass part substituted into it.
      */
-    public static final String MN_S_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s&warning=5";
+    public static final String MN_S_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s%s";
 
     /**
-     * MuggleNet chapter link, needs story ID and chapter number substituted into it.
+     * MuggleNet chapter link, needs story ID and chapter number and warning bypass part substituted into it.
      */
-    public static final String MN_C_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s&chapter=%d&warning=5";
+    public static final String MN_C_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s&chapter=%d%s";
+
+    /**
+     * MuggleNet URL fragment, adds a warning bypass for "Professors"-rated stories/chapters.
+     */
+    public static final String MN_PART_WARN_3 = "&warning=3";
+
+    /**
+     * MuggleNet URL fragment, adds a warning bypass for "6th-7th Year"-rated stories/chapters.
+     */
+    public static final String MN_PART_WARN_5 = "&warning=5";
 
     /**
      * MuggleNet login page link.
@@ -145,6 +158,15 @@ public class C {
      * Error message displayed by MuggleNet when attempting to access a "Professors" rated story while not logged in.
      */
     public static final String MN_REG_USERS_ONLY = "Registered Users Only";
+
+    public static final String MN_NEEDS_WARN_5 = "This story may contain some sexuality, violence and or profanity " +
+            "not suitable for younger readers.";
+
+    /**
+     * Message displayed in place of a Professors-rated story/chapter if logged in, but the warning integer isn't 3.
+     */
+    public static final String MN_NEEDS_WARN_3 = "This fic may contain language or imagery unsuitable for persons " +
+            "under the age of 17. You must be logged in to read this fic.";
 
     /*
     RegEx Strings

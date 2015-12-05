@@ -87,8 +87,12 @@ public class Util {
                 .data(formData)
                 .cookies(form.cookies())
                 .execute();
+        // Check and see if we have some sort of useful auth cookie now, and throw an exception if we don't.
+        Map<String, String> cookies = login.cookies();
+        cookies.putAll(form.cookies()); // Make sure we still have the cookies from the original response too.
+        if (cookies.get("PHPSESSID") == null) throw new IOException();
         // Then return the cookies.
-        return login.cookies();
+        return cookies;
     }
 
     /**

@@ -5,7 +5,6 @@ import bkromhout.FictionDL.Chapter;
 import bkromhout.FictionDL.FictionDL;
 import bkromhout.FictionDL.Story.SiyeStory;
 import bkromhout.FictionDL.Util;
-import bkromhout.FictionDL.ex.InitStoryException;
 import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;

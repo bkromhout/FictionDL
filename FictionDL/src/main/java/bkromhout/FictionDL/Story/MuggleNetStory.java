@@ -21,7 +21,7 @@ public class MuggleNetStory extends Story {
     /**
      * Create a new MuggleNetStory object based off of a URL.
      * @param ownerDl The downloader which owns this story.
-     * @param url URL of the story this model represents.
+     * @param url     URL of the story this model represents.
      */
     public MuggleNetStory(ParsingDL ownerDl, String url) throws InitStoryException {
         super(ownerDl, url);
@@ -33,18 +33,32 @@ public class MuggleNetStory extends Story {
      */
     @Override
     protected void populateInfo() throws InitStoryException {
+        String warnBypass = "";
         // Set site.
         hostSite = C.HOST_MN;
         // Get story ID first.
         storyId = parseStoryId(url, C.MN_SID_REGEX, 1);
         // Normalize the URL, since there are many valid MN URL formats.
-        url = String.format(C.MN_S_URL, storyId);
+        url = String.format(C.MN_S_URL, storyId, warnBypass);
         // Get the story page in order to parse the story info.
         Document infoDoc = Util.downloadHtml(url, ownerDl.getCookies());
         // Make sure that we got a Document, that this is a valid story, and that we don't need to login.
         if (infoDoc == null) throw initEx();
-        if (infoDoc.select("div.errorText").first() != null)
-            throw initEx(infoDoc.select("div.errorText").first().text().trim());
+        Element errorText = infoDoc.select("div.errorText").first();
+        // Figure out if we need to change the warning bypass.
+        if (errorText != null && errorText.ownText().trim().equals(C.MN_NEEDS_WARN_3)) {
+            // We're logged in, but need to change our warning bypass to 3 for this story.
+            warnBypass = C.MN_PART_WARN_3;
+            // Now get the story page again.
+            url = String.format(C.MN_S_URL, storyId, warnBypass);
+            infoDoc = Util.downloadHtml(url, ownerDl.getCookies());
+        } else if (errorText != null && errorText.ownText().trim().equals(C.MN_NEEDS_WARN_5)) {
+            // We're logged in, but need to change our warning bypass to 5 for this story.
+            warnBypass = C.MN_PART_WARN_5;
+            // Now get the story page again.
+            url = String.format(C.MN_S_URL, storyId, warnBypass);
+            infoDoc = Util.downloadHtml(url, ownerDl.getCookies());
+        } else if (errorText != null) throw initEx(errorText.ownText().trim()); // Just throw some exception
         // Get the element that has the title and author of the story in it.
         Elements taElem = infoDoc.select("div#pagetitle a");
         if (taElem == null) throw initEx();
@@ -83,7 +97,7 @@ public class MuggleNetStory extends Story {
         // Get date last updated.
         dateUpdated = makeDetailDivForLabel(details, labels, 12).text().trim();
         // Generate chapter URLs.
-        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.MN_C_URL, storyId, i + 1));
+        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.MN_C_URL, storyId, i + 1, warnBypass));
     }
 
     /**

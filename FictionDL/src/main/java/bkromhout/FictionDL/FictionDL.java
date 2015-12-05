@@ -1,11 +1,13 @@
 package bkromhout.FictionDL;
 
-import bkromhout.FictionDL.Downloader.*;
+import bkromhout.FictionDL.Downloader.FanFictionDL;
+import bkromhout.FictionDL.Downloader.FictionHuntDL;
+import bkromhout.FictionDL.Downloader.MuggleNetDL;
+import bkromhout.FictionDL.Downloader.SiyeDL;
 import javafx.concurrent.Task;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.ArrayList;
 
 /**
  * Fan Fiction Downloader.
@@ -110,7 +112,7 @@ public class FictionDL {
          */
         if (!parser.getMnUrls().isEmpty()) {
             MuggleNetDL muggleNetDL = new MuggleNetDL(this, parser.getMnUrls());
-            
+            muggleNetDL.addAuth("bkromhout", "***REMOVED***");
             muggleNetDL.download();
         }
     }

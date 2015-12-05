@@ -35,6 +35,7 @@ public class MuggleNetDL extends ParsingDL {
      * @param password Password.
      */
     public void addAuth(String username, String password) {
+        Util.logf(C.STARTING_SITE_AUTH_PROCESS, siteName);
         // Add form-data elements.
         HashMap<String, String> formData = new HashMap<>();
         formData.put("penname", username);
@@ -46,6 +47,7 @@ public class MuggleNetDL extends ParsingDL {
         try {
             // Get new cookies.
             cookies.putAll(Util.getAuthCookies(C.MN_L_URL, formData));
+            Util.logf(C.DONE);
         } catch (IOException e) {
             Util.logf(C.LOGIN_FAILED, siteName);
         }
