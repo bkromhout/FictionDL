@@ -77,9 +77,11 @@ public abstract class ParsingDL {
         ArrayList<Story> stories = new ArrayList<>();
         for (String url : storyUrls) {
             try {
+                // Doing a bit of reflection magic here to construct story classes ;)
                 stories.add(storyClass.getConstructor(ParsingDL.class, String.class).newInstance(this, url));
             } catch (InvocationTargetException e) {
                 storyProcessed(); // Call this, since we have "processed" a story by failing to download it.
+                // Now figure out what the heck to put in the log.
                 if (e.getCause() == null) e.printStackTrace();
                 else if (e.getCause().getMessage() == null) e.getCause().printStackTrace();
                 else Util.log(e.getCause().getMessage());
