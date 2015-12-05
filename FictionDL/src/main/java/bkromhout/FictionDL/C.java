@@ -67,7 +67,7 @@ public class C {
 
     // Download Process
     public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n" + LOG_BLUE;
-    public static final String FETCH_BUILD_MODELS = "Fetching story info from %s and building story models...\n";
+    public static final String FETCH_BUILD_MODELS = "Fetching story infos from %s and building story models...\n";
     public static final String DL_STORIES_FROM_SITE = "Downloading stories from %s...\n\n";
     public static final String SIYE_SLOW = "SIYE's process is *very slow* due to their horrid HTML structure, please " +
             "be patient ;)";

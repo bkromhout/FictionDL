@@ -80,7 +80,9 @@ public abstract class ParsingDL {
                 stories.add(storyClass.getConstructor(ParsingDL.class, String.class).newInstance(this, url));
             } catch (InvocationTargetException e) {
                 storyProcessed(); // Call this, since we have "processed" a story by failing to download it.
-                Util.log(e.getCause().getMessage());
+                if (e.getCause() == null) e.printStackTrace();
+                else if (e.getCause().getMessage() == null) e.getCause().printStackTrace();
+                else Util.log(e.getCause().getMessage());
             } catch (ReflectiveOperationException e) {
                 // Shouldn't hit this at all.
                 e.printStackTrace();

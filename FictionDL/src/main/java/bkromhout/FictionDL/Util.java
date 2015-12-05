@@ -142,6 +142,7 @@ public class Util {
      * @return Cleaned HTML string.
      */
     public static String cleanHtmlString(String chapterContent) {
+        if (chapterContent == null) return null;
         // Make sure <br> and <hr> tags are closed.
         chapterContent = closeTags(chapterContent, "br");
         chapterContent = closeTags(chapterContent, "hr");
@@ -157,6 +158,7 @@ public class Util {
      * @return A string with all of the given tags closed.
      */
     public static String closeTags(String in, String tag) {
+        if (in == null) return null;
         return in.replaceAll(String.format(C.TAG_REGEX_FIND, tag), C.TAG_REGEX_REPL);
     }
 
@@ -166,6 +168,7 @@ public class Util {
      * @return The escaped string.
      */
     public static String escapeAmps(String in) {
+        if (in == null) return null;
         return in.replaceAll(C.AMP_REGEX, "&#x26;");
     }
 
@@ -176,6 +179,7 @@ public class Util {
      * @return Un-escaped string.
      */
     public static String unEscapeAmps(String in) {
+        if (in == null) return null;
         return in.replace("&amp;", "&").replace("&#x26;", "&");
     }
 
@@ -188,6 +192,7 @@ public class Util {
      * @return Fixed string.
      */
     public static String removeFFFDChars(String in) {
+        if (in == null) return null;
         return in.replace('\uFFFD', '\u00A0');
     }
 
@@ -199,6 +204,7 @@ public class Util {
      * @return The escaped string.
      */
     public static String convertWin1252Chars(String in) {
+        if (in == null) return null;
         in = removeFFFDChars(in);
         in = escapeAmps(in);
         return in.replace('\u0096', '–').replace('\u0097', '—').replace('\u0091', '‘').replace('\u0092', '’').replace(
@@ -211,6 +217,7 @@ public class Util {
      * @return The fixed file name.
      */
     public static String ensureLegalFilename(String in) {
+        if (in == null) return null;
         // Remove problematic characters.
         String out = in.replace("<", "").replace(">", "").replace(":", " -").replace("\"", "").replace("/", "").replace(
                 "\\", "").replace("|", "-").replace("?", "").replace("*", "").replace("\0", "");

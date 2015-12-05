@@ -55,7 +55,7 @@ public abstract class Story {
     /**
      * Create a new Story.
      * @param ownerDl The downloader which owns this story.
-     * @param url Story URL.
+     * @param url     Story URL.
      * @throws InitStoryException Thrown for many reasons, but the net result is that we can't build a story model.
      */
     protected Story(ParsingDL ownerDl, String url) throws InitStoryException {
@@ -109,6 +109,8 @@ public abstract class Story {
      * @return InitStoryException with the message we figure out.
      */
     protected InitStoryException initEx(String assist, String fStr1) {
+        if (assist == null)
+            return new InitStoryException(String.format(C.STORY_DL_FAILED, ownerDl.getSiteName(), storyId));
         switch (assist) {
             case C.BAD_URL:
                 // URL was bad.
