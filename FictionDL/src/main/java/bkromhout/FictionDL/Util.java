@@ -218,6 +218,8 @@ public class Util {
      */
     public static String ensureLegalFilename(String in) {
         if (in == null) return null;
+        // Unescape ampersands.
+        in = unEscapeAmps(in);
         // Remove problematic characters.
         String out = in.replace("<", "").replace(">", "").replace(":", " -").replace("\"", "").replace("/", "").replace(
                 "\\", "").replace("|", "-").replace("?", "").replace("*", "").replace("\0", "");

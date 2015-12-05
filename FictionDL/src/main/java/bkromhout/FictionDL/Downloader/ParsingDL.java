@@ -121,7 +121,7 @@ public abstract class ParsingDL {
      * @param story Story to download and save.
      */
     protected void downloadStory(Story story) {
-        Util.logf(C.DL_CHAPS_FOR, story.getTitle());
+        Util.logf(C.DL_CHAPS_FOR, Util.unEscapeAmps(story.getTitle()));
         // Download the chapters and fill in their titles.
         ArrayList<Chapter> chapters = downloadChapters(story);
         // Make sure we got all of the chapters. If we didn't we won't continue.
