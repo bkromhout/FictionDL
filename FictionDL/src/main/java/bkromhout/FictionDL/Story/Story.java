@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 /**
  * Base Story class.
  */
-public class Story {
+public abstract class Story {
     // The downloader which owns this story.
     protected ParsingDL ownerDl;
     // Story URL.
@@ -51,6 +51,24 @@ public class Story {
     protected ArrayList<String> chapterUrls = new ArrayList<>();
     // List of chapters.
     protected ArrayList<Chapter> chapters = new ArrayList<>();
+
+    /**
+     * Create a new Story.
+     * @param ownerDl The downloader which owns this story.
+     * @param url Story URL.
+     * @throws InitStoryException Thrown for many reasons, but the net result is that we can't build a story model.
+     */
+    protected Story(ParsingDL ownerDl, String url) throws InitStoryException {
+        this.ownerDl = ownerDl;
+        this.url = url;
+        populateInfo();
+    }
+
+    /**
+     * Populate this model's fields.
+     * @throws InitStoryException Thrown for many reasons, but the net result is that we can't build a story model.
+     */
+    protected abstract void populateInfo() throws InitStoryException;
 
     /**
      * Parse the storyId of a story from its URL using regex.
@@ -97,10 +115,10 @@ public class Story {
                 return new InitStoryException(String.format(C.INVALID_URL, fStr1));
             case C.MN_REG_USERS_ONLY:
                 // Need to login to MuggleNet.
-                return new InitStoryException(String.format(C.MUST_LOGIN, ownerDl.getSite(), storyId));
+                return new InitStoryException(String.format(C.MUST_LOGIN, ownerDl.getSiteName(), storyId));
             default:
                 // Default string.
-                return new InitStoryException(String.format(C.STORY_DL_FAILED, ownerDl.getSite(), storyId));
+                return new InitStoryException(String.format(C.STORY_DL_FAILED, ownerDl.getSiteName(), storyId));
         }
     }
 
@@ -137,7 +155,7 @@ public class Story {
     }
 
     /**
-     * Get story's origin site.
+     * Get story's host site. This string is site domain, not the human readable site name.
      * @return Story site.
      */
     public String getHostSite() {

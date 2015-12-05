@@ -1,13 +1,11 @@
 package bkromhout.FictionDL;
 
-import bkromhout.FictionDL.Downloader.FanFictionDL;
-import bkromhout.FictionDL.Downloader.FictionHuntDL;
-import bkromhout.FictionDL.Downloader.MuggleNetDL;
-import bkromhout.FictionDL.Downloader.SiyeDL;
+import bkromhout.FictionDL.Downloader.*;
 import javafx.concurrent.Task;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 /**
  * Fan Fiction Downloader.
@@ -92,7 +90,6 @@ public class FictionDL {
         if (!parser.getFictionHuntUrls().isEmpty()) {
             FictionHuntDL fictionHuntDL = new FictionHuntDL(this, parser.getFictionHuntUrls());
             fictionHuntDL.download();
-            Util.logf(C.FINISHED_WITH_SITE, FictionHuntDL.SITE);
         }
         /*
         Download FanFiction.net stories.
@@ -100,7 +97,6 @@ public class FictionDL {
         if (!parser.getFfnUrls().isEmpty()) {
             FanFictionDL fanFictionDL = new FanFictionDL(this, parser.getFfnUrls());
             fanFictionDL.download();
-            Util.logf(C.FINISHED_WITH_SITE, FanFictionDL.SITE);
         }
         /*
         Download SIYE stories.
@@ -108,15 +104,14 @@ public class FictionDL {
         if (!parser.getSiyeUrls().isEmpty()) {
             SiyeDL siyeDL = new SiyeDL(this, parser.getSiyeUrls());
             siyeDL.download();
-            Util.logf(C.FINISHED_WITH_SITE, SiyeDL.SITE);
         }
         /*
         Download MuggleNet stories.
          */
         if (!parser.getMnUrls().isEmpty()) {
             MuggleNetDL muggleNetDL = new MuggleNetDL(this, parser.getMnUrls());
+            
             muggleNetDL.download();
-            Util.logf(C.FINISHED_WITH_SITE, MuggleNetDL.SITE);
         }
     }
 

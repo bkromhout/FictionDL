@@ -4,19 +4,29 @@ import bkromhout.FictionDL.*;
 import bkromhout.FictionDL.Story.Story;
 import org.jsoup.nodes.Document;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 /**
- * Base class for a downloader that has to parse text (as opposed to just downloading an ePUB file, like the
- * FanFiction.net downloader for example). Downloaders which have to do parsing will also have a corresponding *Story
- * class which subclasses the Story class.
+ * Base class for a downloader that has to parse HTML. Downloaders which have to do parsing will also have a
+ * corresponding *Story class which subclasses the Story class. This class consolidates as much common code as possible,
+ * but still allows for downloader subclasses to override methods to provide flexibility.
  */
 public abstract class ParsingDL {
     /**
+     * This is the class of story which this Downloader interacts with. Must extend Story.
+     */
+    protected Class<? extends Story> storyClass;
+    /**
+     * The FictionDL instance which owns this downloader.
+     */
+    private FictionDL fictionDL;
+    /**
      * Human-readable site name for this downloader.
      */
-    protected String site;
+    protected String siteName;
     /**
      * Story URLs.
      */
@@ -26,22 +36,25 @@ public abstract class ParsingDL {
      */
     protected String chapTextSelector;
     /**
-     * The FictionDL instance which owns this downloader.
+     * Cookies to send with every request this downloader makes. Empty by default.
      */
-    private FictionDL fictionDL;
+    protected HashMap<String, String> cookies = new HashMap<>();
 
     /**
      * Create a new ParsingDL.
+     * @param storyClass       The class of Story which this downloader uses.
      * @param fictionDL        FictionDL object which owns this downloader.
-     * @param site             Human-readable site name for this downloader.
+     * @param siteName         Human-readable site name for this downloader.
      * @param storyUrls        List of story URLs to be downloaded.
      * @param chapTextSelector CSS selector used to extract chapter text from original chapter HTMLs. (If all of the
      *                         chapter's text cannot be extracted with one CSS selector, the subclass will need to pass
      *                         null for this and override the extractChapText() method.)
      */
-    protected ParsingDL(FictionDL fictionDL, String site, ArrayList<String> storyUrls, String chapTextSelector) {
+    protected ParsingDL(Class<? extends Story> storyClass, FictionDL fictionDL, String siteName,
+                        ArrayList<String> storyUrls, String chapTextSelector) {
+        this.storyClass = storyClass;
         this.fictionDL = fictionDL;
-        this.site = site;
+        this.siteName = siteName;
         this.storyUrls = storyUrls;
         this.chapTextSelector = chapTextSelector;
     }
@@ -57,7 +70,42 @@ public abstract class ParsingDL {
     /**
      * Download the stories whose URLs were passed to this instance of the downloader upon creation.
      */
-    public abstract void download();
+    public void download() {
+        printPreDlMsgs();
+        // Create story models from URLs.
+        Util.logf(C.FETCH_BUILD_MODELS, siteName);
+        ArrayList<Story> stories = new ArrayList<>();
+        for (String url : storyUrls) {
+            try {
+                stories.add(storyClass.getConstructor(ParsingDL.class, String.class).newInstance(this, url));
+            } catch (InvocationTargetException e) {
+                storyProcessed(); // Call this, since we have "processed" a story by failing to download it.
+                Util.log(e.getCause().getMessage());
+            } catch (ReflectiveOperationException e) {
+                // Shouldn't hit this at all.
+                e.printStackTrace();
+                Main.exit(1);
+            }
+        }
+        // Download and save the stories.
+        Util.logf(C.DL_STORIES_FROM_SITE, siteName);
+        stories.forEach(this::downloadStory);
+        printPostDlMsgs();
+    }
+
+    /**
+     * Prints log messages, first call of .download().
+     */
+    protected void printPreDlMsgs() {
+        Util.logf(C.STARTING_SITE_DL_PROCESS, siteName);
+    }
+
+    /**
+     * Prints log messages, last call of .download().
+     */
+    protected void printPostDlMsgs() {
+        Util.logf(C.FINISHED_WITH_SITE, siteName);
+    }
 
     /**
      * Download the chapters of a story, get their titles, extract their content, then process everything and save the
@@ -98,7 +146,7 @@ public abstract class ParsingDL {
      */
     private ArrayList<Chapter> downloadChapters(Story story) {
         // Download chapter HTML Documents.
-        ArrayList<Document> htmls = Util.getDocuments(story.getChapterUrls());
+        ArrayList<Document> htmls = Util.getDocuments(story.getChapterUrls(), cookies);
         // Create chapters without titles, those will be filled in by the overridden method.
         ArrayList<Chapter> chapters = htmls.stream().map(html -> new Chapter(null, html)).collect(
                 Collectors.toCollection(ArrayList::new));
@@ -145,7 +193,15 @@ public abstract class ParsingDL {
      * Get the human-readable name for this downloader's site.
      * @return Site name.
      */
-    public String getSite() {
-        return site;
+    public String getSiteName() {
+        return siteName;
+    }
+
+    /**
+     * Get the cookies to send with any request to this downloader's site.
+     * @return Cookies.
+     */
+    public HashMap<String, String> getCookies() {
+        return cookies;
     }
 }

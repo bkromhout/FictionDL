@@ -16,35 +16,14 @@ import java.util.regex.Pattern;
  * Downloader for FanFiction.net stories.
  */
 public class FanFictionDL extends ParsingDL {
+
     /**
      * Create a new FanFiction.net downloader.
      * @param fictionDL FictionDL object which owns this downloader.
      * @param urls      List of FanFiction.net URLs.
      */
     public FanFictionDL(FictionDL fictionDL, ArrayList<String> urls) {
-        super(fictionDL, "FanFiction.net", urls, "div#storytext");
-    }
-
-    /**
-     * Download the stories whose URLs were passed to this instance of the downloader upon creation.
-     */
-    @Override
-    public void download() {
-        Util.logf(C.STARTING_SITE_DL_PROCESS, site);
-        // Create story models from URLs.
-        Util.logf(C.FETCH_BUILD_MODELS, site);
-        ArrayList<FanFictionStory> stories = new ArrayList<>();
-        for (String url : storyUrls) {
-            try {
-                stories.add(new FanFictionStory(url));
-            } catch (InitStoryException e) {
-                storyProcessed(); // Call this, since we have "processed" a story by failing to download it.
-                Util.log(e.getMessage());
-            }
-        }
-        // Download and save the stories.
-        Util.logf(C.DL_STORIES_FROM_SITE, site);
-        stories.forEach(this::downloadStory);
+        super(FanFictionStory.class, fictionDL, C.NAME_FFN, urls, "div#storytext");
     }
 
     /**

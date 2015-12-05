@@ -123,11 +123,12 @@ public class Util {
      * Takes in a list of URLs (as strings) and returns a list of Documents downloaded from the URLs. Any malformed URLs
      * in the input list will be skipped.
      * @param urlList List of URLs to get Documents for.
+     * @param cookies The cookies to send with this request. May be empty or null.
      * @return Documents for all valid URLs that were in the input list.
      */
-    public static ArrayList<Document> getDocuments(ArrayList<String> urlList) {
+    public static ArrayList<Document> getDocuments(ArrayList<String> urlList, Map<String, String> cookies) {
         // Loop through the URL list and download from each. Obviously filter out any null elements.
-        return new ArrayList<>(urlList.stream().map(Util::downloadHtml).filter(out -> out != null)
+        return new ArrayList<>(urlList.stream().map((url) -> Util.downloadHtml(url, cookies)).filter(out -> out != null)
                 .collect(Collectors.toList()));
     }
 

@@ -5,7 +5,6 @@ import bkromhout.FictionDL.FictionDL;
 import bkromhout.FictionDL.Story.FictionHuntStory;
 import bkromhout.FictionDL.Story.Story;
 import bkromhout.FictionDL.Util;
-import bkromhout.FictionDL.ex.InitStoryException;
 
 import java.util.ArrayList;
 
@@ -13,35 +12,14 @@ import java.util.ArrayList;
  * Downloader for FictionHunt stories.
  */
 public class FictionHuntDL extends ParsingDL {
+
     /**
      * Create a new FictionHunt downloader.
      * @param fictionDL FictionDL object which owns this downloader.
      * @param urls      List of FictionHunt URLs.
      */
     public FictionHuntDL(FictionDL fictionDL, ArrayList<String> urls) {
-        super(fictionDL, "FictionHunt", urls, "div.text");
-    }
-
-    /**
-     * Download the stories whose URLs were passed to this instance of the downloader upon creation.
-     */
-    @Override
-    public void download() {
-        Util.logf(C.STARTING_SITE_DL_PROCESS, site);
-        // Create story models from URLs.
-        Util.logf(C.FETCH_BUILD_MODELS, site);
-        ArrayList<FictionHuntStory> stories = new ArrayList<>();
-        for (String url : storyUrls) {
-            try {
-                stories.add(new FictionHuntStory(url));
-            } catch (InitStoryException e) {
-                storyProcessed(); // Call this, since we have "processed" a story by failing to download it.
-                Util.log(e.getMessage());
-            }
-        }
-        // Download and save the stories.
-        Util.logf(C.DL_STORIES_FROM_SITE, site);
-        stories.forEach(this::downloadStory);
+        super(FictionHuntStory.class, fictionDL, C.NAME_FH, urls, "div.text");
     }
 
     /**

@@ -1,6 +1,7 @@
 package bkromhout.FictionDL.Story;
 
 import bkromhout.FictionDL.C;
+import bkromhout.FictionDL.Downloader.ParsingDL;
 import bkromhout.FictionDL.Util;
 import bkromhout.FictionDL.ex.InitStoryException;
 import org.jsoup.nodes.Document;
@@ -19,19 +20,19 @@ public class MuggleNetStory extends Story {
 
     /**
      * Create a new MuggleNetStory object based off of a URL.
+     * @param ownerDl The downloader which owns this story.
      * @param url URL of the story this model represents.
      */
-    public MuggleNetStory(String url) throws InitStoryException {
-        this.url = url;
-        populateInfo();
+    public MuggleNetStory(ParsingDL ownerDl, String url) throws InitStoryException {
+        super(ownerDl, url);
     }
 
     /**
      * Populate this model's fields.
-     * @throws InitStoryException Throw for many reasons, but the net result is that we can't build a story model for
-     *                            this.
+     * @throws InitStoryException Thrown for many reasons, but the net result is that we can't build a story model.
      */
-    private void populateInfo() throws InitStoryException {
+    @Override
+    protected void populateInfo() throws InitStoryException {
         // Set site.
         hostSite = C.HOST_MN;
         // Get story ID first.
@@ -39,7 +40,7 @@ public class MuggleNetStory extends Story {
         // Normalize the URL, since there are many valid MN URL formats.
         url = String.format(C.MN_S_URL, storyId);
         // Get the story page in order to parse the story info.
-        Document infoDoc = Util.downloadHtml(url);
+        Document infoDoc = Util.downloadHtml(url, ownerDl.getCookies());
         // Make sure that we got a Document, that this is a valid story, and that we don't need to login.
         if (infoDoc == null) throw initEx();
         if (infoDoc.select("div.errorText").first() != null)

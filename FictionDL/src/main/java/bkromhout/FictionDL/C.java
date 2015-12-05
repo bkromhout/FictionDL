@@ -73,11 +73,15 @@ public class C {
     public static final String LOGIN_FAILED = "Couldn't log in to %s. Check your login info." + LOG_RED;
 
     /*
-    Supported site domains.
+    Domains and human-readable names for supported sites.
      */
+    public static final String NAME_FFN = "FanFiction.net";
     public static final String HOST_FFN = "fanfiction.net";
+    public static final String NAME_FH = "FictionHunt";
     public static final String HOST_FH = "fictionhunt.com";
+    public static final String NAME_SIYE = "SIYE";
     public static final String HOST_SIYE = "siye.co.uk";
+    public static final String NAME_MN = "MuggleNet";
     public static final String HOST_MN = "fanfiction.mugglenet.com";
 
     /*

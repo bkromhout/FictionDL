@@ -1,6 +1,7 @@
 package bkromhout.FictionDL.Story;
 
 import bkromhout.FictionDL.C;
+import bkromhout.FictionDL.Downloader.ParsingDL;
 import bkromhout.FictionDL.Util;
 import bkromhout.FictionDL.ex.InitStoryException;
 import org.jsoup.nodes.Document;
@@ -14,19 +15,19 @@ public class SiyeStory extends Story {
 
     /**
      * Create a new SiyeStory object based off of a URL.
+     * @param ownerDl The downloader which owns this story.
      * @param url URL of the story this model represents.
      */
-    public SiyeStory(String url) throws InitStoryException {
-        this.url = url;
-        populateInfo();
+    public SiyeStory(ParsingDL ownerDl, String url) throws InitStoryException {
+        super(ownerDl, url);
     }
 
     /**
      * Populate this model's fields.
-     * @throws InitStoryException Throw for many reasons, but the net result is that we can't build a story model for
-     *                            this.
+     * @throws InitStoryException Thrown for many reasons, but the net result is that we can't build a story model.
      */
-    private void populateInfo() throws InitStoryException {
+    @Override
+    protected void populateInfo() throws InitStoryException {
         // Set site.
         hostSite = C.HOST_SIYE;
         // Get chapter 1 HTML first.
