@@ -20,7 +20,7 @@ public class FanFictionStory extends Story {
     /**
      * Create a new FanFictionStory object based off of a URL.
      * @param ownerDl The downloader which owns this story.
-     * @param url URL of the story this model represents.
+     * @param url     URL of the story this model represents.
      */
     public FanFictionStory(ParsingDL ownerDl, String url) throws InitStoryException {
         super(ownerDl, url);

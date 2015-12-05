@@ -16,7 +16,7 @@ public class SiyeStory extends Story {
     /**
      * Create a new SiyeStory object based off of a URL.
      * @param ownerDl The downloader which owns this story.
-     * @param url URL of the story this model represents.
+     * @param url     URL of the story this model represents.
      */
     public SiyeStory(ParsingDL ownerDl, String url) throws InitStoryException {
         super(ownerDl, url);

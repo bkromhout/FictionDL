@@ -18,7 +18,7 @@ public class FictionHuntStory extends Story {
     /**
      * Create a new FictionHuntStory object based off of a URL.
      * @param ownerDl The downloader which owns this story.
-     * @param url URL of the story this model represents.
+     * @param url     URL of the story this model represents.
      */
     public FictionHuntStory(ParsingDL ownerDl, String url) throws InitStoryException {
         super(ownerDl, url);
