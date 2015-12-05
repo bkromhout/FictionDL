@@ -267,4 +267,20 @@ public class Util {
     public static String stripLogStyleTags(String in) {
         return in.replace(C.LOG_RED, "").replace(C.LOG_BLUE, "").replace(C.LOG_GREEN, "");
     }
+
+    /**
+     * Build a simple regex string which is some number of string literals OR'ed together.
+     * @param literals Strings to OR together in the regex. It is assumed that at least one String is supplied.
+     * @return Regex string suitable for using with .find() (it doesn't capture any specific groups), or null if no
+     * strings were given.
+     */
+    public static String buildOrRegex(String... literals) {
+        // Build regex.
+        StringBuilder regex = new StringBuilder();
+        for (int i = 0; i < literals.length; i++) {
+            regex.append("\\Q").append(literals[i]).append("\\E");
+            if (i != literals.length - 1) regex.append('|');
+        }
+        return regex.toString();
+    }
 }

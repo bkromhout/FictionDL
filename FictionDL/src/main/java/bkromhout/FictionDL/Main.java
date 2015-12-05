@@ -5,6 +5,8 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import org.apache.commons.cli.*;
 
+import java.util.HashMap;
+
 /**
  * Just a simple entry point class for the command line app.
  */
@@ -39,7 +41,13 @@ public class Main {
         }
         // Do cool stuff.
         try {
-            new FictionDL(line.getOptionValue("i"), line.getOptionValue("o")).run();
+            // Create arguments map.
+            HashMap<String, String> ficDlArgs = new HashMap<>();
+            ficDlArgs.put(C.ARG_IN_PATH, line.getOptionValue("i"));
+            ficDlArgs.put(C.ARG_OUT_PATH, line.getOptionValue("o"));
+            ficDlArgs.put(C.ARG_CFG_PATH, line.getOptionValue("c"));
+            // Run FictionDL.
+            new FictionDL(ficDlArgs).run();
         } catch (IllegalArgumentException e) {
             Util.logf(C.INVALID_PATH, e.getMessage());
         }
@@ -73,6 +81,12 @@ public class Main {
                 .hasArg()
                 .argName("OUTPUT DIR PATH")
                 .desc("Output directory path (within quotes if it has spaces).")
+                .build());
+        // Add config file option.
+        options.addOption(Option.builder("c")
+                .hasArg()
+                .argName("CONFIG FILE PATH")
+                .desc("Config file path (within quotes if it has spaces).")
                 .build());
         // Add help option.
         options.addOption(Option.builder("?")

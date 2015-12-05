@@ -10,6 +10,16 @@ public class C {
     public static final String VER = "1.1";
     public static final String VER_STRING = "FictionDL, Version " + VER;
 
+    /**
+     * URLs file type.
+     */
+    public static final String FTYPE_LINK = "URLs";
+
+    /**
+     * Config file type.
+     */
+    public static final String FTYPE_CFG = "config";
+
     /*
     Log style tags. Putting these anywhere within a log string will cause the string to be formatted accordingly if
     it's printed to the TextFlow log in the GUI. The tags are stripped before the string is printed. One color and
@@ -24,20 +34,33 @@ public class C {
      */
     public static final double G_MIN_WIDTH = 525.0;
     public static final double G_MIN_HEIGHT = 300.0;
-    public static final String F_CHOOSE_TITLE = "Choose Input File:";
-    public static final String D_CHOOSE_TITLE = "Choose Output Directory:";
+    public static final String F_CHOOSE_TITLE = "Choose File:";
+    public static final String D_CHOOSE_TITLE = "Choose Directory:";
 
     /*
-    Preference Keys.
+    Keys.
      */
-    public static final String KEY_IN_FILE_PATH = "key_in_file_path";
-    public static final String KEY_OUT_DIR_PATH = "key_out_dir_path";
+    public static final String ARG_IN_PATH = "arg_in_path";
+    public static final String ARG_OUT_PATH = "arg_out_path";
+    public static final String ARG_CFG_PATH = "arg_cfg_path";
+    public static final String PREF_IN_FILE_PATH = "key_in_file_path";
+    public static final String PREF_OUT_DIR_PATH = "key_out_dir_path";
+    public static final String PREF_CFG_FILE_PATH = "key_cfg_file_path";
+
+    /*
+    Config File Constants.
+     */
+    // Valid line starters.
+    public static final String CFG_LS_HASH = "#";
+    public static final String CFG_LS_SITE = "site";
+    public static final String CFG_LS_U = "u";
+    public static final String CFG_LS_P = "p";
 
     /*
     Log output strings.
      */
     // General
-    public static final String PARSE_FILE = "Parsing file...";
+    public static final String PARSE_FILE = "Parsing %s file...";
 
     // Auth Process
     public static final String STARTING_SITE_AUTH_PROCESS = "\nAttempting to log in to %s..." + LOG_BLUE;

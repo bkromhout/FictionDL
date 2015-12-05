@@ -8,6 +8,7 @@ import javafx.concurrent.Task;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.HashMap;
 
 /**
  * Fan Fiction Downloader.
@@ -21,8 +22,12 @@ public class FictionDL {
     private File inputFile;
     // Path where the input file resides, which is where stories will be saved.
     public static Path outPath;
+    // Path to config file.
+    private File configFile;
+    // Configuration options.
+    private ConfigFileParser.Config config;
     // File parser.
-    public static FileParser parser;
+    public static LinkFileParser parser;
     // Keep a reference to the FictionDLTask if this is being run from the GUI.
     private FictionDLTask task;
     // Total number of stories which are to be downloaded, across all sites.
@@ -32,46 +37,48 @@ public class FictionDL {
 
     /**
      * Create a new FictionDL to execute the program logic.
-     * @param inputFilePath Path to input file.
-     * @param outputDirPath Path to output directory.
+     * @param args Arguments, mapped to keys.
      * @throws IllegalArgumentException if either of the paths cannot be resolved.
      */
-    public FictionDL(String inputFilePath, String outputDirPath) throws IllegalArgumentException {
-        this(inputFilePath, outputDirPath, null);
+    public FictionDL(HashMap<String, String> args) throws IllegalArgumentException {
+        this(args, null);
     }
 
     /**
      * Create a new FictionDL to execute the program logic.
-     * @param inputFilePath Path to input file.
-     * @param outputDirPath Path to output directory.
-     * @param task          FictionDLTask, which won't be null if this FictionDL is being run from a GUI.
+     * @param args Arguments, mapped to keys.
+     * @param task FictionDLTask, which won't be null if this FictionDL is being run from a GUI.
      * @throws IllegalArgumentException if either of the paths cannot be resolved.
      */
-    public FictionDL(String inputFilePath, String outputDirPath, FictionDLTask task) throws IllegalArgumentException {
+    public FictionDL(HashMap<String, String> args, FictionDLTask task) throws IllegalArgumentException {
         // Store the task (it might be null, that's fine).
         this.task = task;
         // If we're running from a GUI, go ahead and set the progress bar to indeterminate.
         if (task != null) task.updateProgress(-1, 0);
         // Make sure we have an input path.
-        if (inputFilePath == null) throw new IllegalArgumentException("[No input file path!]");
+        if (args.get(C.ARG_IN_PATH) == null) throw new IllegalArgumentException("[No input file path!]");
         // Try to get a file from the input file path.
-        inputFile = Util.tryGetFile(inputFilePath);
+        inputFile = Util.tryGetFile(args.get(C.ARG_IN_PATH));
         // Figure out the output directory.
-        if (outputDirPath == null) {
+        if (args.get(C.ARG_OUT_PATH) != null) {
+            // An output directory was specified.
+            outPath = Util.tryGetPath(args.get(C.ARG_OUT_PATH));
+        } else {
             // If an output directory wasn't specified, use the directory of the input file.
             outPath = inputFile.getAbsoluteFile().getParentFile().toPath();
-        } else {
-            // An output directory was specified.
-            outPath = Util.tryGetPath(outputDirPath);
         }
+        // Figure out the config file.
+        if (args.get(C.ARG_CFG_PATH) != null) configFile = Util.tryGetFile(args.get(C.ARG_CFG_PATH));
     }
 
     /**
      * Actually do stuff.
      */
     public void run() {
-        // Create a FileParser to get the story URLs from the input file.
-        parser = new FileParser(inputFile);
+        // Create a LinkFileParser to get the story URLs from the input file.
+        parser = new LinkFileParser(inputFile);
+        // If we have a config file, create a ConfigFileParser to get options.
+        if (configFile != null) config = new ConfigFileParser(configFile).getConfig();
         // Figure out how many stories we're downloading, then download them.
         totalNumStories = parser.getTotalNumStories();
         getStories(parser);
@@ -81,9 +88,9 @@ public class FictionDL {
 
     /**
      * Takes in a FileParse which has the various sites' URL lists and uses it to kick off the downloading process.
-     * @param parser FileParser which has successfully parsed input file.
+     * @param parser LinkFileParser which has successfully parsed input file.
      */
-    private void getStories(FileParser parser) {
+    private void getStories(LinkFileParser parser) {
         // Set progress bar to 0.
         if (task != null) task.updateProgress(numStoriesProcessed, totalNumStories);
         /*
@@ -112,7 +119,7 @@ public class FictionDL {
          */
         if (!parser.getMnUrls().isEmpty()) {
             MuggleNetDL muggleNetDL = new MuggleNetDL(this, parser.getMnUrls());
-            muggleNetDL.addAuth("bkromhout", "***REMOVED***");
+            if (config != null && config.hasMnAuth()) muggleNetDL.addAuth(config.mnUsername(), config.mnPassword());
             muggleNetDL.download();
         }
     }
@@ -130,23 +137,20 @@ public class FictionDL {
      * Subclass of Task so that FictionDL can be used by a JavaFX GUI app.
      */
     public static class FictionDLTask extends Task {
-        private String inputFilePath;
-        private String outputDirPath;
+        private HashMap<String, String> args;
 
         /**
          * Create a new FictionDLTask.
-         * @param inputFilePath Path to input file.
-         * @param outputDirPath Path to output directory.
+         * @param args Arguments, mapped to keys.
          */
-        public FictionDLTask(String inputFilePath, String outputDirPath) {
-            this.inputFilePath = inputFilePath;
-            this.outputDirPath = outputDirPath;
+        public FictionDLTask(HashMap<String, String> args) {
+            this.args = args;
         }
 
         @Override
         protected Object call() throws Exception {
             // Do cool stuff.
-            new FictionDL(inputFilePath, outputDirPath, this).run();
+            new FictionDL(args, this).run();
             return null;
         }
 

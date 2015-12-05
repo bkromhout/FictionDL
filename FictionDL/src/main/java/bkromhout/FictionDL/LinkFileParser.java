@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 /**
  * Parses the input file.
  */
-public class FileParser {
+public class LinkFileParser {
     // Regex for extracting host strings.
     private Pattern hostRegex = Pattern.compile(C.HOST_REGEX);
     // FictionHunt URLs.
@@ -25,13 +25,14 @@ public class FileParser {
 
     /**
      * Parse the file, populating the various URL lists for the different sites.
+     * @param storiesFile Link file.
      */
-    public FileParser(File storiesFile) {
-        initialize(storiesFile);
+    public LinkFileParser(File storiesFile) {
+        parse(storiesFile);
     }
 
-    private void initialize(File storiesFile) {
-        Util.logf(C.PARSE_FILE);
+    private void parse(File storiesFile) {
+        Util.logf(C.PARSE_FILE, C.FTYPE_LINK);
         // Try to read lines from file into the url list
         try (BufferedReader br = new BufferedReader(new FileReader(storiesFile))) {
             String line = br.readLine();
@@ -113,7 +114,7 @@ public class FileParser {
 
     /**
      * Total number of stories which are to be downloaded across all sites. Note that it is best to find this value
-     * right after this FileParser is initialized since counts in individual lists may change later.
+     * right after this LinkFileParser is initialized since counts in individual lists may change later.
      * @return Number of stories.
      */
     public int getTotalNumStories() {

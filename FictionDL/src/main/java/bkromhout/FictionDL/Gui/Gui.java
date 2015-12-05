@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.HashMap;
 import java.util.prefs.Preferences;
 
 public class Gui extends Application {
@@ -34,22 +35,17 @@ public class Gui extends Application {
         primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.setMinWidth(C.G_MIN_WIDTH);
         primaryStage.setMinHeight(C.G_MIN_HEIGHT);
-        primaryStage.setOnHiding(handler -> {
-            // Save text fields.
-            putPref(C.KEY_IN_FILE_PATH, controller.tfInFile.getText());
-            putPref(C.KEY_OUT_DIR_PATH, controller.tfOutDir.getText());
-        });
+        primaryStage.setOnHiding(handler -> controller.saveFields()); // Save text fields' contents when closing stage.
         // Show the stage.
         primaryStage.show();
     }
 
     /**
      * Create a FictionDL object with the given strings.
-     * @param inputFilePath Path to input file.
-     * @param outputDirPath Path to output directory.
+     * @param args Arguments, mapped to keys.
      */
-    protected void runFictionDl(String inputFilePath, String outputDirPath) {
-        fictionDLTask = new FictionDL.FictionDLTask(inputFilePath, outputDirPath);
+    protected void runFictionDl(HashMap<String, String> args) {
+        fictionDLTask = new FictionDL.FictionDLTask(args);
         // Set the task's handlers.
         fictionDLTask.setOnScheduled(handler -> {
             controller.pbProgress.setProgress(0d);
