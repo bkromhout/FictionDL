@@ -6,6 +6,11 @@ import bkromhout.FictionDL.Util;
 import bkromhout.FictionDL.ex.InitStoryException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.nodes.TextNode;
+import org.jsoup.parser.Tag;
+
+import java.util.List;
 
 /**
  * Model object for a SIYE story. Despite the word "model", this is not an object with a light initialization cost, as
@@ -33,13 +38,14 @@ public class SiyeStory extends Story {
         // Get chapter 1 HTML first.
         Document infoDoc = getInfoPage(url);
         Element storyInfoElem = infoDoc.select("td[align=\"left\"][valign=\"top\"]").last();
+        if (storyInfoElem == null) throw initEx();
         // Get summary.
-        summary = storyInfoElem.textNodes().get(13).text().trim(); // Incomplete stories.
-        if (summary.isEmpty()) summary = storyInfoElem.textNodes().get(14).text().trim(); // Complete stories.
-        // If we still don't have the summary, then the there isn't a story with this story ID on SIYE.
-        if (summary.isEmpty()) throw initEx();
+        int summaryStartIdx = storyInfoElem.select("b:contains(Summary:)").first().siblingIndex() + 1;
+        int summaryEndIdx = storyInfoElem.select("b:contains(Hitcount:)").first().siblingIndex();
+        summary = Util.cleanHtmlString(parseSummary(storyInfoElem, summaryStartIdx, summaryEndIdx));
         // Get characters.
-        characters = storyInfoElem.textNodes().get(3).text().trim();
+        Element charsLabel = storyInfoElem.select("b:contains(Characters:)").first();
+        characters = ((TextNode) storyInfoElem.childNodes().get(charsLabel.siblingIndex() + 1)).text().trim();
         // Figure out the SIYE story ID and author ID link, because we'll get the rest of the general details from
         // there.
         String authorIdLink = findAuthorIdLink(infoDoc);
@@ -115,5 +121,27 @@ public class SiyeStory extends Story {
         if (aIdElement == null) throw initEx();
         // Now return the author page URL.
         return aIdElement.attr("href");
+    }
+
+    /**
+     * Get the story summary from the story details element based on indices of child nodes.
+     * @param parent   Element to copy nodes from.
+     * @param startIdx Index to start copying nodes from (inclusive).
+     * @param endIdx   Index to copy nodes to (exclusive).
+     * @return Summary HTML string.
+     */
+    private String parseSummary(Element parent, int startIdx, int endIdx) {
+        // Parameter checks.
+        if (parent == null || startIdx < 0 || startIdx >= parent.childNodes().size() || endIdx <= startIdx ||
+                endIdx > parent.childNodes().size()) return null;
+        // Copy parent's child nodes.
+        List<Node> nodeCopies = parent.childNodesCopy();
+        // Create the new div.
+        Element summary = new Element(Tag.valueOf("div"), "");
+        // Loop through the copied nodes, starting at the startIdx and up to but not including the endIdx, and append
+        // those nodes to the new div.
+        for (int i = startIdx; i < endIdx; i++) summary.appendChild(nodeCopies.get(i));
+        // Return the summary HTML.
+        return summary.html().trim();
     }
 }

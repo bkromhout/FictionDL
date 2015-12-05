@@ -137,19 +137,19 @@ public class Util {
     }
 
     /**
-     * Do some common chapter HTML cleaning tasks.
-     * @param chapterContent HTML string.
+     * Do some common HTML cleaning tasks.
+     * @param htmlStr HTML string.
      * @return Cleaned HTML string.
      */
-    public static String cleanHtmlString(String chapterContent) {
-        if (chapterContent == null) return null;
+    public static String cleanHtmlString(String htmlStr) {
+        if (htmlStr == null) return null;
         // Make sure <br> and <hr> tags are closed.
-        chapterContent = closeTags(chapterContent, "br");
-        chapterContent = closeTags(chapterContent, "hr");
+        htmlStr = closeTags(htmlStr, "br");
+        htmlStr = closeTags(htmlStr, "hr");
         // Escape pesky characters.
-        chapterContent = convertWin1252Chars(chapterContent);
+        htmlStr = convertWin1252Chars(htmlStr);
         // Squeaky clean!
-        return chapterContent;
+        return htmlStr;
     }
 
     /**
