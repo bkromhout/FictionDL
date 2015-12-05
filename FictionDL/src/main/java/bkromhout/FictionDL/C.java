@@ -7,7 +7,7 @@ public class C {
     /*
     General constants.
      */
-    public static final String VER = "1.1";
+    public static final String VER = "2.0";
     public static final String VER_STRING = "FictionDL, Version " + VER;
 
     /**

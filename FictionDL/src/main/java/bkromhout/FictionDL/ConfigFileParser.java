@@ -98,6 +98,7 @@ public class ConfigFileParser {
         /*
         MuggleNet
          */
+
         /**
          * @return MuggleNet username.
          */
