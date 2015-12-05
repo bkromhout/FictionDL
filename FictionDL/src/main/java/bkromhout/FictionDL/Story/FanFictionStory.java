@@ -1,45 +1,47 @@
 package bkromhout.FictionDL.Story;
 
 import bkromhout.FictionDL.C;
-import bkromhout.FictionDL.Downloader.FanFictionDL;
+import bkromhout.FictionDL.Downloader.ParsingDL;
 import bkromhout.FictionDL.Util;
+import bkromhout.FictionDL.ex.InitStoryException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Model object for a FanFiction.net story. Despite the word "model", this is not an object with a light initialization
  * cost, as it accesses the internet to retrieve story information.
  */
 public class FanFictionStory extends Story {
-    // Story URL.
-    private String url;
 
     /**
      * Create a new FanFictionStory object based off of a URL.
-     * @param url URL of the story this model represents.
+     * @param ownerDl The downloader which owns this story.
+     * @param url     URL of the story this model represents.
      */
-    public FanFictionStory(String url) throws IOException {
-        this.url = url;
-        populateInfo();
+    public FanFictionStory(ParsingDL ownerDl, String url) throws InitStoryException {
+        super(ownerDl, url);
     }
 
     /**
      * Populate this model's fields.
-     * @throws IOException Throw for many reasons, but the net result is that we can't build a story model for this.
+     * @throws InitStoryException Thrown for many reasons, but the net result is that we can't build a story model.
      */
-    private void populateInfo() throws IOException {
+    @Override
+    protected void populateInfo() throws InitStoryException {
+        // Set site.
+        hostSite = C.HOST_FFN;
         // Get story ID first.
         storyId = parseStoryId(url, C.FFN_SID_REGEX, 1);
         // Normalize the URL, since there are many valid FFN URL formats.
-        url = String.format(C.FFN_URL, storyId);
+        url = String.format(C.FFN_S_URL, storyId);
         // Get the first chapter in order to parse the story info.
         Document infoDoc = Util.downloadHtml(url);
         // Make sure that we got a Document and that this is a valid story.
-        if (infoDoc == null || infoDoc.select("span.gui_warning").first() != null)
-            throw new IOException(String.format(C.STORY_DL_FAILED, FanFictionDL.SITE, storyId));
+        if (infoDoc == null || infoDoc.select("span.gui_warning").first() != null) throw initEx();
         // Get the title.
         title = infoDoc.select("div#profile_top b").first().html().trim();
         // Get the author.
@@ -60,10 +62,29 @@ public class FanFictionStory extends Story {
         // Get the word count.
         int wordCntIdx = findDetailsStringIdx(details, "Words: ");
         wordCount = Integer.parseInt(details[wordCntIdx].replace("Words: ", "").replace(",", "").trim());
-        // Get the genre(s).
-        genres = parseGenres(details, chapCntIdx != -1 ? chapCntIdx : wordCntIdx);
-        // Get the characters.
-        characters = details[genres.equals(C.NO_GENRE) ? 2 : 3].trim();
+        // Figure genres and characters, either or both of which may be missing.
+        if (chapCntIdx == 2 || wordCntIdx == 2) {
+            // We don't have genres or characters, set them accordingly.
+            genres = C.NO_GENRE;
+            characters = C.NONE;
+        } else if (chapCntIdx == 3 || (chapCntIdx == -1 && wordCntIdx == 3)) {
+            // We have something at index 2, but we need to figure out if it's a genre or characters. This also means
+            // that we only have one of either genres or characters, not both.
+            Matcher genreMatcher = Pattern.compile(C.FFN_GENRE_REGEX).matcher(details[2]);
+            if (genreMatcher.find()) {
+                // This is the genres string, we don't have characters.
+                genres = details[2].trim();
+                characters = C.NONE;
+            } else {
+                // This is the characters string, we don't have genres.
+                genres = C.NO_GENRE;
+                characters = details[2].trim();
+            }
+        } else {
+            // We have both a genres string and a characters string.
+            genres = details[2].trim();
+            characters = details[3].trim();
+        }
         // Get the dates.
         Elements dates = detailElem.select("span > span");
         // Get the date published.
@@ -73,7 +94,7 @@ public class FanFictionStory extends Story {
         // Get the status.
         status = findDetailsStringIdx(details, "Status: Complete") != -1 ? C.STAT_C : C.STAT_I;
         // Generate chapter URLs.
-        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.FFN_CHAP_URL, storyId, i + 1));
+        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.FFN_C_URL, storyId, i + 1));
     }
 
     /**
@@ -94,20 +115,6 @@ public class FanFictionStory extends Story {
             // Crossover fic.
             return element.nextElementSibling().text().trim();
         }
-    }
-
-    /**
-     * Parse the story genre(s).
-     * @param details The details string array.
-     * @param relIdx  Either the index of the chapter count in the details string, or if that doesn't exist, the index
-     *                of the word count.
-     * @return The story genre(s).
-     */
-    private String parseGenres(String[] details, int relIdx) {
-        // If the relative index is 3, then there wasn't a specific genre string. We'll call it "None/Gen"
-        if (relIdx == 3) return C.NO_GENRE;
-        // If the relative index is 4, then we return the details string at index 2.
-        return details[2].trim();
     }
 
     /**

@@ -2,8 +2,6 @@ package bkromhout.FictionDL;
 
 import org.jsoup.nodes.Document;
 
-import java.nio.charset.StandardCharsets;
-
 /**
  * Chapter model. Very simple, just holds the chapter title and content.
  */

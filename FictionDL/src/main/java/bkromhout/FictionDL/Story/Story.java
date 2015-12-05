@@ -2,6 +2,8 @@ package bkromhout.FictionDL.Story;
 
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Chapter;
+import bkromhout.FictionDL.Downloader.ParsingDL;
+import bkromhout.FictionDL.ex.InitStoryException;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -10,22 +12,30 @@ import java.util.regex.Pattern;
 /**
  * Base Story class.
  */
-public class Story {
+public abstract class Story {
+    // The downloader which owns this story.
+    protected ParsingDL ownerDl;
+    // Story URL.
+    protected String url;
     // Story ID.
     protected String storyId;
     // Story title.
     protected String title;
     // Story author.
     protected String author;
+    // Site story is from (will be used as "Publisher" metadata).
+    protected String hostSite;
     // Story summary.
     protected String summary;
+    // Story series.
+    protected String series;
     // Story type.
     protected String ficType;
     // Story warnings.
     protected String warnings;
     // Story rating.
     protected String rating;
-    // Story genre(s) (may be "None/Gen").
+    // Story genres (may be "None/Gen").
     protected String genres;
     // Story characters (and perhaps pairings, if they can be parsed.)
     protected String characters;
@@ -43,16 +53,83 @@ public class Story {
     protected ArrayList<Chapter> chapters = new ArrayList<>();
 
     /**
+     * Create a new Story.
+     * @param ownerDl The downloader which owns this story.
+     * @param url     Story URL.
+     * @throws InitStoryException Thrown for many reasons, but the net result is that we can't build a story model.
+     */
+    protected Story(ParsingDL ownerDl, String url) throws InitStoryException {
+        this.ownerDl = ownerDl;
+        this.url = url;
+        populateInfo();
+    }
+
+    /**
+     * Populate this model's fields.
+     * @throws InitStoryException Thrown for many reasons, but the net result is that we can't build a story model.
+     */
+    protected abstract void populateInfo() throws InitStoryException;
+
+    /**
      * Parse the storyId of a story from its URL using regex.
-     * @param url URL of story.
+     * @param url   URL of story.
      * @param regex Regex that will help extract the story ID.
      * @param group Number of the group from the regex that will contain the story ID.
-     * @return Story ID.
+     * @return Story ID, or null.
      */
-    protected String parseStoryId(String url, String regex, int group) {
+    protected String parseStoryId(String url, String regex, int group) throws InitStoryException {
         Matcher matcher = Pattern.compile(regex).matcher(url);
-        matcher.find();
+        if (!matcher.find()) throw initEx(C.BAD_URL, url);
         return matcher.group(group);
+    }
+
+    /**
+     * Throw a InitStoryException with some message about why we couldn't create this story.
+     * @return InitStoryException with the message we figure out.
+     */
+    protected InitStoryException initEx() {
+        return initEx(null, null);
+    }
+
+    /**
+     * Throw a InitStoryException with some message about why we couldn't create this story.
+     * @param assist String to help us figure out why we couldn't create this story, and thus what message to put in the
+     *               exception.
+     * @return InitStoryException with the message we figure out.
+     */
+    protected InitStoryException initEx(String assist) {
+        return initEx(assist, null);
+    }
+
+    /**
+     * Throw a InitStoryException with some message about why we couldn't create this story.
+     * @param assist String to help us figure out why we couldn't create this story, and thus what message to put in the
+     *               exception.
+     * @param fStr1  The first string to substitute into some message.
+     * @return InitStoryException with the message we figure out.
+     */
+    protected InitStoryException initEx(String assist, String fStr1) {
+        if (assist == null)
+            return new InitStoryException(String.format(C.STORY_DL_FAILED, ownerDl.getSiteName(), storyId));
+        switch (assist) {
+            case C.BAD_URL:
+                // URL was bad.
+                return new InitStoryException(String.format(C.INVALID_URL, fStr1));
+            case C.MN_REG_USERS_ONLY:
+                // Need to login to MuggleNet.
+                return new InitStoryException(String.format(C.MUST_LOGIN, ownerDl.getSiteName(), storyId));
+            default:
+                // Default string.
+                return new InitStoryException(String.format(C.STORY_DL_FAILED, ownerDl.getSiteName(), storyId));
+        }
+    }
+
+    /**
+     * Get story's URL.
+     * @return Story URL.
+     */
+    public String getUrl() {
+        return url;
     }
 
     /**
@@ -80,6 +157,14 @@ public class Story {
     }
 
     /**
+     * Get story's host site. This string is site domain, not the human readable site name.
+     * @return Story site.
+     */
+    public String getHostSite() {
+        return hostSite;
+    }
+
+    /**
      * Get this story's summary.
      * @return Story summary.
      */
@@ -88,9 +173,17 @@ public class Story {
     }
 
     /**
+     * Get this story's series.
+     * @return Story series.
+     */
+    public String getSeries() {
+        return series;
+    }
+
+    /**
      * Get this story's type. (Ex: FFN's story type is are fandom categories like "Books > Harry Potter", SIYE's are
-     * Harry Potter time period categories such as "Post-Hogwarts". Not all sites may have something worth filling
-     * this in for.)
+     * Harry Potter time period categories such as "Post-Hogwarts". Not all sites may have something worth filling this
+     * in for.)
      * @return Story type.
      */
     public String getFicType() {
@@ -114,8 +207,8 @@ public class Story {
     }
 
     /**
-     * Get this story's genre(s). Might be "None/Gen".
-     * @return Story genre(s).
+     * Get this story's genres. Might be "None/Gen".
+     * @return Story genres.
      */
     public String getGenres() {
         return genres;
@@ -162,7 +255,7 @@ public class Story {
     }
 
     /**
-     * Get this story's status ("Complete", "Incomplete", "Abandoned", etc.).
+     * Get this story's status ("Complete", "Incomplete", etc.).
      * @return Story status.
      */
     public String getStatus() {

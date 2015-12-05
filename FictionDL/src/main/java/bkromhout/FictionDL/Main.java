@@ -1,14 +1,28 @@
 package bkromhout.FictionDL;
 
+import bkromhout.FictionDL.Gui.Gui;
+import javafx.application.Application;
+import javafx.application.Platform;
 import org.apache.commons.cli.*;
+
+import java.util.HashMap;
 
 /**
  * Just a simple entry point class for the command line app.
  */
 public class Main {
+    // Are we running with a GUI?
+    public static boolean isGui = false;
 
     public static void main(String[] args) {
-        System.out.println(C.VER_STRING);
+        // Check for GUI argument.
+        if (args.length == 0 || (args.length == 1 && args[0].equals("-gui"))) {
+            isGui = true;
+            Application.launch(Gui.class);
+            return;
+        }
+        // If it's not there, precede as normal.
+        Util.log(C.VER_STRING);
         // Process CLI input.
         Options options = getOptions();
         CommandLineParser parser = new DefaultParser();
@@ -16,7 +30,7 @@ public class Main {
         try {
             line = parser.parse(options, args);
         } catch (ParseException e) {
-            System.out.println("Bad arguments.");
+            Util.log("Bad arguments.");
             printHelp(options);
             return;
         }
@@ -27,10 +41,25 @@ public class Main {
         }
         // Do cool stuff.
         try {
-            new FictionDL(line.getOptionValue("i"), line.getOptionValue("o")).run();
+            // Create arguments map.
+            HashMap<String, String> ficDlArgs = new HashMap<>();
+            ficDlArgs.put(C.ARG_IN_PATH, line.getOptionValue("i"));
+            ficDlArgs.put(C.ARG_OUT_PATH, line.getOptionValue("o"));
+            ficDlArgs.put(C.ARG_CFG_PATH, line.getOptionValue("c"));
+            // Run FictionDL.
+            new FictionDL(ficDlArgs).run();
         } catch (IllegalArgumentException e) {
-            System.out.println(C.INVALID_PATH);
+            Util.logf(C.INVALID_PATH, e.getMessage());
         }
+    }
+
+    /**
+     * Exit the program, using System.exit() if running in CLI mode and Platform.exit() if running in GUI mode.
+     * @param returnCode The return code to use.
+     */
+    public static void exit(int returnCode) {
+        if (isGui) Platform.exit();
+        else System.exit(returnCode);
     }
 
     /**
@@ -52,6 +81,12 @@ public class Main {
                 .hasArg()
                 .argName("OUTPUT DIR PATH")
                 .desc("Output directory path (within quotes if it has spaces).")
+                .build());
+        // Add config file option.
+        options.addOption(Option.builder("c")
+                .hasArg()
+                .argName("CONFIG FILE PATH")
+                .desc("Config file path (within quotes if it has spaces).")
                 .build());
         // Add help option.
         options.addOption(Option.builder("?")

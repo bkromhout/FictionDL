@@ -1,20 +1,20 @@
 package bkromhout.FictionDL;
 
+import bkromhout.FictionDL.Gui.GuiController;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Entities;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -30,7 +30,8 @@ public class Util {
      */
     public static Path tryGetPath(String path) throws IllegalArgumentException {
         File dir = new File(path);
-        if ((!dir.exists() && !dir.mkdirs()) || !dir.isDirectory()) throw new IllegalArgumentException();
+        if ((!dir.exists() && !dir.mkdirs()) || !dir.isDirectory())
+            throw new IllegalArgumentException(dir.getAbsolutePath());
         return dir.toPath();
     }
 
@@ -44,7 +45,7 @@ public class Util {
     public static File tryGetFile(String path) throws IllegalArgumentException {
         File file = new File(path);
         if (!file.exists() || !file.isFile() || !file.canRead() || !file.canWrite())
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(file.getAbsolutePath());
         return file;
     }
 
@@ -68,17 +69,56 @@ public class Util {
     }
 
     /**
+     * Log in to a site using form-data and return the cookies so that we can access pages on the site which are
+     * restricted to registered users.
+     * @param loginUrl Login URL.
+     * @param formData form-data elements to post to the login URL.
+     * @return Cookies from response, or null if it failed.
+     * @throws IOException if we failed to login for any reason.
+     */
+    public static Map<String, String> getAuthCookies(String loginUrl, Map<String, String> formData) throws IOException {
+        // Get the login form page
+        Connection.Response form = Jsoup.connect(loginUrl)
+                .method(Connection.Method.GET)
+                .execute();
+        // Now log in.
+        Connection.Response login = Jsoup.connect(loginUrl)
+                .method(Connection.Method.POST)
+                .data(formData)
+                .cookies(form.cookies())
+                .execute();
+        // Check and see if we have some sort of useful auth cookie now, and throw an exception if we don't.
+        Map<String, String> cookies = login.cookies();
+        cookies.putAll(form.cookies()); // Make sure we still have the cookies from the original response too.
+        if (cookies.get("PHPSESSID") == null) throw new IOException();
+        // Then return the cookies.
+        return cookies;
+    }
+
+    /**
      * Download an HTML document from the given URL.
      * @param url URL to download.
      * @return A Document object, or null if the url was malformed.
      */
     public static Document downloadHtml(String url) {
+        return downloadHtml(url, null);
+    }
+
+    /**
+     * Download an HTML document from the given URL, sending any given cookies along with the request.
+     * @param url     URL to download.
+     * @param cookies Cookies to send with request, or null for no cookies.
+     * @return A Document object, or null if the url was malformed.
+     */
+    public static Document downloadHtml(String url, Map<String, String> cookies) {
         Document doc = null;
         try {
-            doc = Jsoup.connect(url).get();
+            Connection connection = Jsoup.connect(url);
+            if (cookies != null) connection.cookies(cookies); // Add cookies if we have them
+            doc = connection.get();
         } catch (IOException e) {
             // We're just ignoring the exception really.
-            System.out.printf(C.HTML_DL_FAILED, url);
+            logf(C.HTML_DL_FAILED, url);
         }
         return doc;
     }
@@ -87,28 +127,29 @@ public class Util {
      * Takes in a list of URLs (as strings) and returns a list of Documents downloaded from the URLs. Any malformed URLs
      * in the input list will be skipped.
      * @param urlList List of URLs to get Documents for.
+     * @param cookies The cookies to send with this request. May be empty or null.
      * @return Documents for all valid URLs that were in the input list.
      */
-    public static ArrayList<Document> getDocuments(ArrayList<String> urlList) {
+    public static ArrayList<Document> getDocuments(ArrayList<String> urlList, Map<String, String> cookies) {
         // Loop through the URL list and download from each. Obviously filter out any null elements.
-        return new ArrayList<>(urlList.stream().map(Util::downloadHtml).filter(out -> out != null)
+        return new ArrayList<>(urlList.stream().map((url) -> Util.downloadHtml(url, cookies)).filter(out -> out != null)
                 .collect(Collectors.toList()));
     }
 
     /**
-     * Save a file at the specified path with the specified data. Will create the file if it doesn't exist and overwrite
-     * it if it does.
-     * @param filePath Path at which to save the file. It is assumed that the file name is legal.
-     * @param data     Data to save to the file.
+     * Do some common chapter HTML cleaning tasks.
+     * @param chapterContent HTML string.
+     * @return Cleaned HTML string.
      */
-    public static void saveFile(Path filePath, byte[] data) {
-        try {
-            Files.write(filePath, data);
-        } catch (IOException e) {
-            System.out.printf(C.SAVE_FILE_FAILED, filePath.toString());
-            e.printStackTrace();
-            System.exit(1);
-        }
+    public static String cleanHtmlString(String chapterContent) {
+        if (chapterContent == null) return null;
+        // Make sure <br> and <hr> tags are closed.
+        chapterContent = closeTags(chapterContent, "br");
+        chapterContent = closeTags(chapterContent, "hr");
+        // Escape pesky characters.
+        chapterContent = convertWin1252Chars(chapterContent);
+        // Squeaky clean!
+        return chapterContent;
     }
 
     /**
@@ -117,6 +158,7 @@ public class Util {
      * @return A string with all of the given tags closed.
      */
     public static String closeTags(String in, String tag) {
+        if (in == null) return null;
         return in.replaceAll(String.format(C.TAG_REGEX_FIND, tag), C.TAG_REGEX_REPL);
     }
 
@@ -126,28 +168,47 @@ public class Util {
      * @return The escaped string.
      */
     public static String escapeAmps(String in) {
+        if (in == null) return null;
         return in.replaceAll(C.AMP_REGEX, "&#x26;");
     }
 
     /**
-     * Un-Esacpe ampersands, because epublib is completely idiotic and doesn't check to see if an ampersand is part of a
+     * Un-Escape ampersands, because epublib is completely idiotic and doesn't check to see if an ampersand is part of a
      * character code, it just escapes it again.
      * @param in String to un-escape.
      * @return Un-escaped string.
      */
     public static String unEscapeAmps(String in) {
+        if (in == null) return null;
         return in.replace("&amp;", "&").replace("&#x26;", "&");
     }
 
     /**
+     * Removes any instance of the Unicode replacement character, U+FFFD. Sadly, some sites appear to be littered with
+     * this character, indicating that the author's original content was likely not correctly converted from their
+     * original character encoding to the site's character encoding :( I think the best choice here is usually to
+     * replace it with a non-breaking space, U+00A0.
+     * @param in String to fix.
+     * @return Fixed string.
+     */
+    public static String removeFFFDChars(String in) {
+        if (in == null) return null;
+        return in.replace('\uFFFD', '\u00A0');
+    }
+
+    /**
      * Converts characters that, while valid in Windows-1252 are control characters in Unicode, to their corresponding
-     * Unicode representations. Also escaptes any ampersands not already part of a character code.
+     * Unicode representations. Also escapes any ampersands not already part of a character code, and converts any
+     * Unicode replacement characters to non-breaking spaces.
      * @param in The string to escape.
      * @return The escaped string.
      */
     public static String convertWin1252Chars(String in) {
-        return escapeAmps(in).replace("\u0096", "–").replace("\u0097", "—").replace("\u0091", "‘").replace("\u0092",
-                "’").replace("\u0093", "“").replace("\u0094", "”").replace("\u0095", "•").replace("\u0085", "…");
+        if (in == null) return null;
+        in = removeFFFDChars(in);
+        in = escapeAmps(in);
+        return in.replace('\u0096', '–').replace('\u0097', '—').replace('\u0091', '‘').replace('\u0092', '’').replace(
+                '\u0093', '“').replace('\u0094', '”').replace('\u0095', '•').replace('\u0085', '…');
     }
 
     /**
@@ -156,8 +217,9 @@ public class Util {
      * @return The fixed file name.
      */
     public static String ensureLegalFilename(String in) {
+        if (in == null) return null;
         // Remove problematic characters.
-        String out = in.replace("<", "").replace(">", "").replace(":", "-").replace("\"", "").replace("/", "").replace(
+        String out = in.replace("<", "").replace(">", "").replace(":", " -").replace("\"", "").replace("/", "").replace(
                 "\\", "").replace("|", "-").replace("?", "").replace("*", "").replace("\0", "");
         // Ensure that the end of the filename isn't a space or period for Windows' sake.
         out = out.trim();
@@ -166,5 +228,66 @@ public class Util {
         while (out.charAt(0) == '.') out = out.replaceFirst("\\.", "");
         // Okay, we should be good now.
         return out;
+    }
+
+    /**
+     * Log a string. If running from the CLI, goes to System.out. If running from the GUI, goes to the log TextFlow.
+     * @param str String to log.
+     */
+    public static void log(String str) {
+        if (Main.isGui) logString(str + "\n");
+        else System.out.println(stripLogStyleTags(str));
+    }
+
+    /**
+     * Log a formatted string. If running from the CLI, goes to System.out. If running from the GUI, goes to the log
+     * TextFlow.
+     * @param format Format string.
+     * @param args   Objects to substitute into format string.
+     */
+    public static void logf(String format, Object... args) {
+        if (Main.isGui) logString(String.format(format, args));
+        else System.out.printf(stripLogStyleTags(format), args);
+    }
+
+    /**
+     * Log a string to a GUI TextFlow, making sure to process any log color indicators (See near the top of the C.java
+     * file).
+     * @param s String to log.
+     */
+    private static void logString(String s) {
+        Text text = new Text();
+        // Process any log color style tags, in order of priority.
+        if (s.contains(C.LOG_RED)) text.setFill(Color.ORANGERED);
+        else if (s.contains(C.LOG_BLUE)) text.setFill(Color.ROYALBLUE);
+        else if (s.contains(C.LOG_GREEN)) text.setFill(Color.FORESTGREEN);
+        text.setText(stripLogStyleTags(s));
+        // Send to the TextFlow.
+        GuiController.appendLogText(text);
+    }
+
+    /**
+     * String log color indicators from a string.
+     * @param in String to strip
+     * @return Stripped string.
+     */
+    public static String stripLogStyleTags(String in) {
+        return in.replace(C.LOG_RED, "").replace(C.LOG_BLUE, "").replace(C.LOG_GREEN, "");
+    }
+
+    /**
+     * Build a simple regex string which is some number of string literals OR'ed together.
+     * @param literals Strings to OR together in the regex. It is assumed that at least one String is supplied.
+     * @return Regex string suitable for using with .find() (it doesn't capture any specific groups), or null if no
+     * strings were given.
+     */
+    public static String buildOrRegex(String... literals) {
+        // Build regex.
+        StringBuilder regex = new StringBuilder();
+        for (int i = 0; i < literals.length; i++) {
+            regex.append("\\Q").append(literals[i]).append("\\E");
+            if (i != literals.length - 1) regex.append('|');
+        }
+        return regex.toString();
     }
 }

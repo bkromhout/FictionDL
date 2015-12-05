@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 /**
  * Parses the input file.
  */
-public class FileParser {
+public class LinkFileParser {
     // Regex for extracting host strings.
     private Pattern hostRegex = Pattern.compile(C.HOST_REGEX);
     // FictionHunt URLs.
@@ -20,16 +20,19 @@ public class FileParser {
     private ArrayList<String> ffnUrls = new ArrayList<>();
     // SIYE URLs.
     private ArrayList<String> siyeUrls = new ArrayList<>();
+    // MuggleNet URLs.
+    private ArrayList<String> mnUrls = new ArrayList<>();
 
     /**
      * Parse the file, populating the various URL lists for the different sites.
+     * @param storiesFile Link file.
      */
-    public FileParser(File storiesFile) {
-        initialize(storiesFile);
+    public LinkFileParser(File storiesFile) {
+        parse(storiesFile);
     }
 
-    private void initialize(File storiesFile) {
-        System.out.printf(C.PARSE_FILE);
+    private void parse(File storiesFile) {
+        Util.logf(C.PARSE_FILE, C.FTYPE_LINK);
         // Try to read lines from file into the url list
         try (BufferedReader br = new BufferedReader(new FileReader(storiesFile))) {
             String line = br.readLine();
@@ -40,14 +43,14 @@ public class FileParser {
                 } catch (IllegalStateException e) {
                     // If we couldn't match one of the lines, just say which one in the output (or silently skip it if
                     // it's a blank line.
-                    if (!line.trim().isEmpty()) System.out.printf(C.PROCESS_LINE_FAILED, line);
+                    if (!line.trim().isEmpty()) Util.logf(C.PROCESS_LINE_FAILED, line);
                 }
                 line = br.readLine();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println(C.DONE);
+        Util.log(C.DONE);
     }
 
     /**
@@ -62,9 +65,10 @@ public class FileParser {
         String hostString = hostMatcher.group(2).toLowerCase();
         // ...then add it to it, so long as it isn't a repeat. (Note that since FFN has so many different link styles,
         // it's totally possible for the same story to get added twice. Maybe I'll add some normalization code later.)
-        if (hostString.contains("fictionhunt.com") && !fictionHuntUrls.contains(line)) fictionHuntUrls.add(line);
-        else if (hostString.contains("fanfiction.net") && !ffnUrls.contains(line)) ffnUrls.add(line);
-        else if (hostString.contains("siye.co.uk") && !siyeUrls.contains(line)) siyeUrls.add(line);
+        if (hostString.contains(C.HOST_FH) && !fictionHuntUrls.contains(line)) fictionHuntUrls.add(line);
+        else if (hostString.contains(C.HOST_FFN) && !ffnUrls.contains(line)) ffnUrls.add(line);
+        else if (hostString.contains(C.HOST_SIYE) && !siyeUrls.contains(line)) siyeUrls.add(line);
+        else if (hostString.contains(C.HOST_MN) && !mnUrls.contains(line)) mnUrls.add(line);
     }
 
     /**
@@ -98,5 +102,22 @@ public class FileParser {
      */
     public ArrayList<String> getSiyeUrls() {
         return siyeUrls;
+    }
+
+    /**
+     * Get the list of MuggleNet URLs that were parsed.
+     * @return MuggleNet URLs.
+     */
+    public ArrayList<String> getMnUrls() {
+        return mnUrls;
+    }
+
+    /**
+     * Total number of stories which are to be downloaded across all sites. Note that it is best to find this value
+     * right after this LinkFileParser is initialized since counts in individual lists may change later.
+     * @return Number of stories.
+     */
+    public int getTotalNumStories() {
+        return fictionHuntUrls.size() + ffnUrls.size() + siyeUrls.size() + mnUrls.size();
     }
 }

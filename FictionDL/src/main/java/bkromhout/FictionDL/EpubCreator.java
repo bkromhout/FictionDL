@@ -1,10 +1,7 @@
 package bkromhout.FictionDL;
 
 import bkromhout.FictionDL.Story.Story;
-import nl.siegmann.epublib.domain.Author;
-import nl.siegmann.epublib.domain.Book;
-import nl.siegmann.epublib.domain.GuideReference;
-import nl.siegmann.epublib.domain.Resource;
+import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubWriter;
 
 import java.io.File;
@@ -51,7 +48,7 @@ public final class EpubCreator {
         try {
             new EpubWriter().write(generateEpub(), new FileOutputStream(file));
         } catch (IOException e) {
-            System.out.printf(C.SAVE_FILE_FAILED, file.getAbsolutePath());
+            Util.logf(C.SAVE_FILE_FAILED, file.getAbsolutePath());
             return false;
         }
         return true;
@@ -64,10 +61,12 @@ public final class EpubCreator {
     private Book generateEpub() {
         // Create Book.
         Book book = new Book();
-        // Set title, author, and description (summary).
+        // Set title, author, description (summary), identifier (story URL), and publisher (story site).
         book.getMetadata().addTitle(story.getTitle());
         book.getMetadata().addAuthor(new Author(story.getAuthor()));
         book.getMetadata().addDescription(Util.convertWin1252Chars(story.getSummary()));
+        book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.URL, story.getUrl()));
+        book.getMetadata().addPublisher(story.getHostSite());
         // Create and add CSS file.
         book.addResource(createCss());
         // Create and add title page.
@@ -96,6 +95,9 @@ public final class EpubCreator {
         // Add the summary.
         String detail = story.getSummary();
         if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.SUMMARY, detail));
+        // Add the series.
+        detail = story.getSeries();
+        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.SERIES, detail));
         // Add the fic type.
         detail = story.getFicType();
         if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.FIC_TYPE, detail));
@@ -105,7 +107,7 @@ public final class EpubCreator {
         // Add the rating.
         detail = story.getRating();
         if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.RATING, detail));
-        // Add the genre(s).
+        // Add the genres.
         detail = story.getGenres();
         if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.GENRES, detail));
         // Add the characters.
@@ -151,22 +153,7 @@ public final class EpubCreator {
      */
     private Resource createChapter(Chapter chapter, int chapterNum) {
         // Nothing too fancy here either.
-        return new Resource(cleanChapter(chapter.content).getBytes(StandardCharsets.UTF_8),
+        return new Resource(Util.cleanHtmlString(chapter.content).getBytes(StandardCharsets.UTF_8),
                 String.format("Chapter%d.xhtml", chapterNum));
-    }
-
-    /**
-     * Do some common chapter HTML cleaning tasks.
-     * @param chapterContent Chapter HTML.
-     * @return Cleaned chapter HTML.
-     */
-    private String cleanChapter(String chapterContent) {
-        // Make sure <br> and <hr> tags are closed.
-        chapterContent = Util.closeTags(chapterContent, "br");
-        chapterContent = Util.closeTags(chapterContent, "hr");
-        // Escape pesky characters.
-        chapterContent = Util.convertWin1252Chars(chapterContent);
-        // Squeaky clean!
-        return chapterContent;
     }
 }
