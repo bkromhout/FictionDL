@@ -148,6 +148,8 @@ public class Util {
         htmlStr = closeTags(htmlStr, "hr");
         // Escape pesky characters.
         htmlStr = convertWin1252Chars(htmlStr);
+        // Remove any control characters which are still present.
+        htmlStr = removeControlChars(htmlStr);
         // Squeaky clean!
         return htmlStr;
     }
@@ -194,6 +196,17 @@ public class Util {
     public static String removeFFFDChars(String in) {
         if (in == null) return null;
         return in.replace('\uFFFD', '\u00A0');
+    }
+
+    /**
+     * Removes any Unicode control characters that still exist in the string. Doesn't remove tab, line feed, or carriage
+     * return.
+     * @param in String to fix.
+     * @return Fixed string.
+     */
+    public static String removeControlChars(String in) {
+        if (in == null) return null;
+        return in.replaceAll("[^\\P{Cc}\\t\\r\\n]", "");
     }
 
     /**
