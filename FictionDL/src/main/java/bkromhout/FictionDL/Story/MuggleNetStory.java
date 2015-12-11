@@ -10,7 +10,7 @@ import org.jsoup.nodes.Node;
 import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Model object for a MuggleNet story. Despite the word "model", this is not an object with a light initialization cost,
@@ -112,7 +112,12 @@ public class MuggleNetStory extends Story {
         // Parameter checks.
         if (parent == null || labelIdx < 0 || labelIdx >= labels.size()) return null;
         // Copy parent's child nodes.
-        List<Node> nodeCopies = parent.childNodesCopy();
+        ArrayList<Node> nodeCopies = (ArrayList<Node>) parent.childNodesCopy();
+        // Sometimes MuggleNet wraps the details in a <p> tag, which we don't really want, so we'll unwrap its children.
+        if (nodeCopies.size() == 2) {
+            Node wrapper = nodeCopies.remove(1);
+            nodeCopies.addAll(wrapper.childNodesCopy());
+        }
         // Figure out start and end indices for copying nodes from parent based on the index of labels[labelIdx] in
         // the parent.
         // Start index should be
