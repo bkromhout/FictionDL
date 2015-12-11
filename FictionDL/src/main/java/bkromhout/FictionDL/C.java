@@ -1,24 +1,15 @@
 package bkromhout.FictionDL;
 
 /**
- * Constants file.
+ * Constants file. Constants which belong here are those which are used by multiple classes (or that might be in the
+ * future), as well as any string constants which the user may see. Also appropriate are any string constants which are
+ * exceedingly long/unwieldy which would be annoying to have in their specific classes.
  */
-public class C {
-    /*
-    General constants.
-     */
-    public static final String VER = "2.0.1";
-    public static final String VER_STRING = "FictionDL, Version " + VER;
-
+public abstract class C {
     /**
-     * URLs file type.
+     * Program version string.
      */
-    public static final String FTYPE_LINK = "URLs";
-
-    /**
-     * Config file type.
-     */
-    public static final String FTYPE_CFG = "config";
+    public static final String VER_STRING = "FictionDL, Version 2.0.1";
 
     /*
     Log style tags. Putting these anywhere within a log string will cause the string to be formatted accordingly if
@@ -28,14 +19,6 @@ public class C {
     public static final String LOG_RED = "!red!";
     public static final String LOG_BLUE = "!blue!";
     public static final String LOG_GREEN = "!green!";
-
-    /*
-    GUI Constants.
-     */
-    public static final double G_MIN_WIDTH = 525.0;
-    public static final double G_MIN_HEIGHT = 300.0;
-    public static final String F_CHOOSE_TITLE = "Choose File:";
-    public static final String D_CHOOSE_TITLE = "Choose Directory:";
 
     /*
     Keys.
@@ -48,15 +31,6 @@ public class C {
     public static final String PREF_CFG_FILE_PATH = "key_cfg_file_path";
 
     /*
-    Config File Constants.
-     */
-    // Valid line starters.
-    public static final String CFG_LS_HASH = "#";
-    public static final String CFG_LS_SITE = "site";
-    public static final String CFG_LS_U = "u";
-    public static final String CFG_LS_P = "p";
-
-    /*
     Log output strings.
      */
     // General
@@ -65,7 +39,7 @@ public class C {
     // Auth Process
     public static final String STARTING_SITE_AUTH_PROCESS = "\nAttempting to log in to %s..." + LOG_BLUE;
 
-    // Download Process
+    // Overall Download Process
     public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n" + LOG_BLUE;
     public static final String FETCH_BUILD_MODELS = "Fetching story infos from %s and building story models...\n";
     public static final String DL_STORIES_FROM_SITE = "Downloading stories from %s...\n\n";
@@ -75,13 +49,12 @@ public class C {
     public static final String FINISHED_WITH_SITE = "Finished with %s.\n\n" + LOG_BLUE;
     public static final String ALL_FINISHED = "\nAll Finished! :)" + LOG_GREEN;
 
-    // Stories
+    // Story/Chapter downloading and cleaning process
     public static final String SAVING_STORY = "Saving Story...";
+    public static final String DL_EPUB_FOR = "Downloading ePUB for: \"%s\"...";
     public static final String FH_STORY_ON_FFN = "\"%s\" is still available on FanFiction.net; will download from " +
             "there.\n\n";
-
-    // Chapters
-    public static final String DL_CHAPS_FOR = "Downloading: \"%s\"\n";
+    public static final String DL_CONTENT_FOR = "Downloading: \"%s\"\n";
     public static final String SANITIZING_CHAPS = "Sanitizing chapters...";
 
     // Errors and Warnings
@@ -90,8 +63,9 @@ public class C {
     public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the file: \"%s\"\n" + LOG_RED;
     public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"\n" + LOG_RED;
     public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it." + LOG_RED;
+    public static final String NO_EPUB_ON_SITE = "Couldn't find ePUB on %s for story \"%s\". Skipping it." + LOG_RED;
     public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n" + LOG_RED;
-    public static final String SAVE_FILE_FAILED = "Failed to save file: %s\n" + LOG_RED;
+    public static final String SAVE_FILE_FAILED = "Failed to save file: \"%s\"\n" + LOG_RED;
     public static final String FH_FFN_CHECK_FAILED = "Failed to check if story is still active on FFN. Oh well, " +
             "never hurts to try!" + LOG_RED;
     public static final String MUST_LOGIN = "You need to provide login info for %s to download story with ID=%s!" +
@@ -103,12 +77,18 @@ public class C {
      */
     public static final String NAME_FFN = "FanFiction.net";
     public static final String HOST_FFN = "fanfiction.net";
+
     public static final String NAME_FH = "FictionHunt";
     public static final String HOST_FH = "fictionhunt.com";
+
     public static final String NAME_SIYE = "SIYE";
     public static final String HOST_SIYE = "siye.co.uk";
+
     public static final String NAME_MN = "MuggleNet";
     public static final String HOST_MN = "fanfiction.mugglenet.com";
+
+    public static final String NAME_AO3 = "Ao3";
+    public static final String HOST_AO3 = "archiveofourown.org";
 
     /*
     Link strings. Some need parts substituted into them.
@@ -168,6 +148,11 @@ public class C {
      */
     public static final String MN_L_URL = "http://fanfiction.mugglenet.com/user.php?action=login";
 
+    /**
+     * Ao3 story info link, just needs story ID substituted into it.
+     */
+    public static final String AO3_S_URL = "http://archiveofourown.org/works/%s?view_adult=true";
+
     /*
     Site/Comparison strings, usually used to try and determine what type of error is present when the HTML structure
     by itself doesn't provide enough info.
@@ -178,10 +163,18 @@ public class C {
     public static final String BAD_URL = "BAD_URL";
 
     /**
+     * Indicates we couldn't find an ePUB file to download for a story.
+     */
+    public static final String NO_EPUB = "NO_EPUB";
+
+    /**
      * Error message displayed by MuggleNet when attempting to access a "Professors" rated story while not logged in.
      */
     public static final String MN_REG_USERS_ONLY = "Registered Users Only";
 
+    /**
+     * Message displayed in place of a "6th-7th Years"-rated story/chapter if the warning integer isn't 3.
+     */
     public static final String MN_NEEDS_WARN_5 = "This story may contain some sexuality, violence and or profanity " +
             "not suitable for younger readers.";
 
@@ -248,6 +241,11 @@ public class C {
     public static final String MN_CHAP_TITLE_REGEX = SIYE_CHAP_TITLE_REGEX;
 
     /**
+     * Regex to extract story ID from an Ao3 URL. Use .find() then .group(1).
+     */
+    public static final String AO3_SID_REGEX = "\\/works\\/(\\d*)";
+
+    /**
      * Regex to find all ampersands in a piece of HTML which are actual ampersands and not part of a character code.
      */
     public static final String AMP_REGEX = "[\\&](?!(#|amp;|gt;|lt;|quot;|nbsp;))";
@@ -309,7 +307,7 @@ public class C {
     public static final String FH_NO_SUMMARY = "(Couldn't get summary from FictionHunt, sorry!)";
 
     /*
-    File Template Strings
+    File Template Strings. These are long and would be annoying to have in any specific class.
      */
     /**
      * Yay CSS. It doesn't honestly matter that much anyway though, ePUB readers can do whatever they want to.

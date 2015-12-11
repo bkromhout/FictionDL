@@ -10,6 +10,7 @@ import org.jsoup.nodes.Element;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,8 +24,8 @@ public class MuggleNetDL extends ParsingDL {
      * @param fictionDL FictionDL object which owns this downloader.
      * @param urls      List of MuggleNet URLs.
      */
-    public MuggleNetDL(FictionDL fictionDL, ArrayList<String> urls) {
-        super(MuggleNetStory.class, fictionDL, C.NAME_MN, urls, "div.contentLeft");
+    public MuggleNetDL(FictionDL fictionDL, HashSet<String> urls) {
+        super(fictionDL,MuggleNetStory.class, C.NAME_MN, urls, "div.contentLeft");
     }
 
     /**

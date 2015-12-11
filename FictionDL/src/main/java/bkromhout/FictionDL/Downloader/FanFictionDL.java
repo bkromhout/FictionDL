@@ -7,6 +7,7 @@ import bkromhout.FictionDL.Story.FanFictionStory;
 import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,8 +21,8 @@ public class FanFictionDL extends ParsingDL {
      * @param fictionDL FictionDL object which owns this downloader.
      * @param urls      List of FanFiction.net URLs.
      */
-    public FanFictionDL(FictionDL fictionDL, ArrayList<String> urls) {
-        super(FanFictionStory.class, fictionDL, C.NAME_FFN, urls, "div#storytext");
+    public FanFictionDL(FictionDL fictionDL, HashSet<String> urls) {
+        super(fictionDL,FanFictionStory.class, C.NAME_FFN, urls, "div#storytext");
     }
 
     /**

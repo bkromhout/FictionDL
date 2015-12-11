@@ -12,6 +12,12 @@ import java.util.regex.Pattern;
  * Parses the config file.
  */
 public class ConfigFileParser {
+    /* Valid Line Starters */
+    private static final String CFG_LS_P = "p";
+    private static final String CFG_LS_U = "u";
+    private static final String CFG_LS_SITE = "site";
+    private static final String CFG_LS_HASH = "#";
+
     // Config instance.
     private Config config = new Config();
     // Site which will be given any site-specific preferences.
@@ -26,7 +32,7 @@ public class ConfigFileParser {
     }
 
     private void parse(File cfgFile) {
-        Util.logf(C.PARSE_FILE, C.FTYPE_CFG);
+        Util.logf(C.PARSE_FILE, "config");
         // Try to read lines from file into the url list
         try (BufferedReader br = new BufferedReader(new FileReader(cfgFile))) {
             String line = br.readLine();
@@ -52,12 +58,12 @@ public class ConfigFileParser {
      */
     private void processLine(String line) {
         // Sometimes we don't care...
-        if (line == null || line.isEmpty() || line.startsWith(C.CFG_LS_HASH) || !line.contains("=") ||
+        if (line == null || line.isEmpty() || line.startsWith(CFG_LS_HASH) || !line.contains("=") ||
                 line.indexOf('=') == line.length() - 1) return;
         // Do different things based on what the line starts with (the option prefix).
         String prefix = line.substring(0, line.indexOf('='));
         switch (prefix) {
-            case C.CFG_LS_SITE: {
+            case CFG_LS_SITE: {
                 // Check to make sure this is a valid site.
                 String siteRegex = Util.buildOrRegex(C.NAME_FFN, C.NAME_FH, C.NAME_SIYE, C.NAME_MN);
                 Matcher siteMatcher = Pattern.compile(siteRegex).matcher(line);
@@ -67,8 +73,8 @@ public class ConfigFileParser {
                 else currSite = siteMatcher.group();
                 break;
             }
-            case C.CFG_LS_U:
-            case C.CFG_LS_P: {
+            case CFG_LS_U:
+            case CFG_LS_P: {
                 // Save a username or password for the current site.
                 if (currSite == null) break; // Ignore this if it comes before a valid site.
                 // We take the rest of the line wholesale, so any spaces will be kept.
@@ -103,14 +109,14 @@ public class ConfigFileParser {
          * @return MuggleNet username.
          */
         public String mnUsername() {
-            return options.get(C.NAME_MN + C.CFG_LS_U);
+            return options.get(C.NAME_MN + CFG_LS_U);
         }
 
         /**
          * @return MuggleNet password.
          */
         public String mnPassword() {
-            return options.get(C.NAME_MN + C.CFG_LS_P);
+            return options.get(C.NAME_MN + CFG_LS_P);
         }
 
         /**
@@ -118,8 +124,8 @@ public class ConfigFileParser {
          * @return True if we have a non-empty username and password for MuggleNet, otherwise false.
          */
         public boolean hasMnAuth() {
-            String username = options.get(C.NAME_MN + C.CFG_LS_U);
-            String password = options.get(C.NAME_MN + C.CFG_LS_P);
+            String username = options.get(C.NAME_MN + CFG_LS_U);
+            String password = options.get(C.NAME_MN + CFG_LS_P);
             return username != null && !username.isEmpty() && password != null && !password.isEmpty();
         }
     }

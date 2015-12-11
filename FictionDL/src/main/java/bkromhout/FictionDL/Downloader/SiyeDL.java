@@ -8,6 +8,7 @@ import bkromhout.FictionDL.Util;
 import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,8 +22,8 @@ public class SiyeDL extends ParsingDL {
      * @param fictionDL FictionDL object which owns this downloader.
      * @param urls      List of SIYE URLs.
      */
-    public SiyeDL(FictionDL fictionDL, ArrayList<String> urls) {
-        super(SiyeStory.class, fictionDL, C.NAME_SIYE, urls, null);
+    public SiyeDL(FictionDL fictionDL, HashSet<String> urls) {
+        super(fictionDL, SiyeStory.class, C.NAME_SIYE, urls, null);
     }
 
     /**
@@ -30,8 +31,10 @@ public class SiyeDL extends ParsingDL {
      */
     @Override
     protected void printPreDlMsgs() {
-        super.printPreDlMsgs();
-        Util.log(C.SIYE_SLOW); // Inform the user that SIYE is slow and has crappy HTML structure.
+        Util.logf(C.STARTING_SITE_DL_PROCESS, siteName);
+        // Extra SIYE message; Inform the user that SIYE is slow and has crappy HTML structure.
+        Util.log(C.SIYE_SLOW);
+        Util.logf(C.FETCH_BUILD_MODELS, siteName);
     }
 
     /**

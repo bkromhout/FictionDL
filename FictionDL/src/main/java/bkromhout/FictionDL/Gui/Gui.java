@@ -33,8 +33,8 @@ public class Gui extends Application {
         // Configure the stage.
         primaryStage.setTitle(C.VER_STRING);
         primaryStage.setScene(new Scene(root, 800, 600));
-        primaryStage.setMinWidth(C.G_MIN_WIDTH);
-        primaryStage.setMinHeight(C.G_MIN_HEIGHT);
+        primaryStage.setMinWidth(525.0);
+        primaryStage.setMinHeight(300.0);
         primaryStage.setOnHiding(handler -> controller.saveFields()); // Save text fields' contents when closing stage.
         // Show the stage.
         primaryStage.show();

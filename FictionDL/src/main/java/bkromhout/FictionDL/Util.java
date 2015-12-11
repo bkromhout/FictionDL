@@ -20,7 +20,8 @@ import java.util.stream.Collectors;
 /**
  * Utility class with static methods.
  */
-public class Util {
+public abstract class Util {
+
     /**
      * Attempt to verify that a directory path exists (or can be created), then return a Path of it.
      * @param path String path of a directory.
@@ -225,6 +226,17 @@ public class Util {
     }
 
     /**
+     * Create a filename for an ePUB file based on a title and author.
+     * @param title  Title.
+     * @param author Author.
+     * @return ePUB filename like "[Title] - [Author].epub".
+     */
+    public static String makeEpubFname(String title, String author) {
+        if (title == null || author == null) return null;
+        return ensureLegalFilename(String.format("%s - %s.epub", title, author));
+    }
+
+    /**
      * Removes or replaces characters which could potentially be illegal, and does a few other things.
      * @param in The file name to fix.
      * @return The fixed file name.
@@ -255,6 +267,14 @@ public class Util {
     }
 
     /**
+     * Calls Util.log if verbose output is enabled.
+     * @param str String to log.
+     */
+    public static void loud(String str) {
+        if (Main.isVerbose) log(str);
+    }
+
+    /**
      * Log a formatted string. If running from the CLI, goes to System.out. If running from the GUI, goes to the log
      * TextFlow.
      * @param format Format string.
@@ -263,6 +283,15 @@ public class Util {
     public static void logf(String format, Object... args) {
         if (Main.isGui) logString(String.format(format, args));
         else System.out.printf(stripLogStyleTags(format), args);
+    }
+
+    /**
+     * Calls Util.logf if verbose output is enabled.
+     * @param format Format string.
+     * @param args   Objects to substitute into format string.
+     */
+    public static void loudf(String format, Object... args) {
+        if (Main.isVerbose) logf(format, args);
     }
 
     /**

@@ -13,24 +13,20 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 
 /**
- * Model object for a MuggleNet story. Despite the word "model", this is not an object with a light initialization cost,
- * as it accesses the internet to retrieve story information.
+ * Model object for a MuggleNet story.
  */
 public class MuggleNetStory extends Story {
 
     /**
      * Create a new MuggleNetStory object based off of a URL.
-     * @param ownerDl The downloader which owns this story.
+     * @param ownerDl The parsing downloader which owns this story.
      * @param url     URL of the story this model represents.
+     * @throws InitStoryException if we can't create this story object for some reason.
      */
     public MuggleNetStory(ParsingDL ownerDl, String url) throws InitStoryException {
         super(ownerDl, url);
     }
 
-    /**
-     * Populate this model's fields.
-     * @throws InitStoryException Thrown for many reasons, but the net result is that we can't build a story model.
-     */
     @Override
     protected void populateInfo() throws InitStoryException {
         String warnBypass = "";

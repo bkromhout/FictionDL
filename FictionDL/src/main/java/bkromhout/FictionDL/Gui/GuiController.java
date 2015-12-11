@@ -19,6 +19,9 @@ import java.util.HashMap;
  * Controller class for the GUI.
  */
 public class GuiController {
+    private static final String D_CHOOSE_TITLE = "Choose Directory:";
+    private static final String F_CHOOSE_TITLE = "Choose File:";
+
     // The gui which owns this controller.
     private Gui gui;
 
@@ -67,7 +70,7 @@ public class GuiController {
         btnChooseInFile.setOnAction(event -> {
             // Create a file chooser.
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle(C.F_CHOOSE_TITLE);
+            fileChooser.setTitle(F_CHOOSE_TITLE);
             // Set start directory if the current text field value is a valid file.
             File currFile = tfInFile.getText() != null ? new File(tfInFile.getText()) : null;
             if (currFile != null && currFile.exists() && currFile.isFile())
@@ -81,7 +84,7 @@ public class GuiController {
         btnChooseOutDir.setOnAction(event -> {
             // Create a directory chooser.
             DirectoryChooser dirChooser = new DirectoryChooser();
-            dirChooser.setTitle(C.D_CHOOSE_TITLE);
+            dirChooser.setTitle(D_CHOOSE_TITLE);
             // Set the start directory if the current text field value is a valid directory.
             File currDir = tfOutDir.getText() != null ? new File(tfOutDir.getText()) : null;
             if (currDir != null && currDir.exists() && currDir.isDirectory())
@@ -95,7 +98,7 @@ public class GuiController {
         btnChooseCfgFile.setOnAction(event -> {
             // Create a file chooser.
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle(C.F_CHOOSE_TITLE);
+            fileChooser.setTitle(F_CHOOSE_TITLE);
             // Set start directory if the current text field value is a valid file.
             File currFile = tfCfgFile.getText() != null ? new File(tfCfgFile.getText()) : null;
             if (currFile != null && currFile.exists() && currFile.isFile())

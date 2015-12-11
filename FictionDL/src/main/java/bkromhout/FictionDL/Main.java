@@ -11,18 +11,22 @@ import java.util.HashMap;
  * Just a simple entry point class for the command line app.
  */
 public class Main {
-    // Are we running with a GUI?
+    /**
+     * Are we running with a GUI?
+     */
     public static boolean isGui = false;
+    /**
+     * Verbose log output?
+     */
+    public static boolean isVerbose = false;
 
     public static void main(String[] args) {
-        // Check for GUI argument.
-        if (args.length == 0 || (args.length == 1 && args[0].equals("-gui"))) {
+        // Make sure we start the GUI if the jar was run with no arguments at all (AKA, it was double-clicked).
+        if (args.length == 0) {
             isGui = true;
             Application.launch(Gui.class);
             return;
         }
-        // If it's not there, precede as normal.
-        Util.log(C.VER_STRING);
         // Process CLI input.
         Options options = getOptions();
         CommandLineParser parser = new DefaultParser();
@@ -39,17 +43,27 @@ public class Main {
             printHelp(options);
             return;
         }
-        // Do cool stuff.
-        try {
-            // Create arguments map.
-            HashMap<String, String> ficDlArgs = new HashMap<>();
-            ficDlArgs.put(C.ARG_IN_PATH, line.getOptionValue("i"));
-            ficDlArgs.put(C.ARG_OUT_PATH, line.getOptionValue("o"));
-            ficDlArgs.put(C.ARG_CFG_PATH, line.getOptionValue("c"));
-            // Run FictionDL.
-            new FictionDL(ficDlArgs).run();
-        } catch (IllegalArgumentException e) {
-            Util.logf(C.INVALID_PATH, e.getMessage());
+        // Check verbosity.
+        if (line.hasOption("v")) isVerbose = true;
+        // Check GUI.
+        if (line.hasOption("g")) {
+            // Run FictionDL using the GUI.
+            isGui = true;
+            Application.launch(Gui.class);
+        } else {
+            // Run FictionDL using the CLI.
+            Util.log(C.VER_STRING);
+            try {
+                // Create arguments map.
+                HashMap<String, String> ficDlArgs = new HashMap<>();
+                ficDlArgs.put(C.ARG_IN_PATH, line.getOptionValue("i"));
+                ficDlArgs.put(C.ARG_OUT_PATH, line.getOptionValue("o"));
+                ficDlArgs.put(C.ARG_CFG_PATH, line.getOptionValue("c"));
+                // Run FictionDL.
+                new FictionDL(ficDlArgs).run();
+            } catch (IllegalArgumentException e) {
+                Util.logf(C.INVALID_PATH, e.getMessage());
+            }
         }
     }
 
@@ -73,8 +87,8 @@ public class Main {
         options.addOption(Option.builder("i")
                 .hasArg()
                 .argName("INPUT FILE PATH")
-                .desc("Input file path (within quotes if it has spaces). REQUIRED!")
-                .required()
+                .desc("Input file path (within quotes if it has spaces). This option is required if none of -g, " +
+                        "--gui, -?, or --help are present.")
                 .build());
         // Add output file option.
         options.addOption(Option.builder("o")
@@ -87,6 +101,16 @@ public class Main {
                 .hasArg()
                 .argName("CONFIG FILE PATH")
                 .desc("Config file path (within quotes if it has spaces).")
+                .build());
+        // Add verbose option.
+        options.addOption(Option.builder("v")
+                .desc("Verbose log output. Little of this is useful to most users.")
+                .build());
+        // Add GUI option.
+        options.addOption(Option.builder("g")
+                .longOpt("gui")
+                .desc("Explicitly run with the GUI, ignores any path arguments. The same effect can be achieved by " +
+                        "supplying no arguments.")
                 .build());
         // Add help option.
         options.addOption(Option.builder("?")

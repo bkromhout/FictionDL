@@ -12,24 +12,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Model object for a FanFiction.net story. Despite the word "model", this is not an object with a light initialization
- * cost, as it accesses the internet to retrieve story information.
+ * Model object for a FanFiction.net story.
  */
 public class FanFictionStory extends Story {
 
     /**
      * Create a new FanFictionStory object based off of a URL.
-     * @param ownerDl The downloader which owns this story.
+     * @param ownerDl The parsing downloader which owns this story.
      * @param url     URL of the story this model represents.
+     * @throws InitStoryException if we can't create this story object for some reason.
      */
     public FanFictionStory(ParsingDL ownerDl, String url) throws InitStoryException {
         super(ownerDl, url);
     }
 
-    /**
-     * Populate this model's fields.
-     * @throws InitStoryException Thrown for many reasons, but the net result is that we can't build a story model.
-     */
     @Override
     protected void populateInfo() throws InitStoryException {
         // Set site.

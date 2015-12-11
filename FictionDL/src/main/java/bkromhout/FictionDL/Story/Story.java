@@ -2,7 +2,7 @@ package bkromhout.FictionDL.Story;
 
 import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Chapter;
-import bkromhout.FictionDL.Downloader.ParsingDL;
+import bkromhout.FictionDL.Downloader.Downloader;
 import bkromhout.FictionDL.ex.InitStoryException;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  */
 public abstract class Story {
     // The downloader which owns this story.
-    protected ParsingDL ownerDl;
+    protected Downloader ownerDl;
     // Story URL.
     protected String url;
     // Story ID.
@@ -56,9 +56,9 @@ public abstract class Story {
      * Create a new Story.
      * @param ownerDl The downloader which owns this story.
      * @param url     Story URL.
-     * @throws InitStoryException Thrown for many reasons, but the net result is that we can't build a story model.
+     * @throws InitStoryException if we can't create this story object for some reason.
      */
-    protected Story(ParsingDL ownerDl, String url) throws InitStoryException {
+    protected Story(Downloader ownerDl, String url) throws InitStoryException {
         this.ownerDl = ownerDl;
         this.url = url;
         populateInfo();
@@ -66,7 +66,7 @@ public abstract class Story {
 
     /**
      * Populate this model's fields.
-     * @throws InitStoryException Thrown for many reasons, but the net result is that we can't build a story model.
+     * @throws InitStoryException if we can't fill in all of the fields needed for this story object.
      */
     protected abstract void populateInfo() throws InitStoryException;
 
@@ -76,6 +76,7 @@ public abstract class Story {
      * @param regex Regex that will help extract the story ID.
      * @param group Number of the group from the regex that will contain the story ID.
      * @return Story ID, or null.
+     * @throws InitStoryException if we can't parse the story ID from the URL.
      */
     protected String parseStoryId(String url, String regex, int group) throws InitStoryException {
         Matcher matcher = Pattern.compile(regex).matcher(url);
@@ -105,16 +106,19 @@ public abstract class Story {
      * Throw a InitStoryException with some message about why we couldn't create this story.
      * @param assist String to help us figure out why we couldn't create this story, and thus what message to put in the
      *               exception.
-     * @param fStr1  The first string to substitute into some message.
+     * @param str1   The first string to substitute into some message.
      * @return InitStoryException with the message we figure out.
      */
-    protected InitStoryException initEx(String assist, String fStr1) {
+    protected InitStoryException initEx(String assist, String str1) {
         if (assist == null)
             return new InitStoryException(String.format(C.STORY_DL_FAILED, ownerDl.getSiteName(), storyId));
         switch (assist) {
             case C.BAD_URL:
-                // URL was bad.
-                return new InitStoryException(String.format(C.INVALID_URL, fStr1));
+                // URL was bad. str1 is the malformed URL.
+                return new InitStoryException(String.format(C.INVALID_URL, str1));
+            case C.NO_EPUB:
+                // Couldn't find an ePUB file to download. str1 is the story title.
+                return new InitStoryException(String.format(C.NO_EPUB_ON_SITE, ownerDl.getSiteName(), str1));
             case C.MN_REG_USERS_ONLY:
                 // Need to login to MuggleNet.
                 return new InitStoryException(String.format(C.MUST_LOGIN, ownerDl.getSiteName(), storyId));

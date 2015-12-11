@@ -1,9 +1,6 @@
 package bkromhout.FictionDL;
 
-import bkromhout.FictionDL.Downloader.FanFictionDL;
-import bkromhout.FictionDL.Downloader.FictionHuntDL;
-import bkromhout.FictionDL.Downloader.MuggleNetDL;
-import bkromhout.FictionDL.Downloader.SiyeDL;
+import bkromhout.FictionDL.Downloader.*;
 import javafx.concurrent.Task;
 
 import java.io.File;
@@ -11,7 +8,8 @@ import java.nio.file.Path;
 import java.util.HashMap;
 
 /**
- * Fan Fiction Downloader.
+ * Fan Fiction Downloader. (Not to be confused wih the FanFictionDL, which is an actual site downloader, this class is a
+ * main class which the program is named after.)
  * <p>
  * Originally only supported FictionHunt, but has been expanded to support other sites now as well.
  * <p>
@@ -121,6 +119,13 @@ public class FictionDL {
             MuggleNetDL muggleNetDL = new MuggleNetDL(this, parser.getMnUrls());
             if (config != null && config.hasMnAuth()) muggleNetDL.addAuth(config.mnUsername(), config.mnPassword());
             muggleNetDL.download();
+        }
+        /*
+        Download Ao3 stories.
+         */
+        if (!parser.getAo3Urls().isEmpty()) {
+            Ao3DL ao3DL = new Ao3DL(this, parser.getAo3Urls());
+            ao3DL.download();
         }
     }
 

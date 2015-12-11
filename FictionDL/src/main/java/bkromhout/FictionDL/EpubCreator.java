@@ -33,18 +33,18 @@ public final class EpubCreator {
      * @return True if ePUB generated successfully, otherwise false (and an error message will have been printed).
      */
     public boolean makeEpub(Path saveDir) {
-        return makeEpub(saveDir, String.format("%s - %s.epub", story.getTitle(), story.getAuthor()));
+        return makeEpub(saveDir, Util.makeEpubFname(story.getTitle(), story.getAuthor()));
     }
 
     /**
      * Generate an ePUB file and save it at the given location with the given file name.
      * @param saveDir  Location to save the ePUB at.
-     * @param fileName File name to save the ePUB with.
+     * @param fileName File name to save the ePUB with. It is assumed that this filename is legal!
      * @return True if ePUB generated successfully, otherwise false (and an error message will have been printed).
      */
     public boolean makeEpub(Path saveDir, String fileName) {
         // Generate and save the ePUB, making sure that the file name is legal for any OS.
-        File file = saveDir.resolve(Util.ensureLegalFilename(fileName)).toFile();
+        File file = saveDir.resolve(fileName).toFile();
         try {
             new EpubWriter().write(generateEpub(), new FileOutputStream(file));
         } catch (IOException e) {

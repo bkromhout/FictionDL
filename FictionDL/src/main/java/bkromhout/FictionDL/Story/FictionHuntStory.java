@@ -8,8 +8,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 /**
- * Model object for a FictionHunt story. Despite the word "model", this is not an object with a light initialization
- * cost, as it accesses the internet to retrieve story information.
+ * Model object for a FictionHunt story.
  */
 public class FictionHuntStory extends Story {
     // If the story is still available on FanFiction.net, get its story ID and use p0ody-files to download it.
@@ -17,17 +16,14 @@ public class FictionHuntStory extends Story {
 
     /**
      * Create a new FictionHuntStory object based off of a URL.
-     * @param ownerDl The downloader which owns this story.
+     * @param ownerDl The parsing downloader which owns this story.
      * @param url     URL of the story this model represents.
+     * @throws InitStoryException if we can't create this story object for some reason.
      */
     public FictionHuntStory(ParsingDL ownerDl, String url) throws InitStoryException {
         super(ownerDl, url);
     }
 
-    /**
-     * Populate this model's fields.
-     * @throws InitStoryException Thrown for many reasons, but the net result is that we can't build a story model.
-     */
     @Override
     protected void populateInfo() throws InitStoryException {
         // Set site.

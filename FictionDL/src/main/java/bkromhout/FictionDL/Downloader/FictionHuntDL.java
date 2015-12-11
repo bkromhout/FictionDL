@@ -6,7 +6,7 @@ import bkromhout.FictionDL.Story.FictionHuntStory;
 import bkromhout.FictionDL.Story.Story;
 import bkromhout.FictionDL.Util;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Downloader for FictionHunt stories.
@@ -18,8 +18,8 @@ public class FictionHuntDL extends ParsingDL {
      * @param fictionDL FictionDL object which owns this downloader.
      * @param urls      List of FictionHunt URLs.
      */
-    public FictionHuntDL(FictionDL fictionDL, ArrayList<String> urls) {
-        super(FictionHuntStory.class, fictionDL, C.NAME_FH, urls, "div.text");
+    public FictionHuntDL(FictionDL fictionDL, HashSet<String> urls) {
+        super(fictionDL, FictionHuntStory.class, C.NAME_FH, urls, "div.text");
     }
 
     /**

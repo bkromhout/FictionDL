@@ -4,7 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,16 +12,20 @@ import java.util.regex.Pattern;
  * Parses the input file.
  */
 public class LinkFileParser {
+
+
     // Regex for extracting host strings.
     private Pattern hostRegex = Pattern.compile(C.HOST_REGEX);
     // FictionHunt URLs.
-    private ArrayList<String> fictionHuntUrls = new ArrayList<>();
+    private HashSet<String> fictionHuntUrls = new HashSet<>();
     // FanFiction.net URLs.
-    private ArrayList<String> ffnUrls = new ArrayList<>();
+    private HashSet<String> ffnUrls = new HashSet<>();
     // SIYE URLs.
-    private ArrayList<String> siyeUrls = new ArrayList<>();
+    private HashSet<String> siyeUrls = new HashSet<>();
     // MuggleNet URLs.
-    private ArrayList<String> mnUrls = new ArrayList<>();
+    private HashSet<String> mnUrls = new HashSet<>();
+    // Ao3 URLs.
+    private HashSet<String> ao3Urls = new HashSet<>();
 
     /**
      * Parse the file, populating the various URL lists for the different sites.
@@ -32,7 +36,7 @@ public class LinkFileParser {
     }
 
     private void parse(File storiesFile) {
-        Util.logf(C.PARSE_FILE, C.FTYPE_LINK);
+        Util.logf(C.PARSE_FILE, "URLs");
         // Try to read lines from file into the url list
         try (BufferedReader br = new BufferedReader(new FileReader(storiesFile))) {
             String line = br.readLine();
@@ -65,10 +69,11 @@ public class LinkFileParser {
         String hostString = hostMatcher.group(2).toLowerCase();
         // ...then add it to it, so long as it isn't a repeat. (Note that since FFN has so many different link styles,
         // it's totally possible for the same story to get added twice. Maybe I'll add some normalization code later.)
-        if (hostString.contains(C.HOST_FH) && !fictionHuntUrls.contains(line)) fictionHuntUrls.add(line);
-        else if (hostString.contains(C.HOST_FFN) && !ffnUrls.contains(line)) ffnUrls.add(line);
-        else if (hostString.contains(C.HOST_SIYE) && !siyeUrls.contains(line)) siyeUrls.add(line);
-        else if (hostString.contains(C.HOST_MN) && !mnUrls.contains(line)) mnUrls.add(line);
+        if (hostString.contains(C.HOST_FH)) fictionHuntUrls.add(line);
+        else if (hostString.contains(C.HOST_FFN)) ffnUrls.add(line);
+        else if (hostString.contains(C.HOST_SIYE)) siyeUrls.add(line);
+        else if (hostString.contains(C.HOST_MN)) mnUrls.add(line);
+        else if (hostString.contains(C.HOST_AO3)) ao3Urls.add(line);
     }
 
     /**
@@ -77,14 +82,14 @@ public class LinkFileParser {
      * @param ffnUrl FanFiction.net URL.
      */
     public void addFfnUrl(String ffnUrl) {
-        if (!ffnUrls.contains(ffnUrl)) ffnUrls.add(ffnUrl);
+        ffnUrls.add(ffnUrl);
     }
 
     /**
      * Get the list of FictionHunt URLs that were parsed.
      * @return FictionHunt URLs.
      */
-    public ArrayList<String> getFictionHuntUrls() {
+    public HashSet<String> getFictionHuntUrls() {
         return fictionHuntUrls;
     }
 
@@ -92,7 +97,7 @@ public class LinkFileParser {
      * Get the list of FanFiction.net URLs that were parsed.
      * @return FanFiction.net URLs.
      */
-    public ArrayList<String> getFfnUrls() {
+    public HashSet<String> getFfnUrls() {
         return ffnUrls;
     }
 
@@ -100,7 +105,7 @@ public class LinkFileParser {
      * Get the list of SIYE URLs that were parsed.
      * @return SIYE URLs.
      */
-    public ArrayList<String> getSiyeUrls() {
+    public HashSet<String> getSiyeUrls() {
         return siyeUrls;
     }
 
@@ -108,8 +113,16 @@ public class LinkFileParser {
      * Get the list of MuggleNet URLs that were parsed.
      * @return MuggleNet URLs.
      */
-    public ArrayList<String> getMnUrls() {
+    public HashSet<String> getMnUrls() {
         return mnUrls;
+    }
+
+    /**
+     * Get the list of Ao3 URLs that were parsed.
+     * @return Ao3 URLs.
+     */
+    public HashSet<String> getAo3Urls() {
+        return ao3Urls;
     }
 
     /**
@@ -118,6 +131,6 @@ public class LinkFileParser {
      * @return Number of stories.
      */
     public int getTotalNumStories() {
-        return fictionHuntUrls.size() + ffnUrls.size() + siyeUrls.size() + mnUrls.size();
+        return fictionHuntUrls.size() + ffnUrls.size() + siyeUrls.size() + mnUrls.size() + ao3Urls.size();
     }
 }
