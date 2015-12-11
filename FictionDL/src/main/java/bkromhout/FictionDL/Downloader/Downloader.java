@@ -5,6 +5,7 @@ import bkromhout.FictionDL.FictionDL;
 import bkromhout.FictionDL.Main;
 import bkromhout.FictionDL.Story.Story;
 import bkromhout.FictionDL.Util;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -45,8 +46,8 @@ public abstract class Downloader {
      * @param siteName   Human-readable site name for this downloader.
      * @param storyUrls  Set of story URLs to be downloaded.
      */
-    public Downloader(FictionDL fictionDL, Class<? extends Story> storyClass, String siteName,
-                      HashSet<String> storyUrls) {
+    protected Downloader(FictionDL fictionDL, Class<? extends Story> storyClass, String siteName,
+                         HashSet<String> storyUrls) {
         this.fictionDL = fictionDL;
         this.storyClass = storyClass;
         this.siteName = siteName;
@@ -63,7 +64,7 @@ public abstract class Downloader {
         for (String url : storyUrls) {
             try {
                 // Doing a bit of reflection magic here to construct story classes ;)
-                stories.add(storyClass.getConstructor(Downloader.class, String.class).newInstance(this, url));
+                stories.add(ConstructorUtils.invokeConstructor(storyClass, this, url));
             } catch (InvocationTargetException e) {
                 storyProcessed(); // Call this, since we have "processed" a story by failing to download it.
                 // Now figure out what the heck to put in the log.

@@ -12,7 +12,7 @@ import org.jsoup.nodes.Element;
  */
 public class FictionHuntStory extends Story {
     // If the story is still available on FanFiction.net, get its story ID and use p0ody-files to download it.
-    private boolean isOnFfn = false;
+    private boolean isOnFfn;
 
     /**
      * Create a new FictionHuntStory object based off of a URL.

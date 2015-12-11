@@ -17,7 +17,7 @@ public class Ao3Story extends Story {
      * @param url     Story URL.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    protected Ao3Story(EpubDL ownerDl, String url) throws InitStoryException {
+    public Ao3Story(EpubDL ownerDl, String url) throws InitStoryException {
         super(ownerDl, url);
     }
 
