@@ -137,19 +137,21 @@ public class Util {
     }
 
     /**
-     * Do some common chapter HTML cleaning tasks.
-     * @param chapterContent HTML string.
+     * Do some common HTML cleaning tasks.
+     * @param htmlStr HTML string.
      * @return Cleaned HTML string.
      */
-    public static String cleanHtmlString(String chapterContent) {
-        if (chapterContent == null) return null;
+    public static String cleanHtmlString(String htmlStr) {
+        if (htmlStr == null) return null;
         // Make sure <br> and <hr> tags are closed.
-        chapterContent = closeTags(chapterContent, "br");
-        chapterContent = closeTags(chapterContent, "hr");
+        htmlStr = closeTags(htmlStr, "br");
+        htmlStr = closeTags(htmlStr, "hr");
         // Escape pesky characters.
-        chapterContent = convertWin1252Chars(chapterContent);
+        htmlStr = convertWin1252Chars(htmlStr);
+        // Remove any control characters which are still present.
+        htmlStr = removeControlChars(htmlStr);
         // Squeaky clean!
-        return chapterContent;
+        return htmlStr;
     }
 
     /**
@@ -197,6 +199,17 @@ public class Util {
     }
 
     /**
+     * Removes any Unicode control characters that still exist in the string. Doesn't remove tab, line feed, or carriage
+     * return.
+     * @param in String to fix.
+     * @return Fixed string.
+     */
+    public static String removeControlChars(String in) {
+        if (in == null) return null;
+        return in.replaceAll("[^\\P{Cc}\\t\\r\\n]", "");
+    }
+
+    /**
      * Converts characters that, while valid in Windows-1252 are control characters in Unicode, to their corresponding
      * Unicode representations. Also escapes any ampersands not already part of a character code, and converts any
      * Unicode replacement characters to non-breaking spaces.
@@ -218,6 +231,8 @@ public class Util {
      */
     public static String ensureLegalFilename(String in) {
         if (in == null) return null;
+        // Unescape ampersands.
+        in = unEscapeAmps(in);
         // Remove problematic characters.
         String out = in.replace("<", "").replace(">", "").replace(":", " -").replace("\"", "").replace("/", "").replace(
                 "\\", "").replace("|", "-").replace("?", "").replace("*", "").replace("\0", "");

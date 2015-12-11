@@ -62,9 +62,9 @@ public final class EpubCreator {
         // Create Book.
         Book book = new Book();
         // Set title, author, description (summary), identifier (story URL), and publisher (story site).
-        book.getMetadata().addTitle(story.getTitle());
+        book.getMetadata().addTitle(Util.unEscapeAmps(story.getTitle()));
         book.getMetadata().addAuthor(new Author(story.getAuthor()));
-        book.getMetadata().addDescription(Util.convertWin1252Chars(story.getSummary()));
+        book.getMetadata().addDescription(Util.removeControlChars(Util.convertWin1252Chars(story.getSummary())));
         book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.URL, story.getUrl()));
         book.getMetadata().addPublisher(story.getHostSite());
         // Create and add CSS file.
@@ -131,7 +131,7 @@ public final class EpubCreator {
         // Add the bottom part that closes the HTML.
         titleHtml.append(C.TITLE_PAGE_END);
         // Escape pesky characters, because ugh.
-        String cleanTitleHtml = Util.convertWin1252Chars(titleHtml.toString());
+        String cleanTitleHtml = Util.removeControlChars(Util.convertWin1252Chars(titleHtml.toString()));
         // Return a new Resource for the title page.
         return new Resource(cleanTitleHtml.getBytes(StandardCharsets.UTF_8), "title.xhtml");
     }
