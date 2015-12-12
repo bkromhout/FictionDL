@@ -2,8 +2,8 @@ package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.C;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.Util;
+import bkromhout.fdl.storys.Story;
 
 import java.io.IOException;
 import java.io.InputStream;

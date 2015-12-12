@@ -3,8 +3,8 @@ package bkromhout.fdl.downloaders;
 import bkromhout.fdl.C;
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.storys.MuggleNetStory;
 import bkromhout.fdl.Util;
+import bkromhout.fdl.storys.MuggleNetStory;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
@@ -18,6 +18,10 @@ import java.util.regex.Pattern;
  * Downloader for MuggleNet stories.
  */
 public class MuggleNetDL extends ParsingDL implements AuthSupport {
+    /**
+     * MuggleNet login page link.
+     */
+    private static final String MN_L_URL = "http://fanfiction.mugglenet.com/user.php?action=login";
 
     /**
      * Create a new MuggleNet downloader.
@@ -25,7 +29,7 @@ public class MuggleNetDL extends ParsingDL implements AuthSupport {
      * @param urls      List of MuggleNet URLs.
      */
     public MuggleNetDL(FictionDL fictionDL, HashSet<String> urls) {
-        super(fictionDL,MuggleNetStory.class, C.NAME_MN, urls, "div.contentLeft");
+        super(fictionDL, MuggleNetStory.class, C.NAME_MN, urls, "div.contentLeft");
     }
 
     /**
@@ -47,7 +51,7 @@ public class MuggleNetDL extends ParsingDL implements AuthSupport {
         cookies.clear();
         try {
             // Get new cookies.
-            cookies.putAll(Util.getAuthCookies(C.MN_L_URL, formData));
+            cookies.putAll(Util.getAuthCookies(MN_L_URL, formData));
             Util.logf(C.DONE);
         } catch (IOException e) {
             Util.logf(C.LOGIN_FAILED, siteName);
@@ -67,7 +71,7 @@ public class MuggleNetDL extends ParsingDL implements AuthSupport {
             // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
             // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
             if (titleElement != null) {
-                Matcher matcher = Pattern.compile(C.MN_CHAP_TITLE_REGEX).matcher(titleElement.html().trim());
+                Matcher matcher = Pattern.compile("(d+.s)(.*)").matcher(titleElement.html().trim());
                 matcher.matches();
                 try {
                     chapter.title = matcher.group(2);

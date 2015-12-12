@@ -13,6 +13,15 @@ import java.util.regex.Pattern;
  * Base Story class.
  */
 public abstract class Story {
+    /**
+     * Indicates a URL is malformed.
+     */
+    private static final String BAD_URL = "BAD_URL";
+    /**
+     * Indicates we couldn't find an ePUB file to download for a story.
+     */
+    public static final String NO_EPUB = "NO_EPUB";
+
     // The downloader which owns this story.
     protected Downloader ownerDl;
     // Story URL.
@@ -80,7 +89,7 @@ public abstract class Story {
      */
     protected String parseStoryId(String url, String regex, int group) throws InitStoryException {
         Matcher matcher = Pattern.compile(regex).matcher(url);
-        if (!matcher.find()) throw initEx(C.BAD_URL, url);
+        if (!matcher.find()) throw initEx(BAD_URL, url);
         return matcher.group(group);
     }
 
@@ -113,13 +122,13 @@ public abstract class Story {
         if (assist == null)
             return new InitStoryException(String.format(C.STORY_DL_FAILED, ownerDl.getSiteName(), storyId));
         switch (assist) {
-            case C.BAD_URL:
+            case BAD_URL:
                 // URL was bad. str1 is the malformed URL.
                 return new InitStoryException(String.format(C.INVALID_URL, str1));
-            case C.NO_EPUB:
+            case NO_EPUB:
                 // Couldn't find an ePUB file to download. str1 is the story title.
                 return new InitStoryException(String.format(C.NO_EPUB_ON_SITE, ownerDl.getSiteName(), str1));
-            case C.MN_REG_USERS_ONLY:
+            case MuggleNetStory.MN_REG_USERS_ONLY:
                 // Need to login to MuggleNet.
                 return new InitStoryException(String.format(C.MUST_LOGIN, ownerDl.getSiteName(), storyId));
             default:

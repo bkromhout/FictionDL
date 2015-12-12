@@ -1,8 +1,8 @@
 package bkromhout.fdl.storys;
 
 import bkromhout.fdl.C;
-import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.Util;
+import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,6 +16,36 @@ import java.util.ArrayList;
  * Model object for a MuggleNet story.
  */
 public class MuggleNetStory extends Story {
+    /**
+     * MuggleNet chapter link, needs story ID and chapter number and warning bypass part substituted into it.
+     */
+    private static final String MN_C_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s&chapter=%d%s";
+    /**
+     * MuggleNet story info link, just needs story ID and warning bypass part substituted into it.
+     */
+    private static final String MN_S_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s%s";
+    /**
+     * MuggleNet URL fragment, adds a warning bypass for "6th-7th Year"-rated stories/chapters.
+     */
+    private static final String MN_PART_WARN_5 = "&warning=5";
+    /**
+     * MuggleNet URL fragment, adds a warning bypass for "Professors"-rated stories/chapters.
+     */
+    private static final String MN_PART_WARN_3 = "&warning=3";
+    /**
+     * Error message displayed by MuggleNet when attempting to access a "Professors" rated story while not logged in.
+     */
+    public static final String MN_REG_USERS_ONLY = "Registered Users Only";
+    /**
+     * Message displayed in place of a "6th-7th Years"-rated story/chapter if the warning integer isn't 3.
+     */
+    private static final String MN_NEEDS_WARN_5 = "This story may contain some sexuality, violence and or profanity " +
+            "not suitable for younger readers.";
+    /**
+     * Message displayed in place of a Professors-rated story/chapter if logged in, but the warning integer isn't 3.
+     */
+    private static final String MN_NEEDS_WARN_3 = "This fic may contain language or imagery unsuitable for persons " +
+            "under the age of 17. You must be logged in to read this fic.";
 
     /**
      * Create a new MuggleNetStory object based off of a URL.
@@ -33,26 +63,26 @@ public class MuggleNetStory extends Story {
         // Set site.
         hostSite = C.HOST_MN;
         // Get story ID first.
-        storyId = parseStoryId(url, C.MN_SID_REGEX, 1);
+        storyId = parseStoryId(url, "sid=(d*)", 1);
         // Normalize the URL, since there are many valid MN URL formats.
-        url = String.format(C.MN_S_URL, storyId, warnBypass);
+        url = String.format(MN_S_URL, storyId, warnBypass);
         // Get the story page in order to parse the story info.
         Document infoDoc = Util.downloadHtml(url, ownerDl.getCookies());
         // Make sure that we got a Document, that this is a valid story, and that we don't need to login.
         if (infoDoc == null) throw initEx();
         Element errorText = infoDoc.select("div.errorText").first();
         // Figure out if we need to change the warning bypass.
-        if (errorText != null && errorText.ownText().trim().equals(C.MN_NEEDS_WARN_3)) {
+        if (errorText != null && errorText.ownText().trim().equals(MN_NEEDS_WARN_3)) {
             // We're logged in, but need to change our warning bypass to 3 for this story.
-            warnBypass = C.MN_PART_WARN_3;
+            warnBypass = MN_PART_WARN_3;
             // Now get the story page again.
-            url = String.format(C.MN_S_URL, storyId, warnBypass);
+            url = String.format(MN_S_URL, storyId, warnBypass);
             infoDoc = Util.downloadHtml(url, ownerDl.getCookies());
-        } else if (errorText != null && errorText.ownText().trim().equals(C.MN_NEEDS_WARN_5)) {
+        } else if (errorText != null && errorText.ownText().trim().equals(MN_NEEDS_WARN_5)) {
             // We're logged in, but need to change our warning bypass to 5 for this story.
-            warnBypass = C.MN_PART_WARN_5;
+            warnBypass = MN_PART_WARN_5;
             // Now get the story page again.
-            url = String.format(C.MN_S_URL, storyId, warnBypass);
+            url = String.format(MN_S_URL, storyId, warnBypass);
             infoDoc = Util.downloadHtml(url, ownerDl.getCookies());
         } else if (errorText != null) throw initEx(errorText.ownText().trim()); // Just throw some exception
         // Get the element that has the title and author of the story in it.
@@ -93,7 +123,7 @@ public class MuggleNetStory extends Story {
         // Get date last updated.
         dateUpdated = makeDetailDivForLabel(details, labels, 12).text().trim();
         // Generate chapter URLs.
-        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.MN_C_URL, storyId, i + 1, warnBypass));
+        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(MN_C_URL, storyId, i + 1, warnBypass));
     }
 
     /**

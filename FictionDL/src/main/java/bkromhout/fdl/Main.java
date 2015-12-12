@@ -34,7 +34,7 @@ public class Main {
         try {
             line = parser.parse(options, args);
         } catch (ParseException e) {
-            Util.log("Bad arguments.");
+            Util.log(C.INVALID_ARGS);
             printHelp(options);
             return;
         }

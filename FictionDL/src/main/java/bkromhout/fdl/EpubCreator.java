@@ -94,40 +94,40 @@ public final class EpubCreator {
         // Now we add story details if, unless they are null.
         // Add the summary.
         String detail = story.getSummary();
-        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.SUMMARY, detail));
+        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, "Summary", detail));
         // Add the series.
         detail = story.getSeries();
-        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.SERIES, detail));
+        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, "Series", detail));
         // Add the fic type.
         detail = story.getFicType();
-        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.FIC_TYPE, detail));
+        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, "Fic Type", detail));
         // Add the warnings.
         detail = story.getWarnings();
-        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.WARNINGS, detail));
+        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, "Warnings", detail));
         // Add the rating.
         detail = story.getRating();
-        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.RATING, detail));
+        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, "Rated", detail));
         // Add the genres.
         detail = story.getGenres();
-        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.GENRES, detail));
+        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, "Genres", detail));
         // Add the characters.
         detail = story.getCharacters();
-        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.CHARACTERS, detail));
+        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, "Characters", detail));
         // Add the word count.
         int value = story.getWordCount();
-        if (value != -1) titleHtml.append(String.format(C.TITLE_PAGE_D_PART, C.WORD_COUNT, value));
+        if (value != -1) titleHtml.append(String.format(C.TITLE_PAGE_D_PART, "Word Count", value));
         // Add the chapter count.
         value = story.getChapterCount();
-        if (value != -1) titleHtml.append(String.format(C.TITLE_PAGE_D_PART, C.CHAP_COUNT, value));
+        if (value != -1) titleHtml.append(String.format(C.TITLE_PAGE_D_PART, "Chapter Count", value));
         // Add the date published.
         detail = story.getDatePublished();
-        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.DATE_PUBL, detail));
+        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, "Date Published", detail));
         // Add the date updated.
         detail = story.getDateUpdated();
-        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.DATE_LUPD, detail));
+        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, "Date Last Updated", detail));
         // Add the status.
         detail = story.getStatus();
-        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, C.STATUS, detail));
+        if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, "Status", detail));
         // Add the bottom part that closes the HTML.
         titleHtml.append(C.TITLE_PAGE_END);
         // Escape pesky characters, because ugh.

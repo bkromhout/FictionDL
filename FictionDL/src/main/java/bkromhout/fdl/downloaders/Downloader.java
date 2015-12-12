@@ -3,8 +3,8 @@ package bkromhout.fdl.downloaders;
 import bkromhout.fdl.C;
 import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.Main;
-import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.Util;
+import bkromhout.fdl.storys.Story;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import java.lang.reflect.InvocationTargetException;

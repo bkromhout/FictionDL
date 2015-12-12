@@ -1,6 +1,8 @@
 package bkromhout.fdl;
 
 import bkromhout.fdl.downloaders.*;
+import bkromhout.fdl.parsers.ConfigFileParser;
+import bkromhout.fdl.parsers.LinkFileParser;
 import javafx.concurrent.Task;
 
 import java.io.File;

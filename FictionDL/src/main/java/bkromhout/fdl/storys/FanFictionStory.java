@@ -1,8 +1,8 @@
 package bkromhout.fdl.storys;
 
 import bkromhout.fdl.C;
-import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.Util;
+import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -15,6 +15,21 @@ import java.util.regex.Pattern;
  * Model object for a FanFiction.net story.
  */
 public class FanFictionStory extends Story {
+    /**
+     * FFN story link, just needs the story ID string substituted into it.
+     */
+    public static final String FFN_S_URL = "https://www.fanfiction.net/s/%s/1";
+    /**
+     * FFN story chapter link, just needs the story ID string and chapter number substituted into it.
+     */
+    private static final String FFN_C_URL = "https://www.fanfiction.net/s/%s/%d";
+    /**
+     * Regex to determine if a string contains a valid FFN genre. If .find() returns true, it does.
+     */
+    private static final String FFN_GENRE_REGEX = "\\QAdventure\\E|\\QAngst\\E|\\QCrime\\E|\\QDrama\\E|\\QFamily\\E" +
+            "|\\QFantasy\\E|\\QFriendship\\E|\\QGeneral\\E|\\QHorror\\E|\\QHumor\\E|\\QHurt/Comfort\\E|\\QMystery\\E" +
+            "|\\QParody\\E|\\QPoetry\\E|\\QRomance\\E|\\QSci-Fi\\E|\\QSpiritual\\E|\\QSupernatural\\E|\\QSuspense\\E" +
+            "|\\QTragedy\\E|\\QWestern\\E";
 
     /**
      * Create a new FanFictionStory object based off of a URL.
@@ -31,9 +46,9 @@ public class FanFictionStory extends Story {
         // Set site.
         hostSite = C.HOST_FFN;
         // Get story ID first.
-        storyId = parseStoryId(url, C.FFN_SID_REGEX, 1);
+        storyId = parseStoryId(url, "/s/(d*)", 1);
         // Normalize the URL, since there are many valid FFN URL formats.
-        url = String.format(C.FFN_S_URL, storyId);
+        url = String.format(FFN_S_URL, storyId);
         // Get the first chapter in order to parse the story info.
         Document infoDoc = Util.downloadHtml(url);
         // Make sure that we got a Document and that this is a valid story.
@@ -41,7 +56,7 @@ public class FanFictionStory extends Story {
         // Get the title.
         title = infoDoc.select("div#profile_top b").first().html().trim();
         // Get the author.
-        author = infoDoc.select("div#profile_top a[href~=" + C.FFN_AUTHOR_LINK_REGEX + "]").first().html().trim();
+        author = infoDoc.select("div#profile_top a[href~=" + "/u/.*" + "]").first().html().trim();
         // Get the summary.
         summary = infoDoc.select("div#profile_top > div").first().html().trim();
         // Get the fic type.
@@ -66,7 +81,7 @@ public class FanFictionStory extends Story {
         } else if (chapCntIdx == 3 || (chapCntIdx == -1 && wordCntIdx == 3)) {
             // We have something at index 2, but we need to figure out if it's a genre or characters. This also means
             // that we only have one of either genres or characters, not both.
-            Matcher genreMatcher = Pattern.compile(C.FFN_GENRE_REGEX).matcher(details[2]);
+            Matcher genreMatcher = Pattern.compile(FFN_GENRE_REGEX).matcher(details[2]);
             if (genreMatcher.find()) {
                 // This is the genres string, we don't have characters.
                 genres = details[2].trim();
@@ -90,7 +105,7 @@ public class FanFictionStory extends Story {
         // Get the status.
         status = findDetailsStringIdx(details, "Status: Complete") != -1 ? C.STAT_C : C.STAT_I;
         // Generate chapter URLs.
-        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.FFN_C_URL, storyId, i + 1));
+        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(FFN_C_URL, storyId, i + 1));
     }
 
     /**

@@ -1,9 +1,9 @@
-package bkromhout.fdl;
+package bkromhout.fdl.parsers;
 
-import java.io.BufferedReader;
+import bkromhout.fdl.C;
+import bkromhout.fdl.Util;
+
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,12 +11,7 @@ import java.util.regex.Pattern;
 /**
  * Parses the config file.
  */
-public class ConfigFileParser {
-    /**
-     * The type of file this parser handles.
-     */
-    private static final String TYPE = "config";
-
+public class ConfigFileParser extends FileParser {
     /* Valid Line Starters */
     private static final String CFG_LS_P = "p";
     private static final String CFG_LS_U = "u";
@@ -33,23 +28,7 @@ public class ConfigFileParser {
      * @param cfgFile Config file.
      */
     public ConfigFileParser(File cfgFile) {
-        parse(cfgFile);
-    }
-
-    private void parse(File cfgFile) {
-        Util.logf(C.PARSE_FILE, TYPE);
-        // Try to read lines from file into the url list
-        try (BufferedReader br = new BufferedReader(new FileReader(cfgFile))) {
-            String line = br.readLine();
-            while (line != null) {
-                // Process the line.
-                processLine(line.trim());
-                line = br.readLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Util.log(C.DONE);
+        super("config", cfgFile);
     }
 
     /**
@@ -57,7 +36,8 @@ public class ConfigFileParser {
      * lines if they don't start with a valid line starter or are malformed.
      * @param line Line from the config file.
      */
-    private void processLine(String line) {
+    @Override
+    protected void processLine(String line) {
         // Sometimes we don't care...
         if (line == null || line.isEmpty() || line.startsWith(CFG_LS_HASH) || !line.contains("=") ||
                 line.indexOf('=') == line.length() - 1) return;
@@ -83,7 +63,7 @@ public class ConfigFileParser {
                 break;
             }
             default: {
-                Util.loudf(C.PROCESS_LINE_FAILED, TYPE, line);
+                Util.loudf(C.PROCESS_LINE_FAILED, type, line);
             }
         }
     }

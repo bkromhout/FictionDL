@@ -1,8 +1,8 @@
 package bkromhout.fdl.storys;
 
 import bkromhout.fdl.C;
-import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.Util;
+import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,6 +16,14 @@ import java.util.List;
  * Model object for a SIYE story.
  */
 public class SiyeStory extends Story {
+    /**
+     * SIYE story chapter link, just needs the story ID string and chapter number substituted into it.
+     */
+    private static final String SIYE_C_URL = "http://siye.co.uk/viewstory.php?sid=%s&chapter=%d";
+    /**
+     * SIYE author page link, just needs relative author link string substituted into it.
+     */
+    private static final String SIYE_A_URL = "http://siye.co.uk/%s";
 
     /**
      * Create a new SiyeStory object based off of a URL.
@@ -46,7 +54,7 @@ public class SiyeStory extends Story {
         // there.
         String authorIdLink = findAuthorIdLink(infoDoc);
         // Get the HTML at the author URL.
-        Document doc = Util.downloadHtml(String.format(C.SIYE_A_URL, authorIdLink));
+        Document doc = Util.downloadHtml(String.format(SIYE_A_URL, authorIdLink));
         if (doc == null) throw initEx();
         // Get the story row from on the author's page.
         Element storyRow = doc.select(String.format("td tr td:has(a[href=\"viewstory.php?sid=%s\"])", storyId)).last();
@@ -85,7 +93,7 @@ public class SiyeStory extends Story {
         // Get date last updated.
         dateUpdated = details[8].replace("Updated: ", "").trim();
         // Generate chapter URLs.
-        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(C.SIYE_C_URL, storyId, i + 1));
+        for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(SIYE_C_URL, storyId, i + 1));
     }
 
     /**
@@ -97,9 +105,9 @@ public class SiyeStory extends Story {
     private Document getInfoPage(String url) throws InitStoryException {
         // Need to normalize this URL first to be sure we can get the author ID link.
         // Start by getting the story ID from the URL.
-        storyId = parseStoryId(url, C.SIYE_SID_REGEX, 1);
+        storyId = parseStoryId(url, "sid=(d*)", 1);
         // Now download the first chapter's HTML.
-        Document chDoc = Util.downloadHtml(String.format(C.SIYE_C_URL, storyId, 1));
+        Document chDoc = Util.downloadHtml(String.format(SIYE_C_URL, storyId, 1));
         if (chDoc == null) throw initEx();
         return chDoc;
     }

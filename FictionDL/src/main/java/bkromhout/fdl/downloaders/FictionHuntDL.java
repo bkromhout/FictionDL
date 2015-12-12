@@ -2,9 +2,10 @@ package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.C;
 import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.Util;
+import bkromhout.fdl.storys.FanFictionStory;
 import bkromhout.fdl.storys.FictionHuntStory;
 import bkromhout.fdl.storys.Story;
-import bkromhout.fdl.Util;
 
 import java.util.HashSet;
 
@@ -33,7 +34,7 @@ public class FictionHuntDL extends ParsingDL {
         if (((FictionHuntStory) story).isOnFfn()) {
             // Story still on FanFiction.net, which is preferable, so we'll add a FFN URL so it gets downloaded later.
             Util.logf(C.FH_ON_FFN, story.getTitle());
-            FictionDL.parser.addFfnUrl(String.format(C.FFN_S_URL, story.getStoryId()));
+            FictionDL.parser.addFfnUrl(String.format(FanFictionStory.FFN_S_URL, story.getStoryId()));
             // It isn't appropriate to call .storyProcessed() here since FanFictionDL will download the story and
             // call it later.
         } else {

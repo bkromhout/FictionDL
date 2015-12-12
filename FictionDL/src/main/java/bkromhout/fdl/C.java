@@ -32,7 +32,7 @@ public abstract class C {
     // General.
     public static final String DONE = "Done!" + LOG_GREEN;
 
-    public static final String PARSE_FILE = "Parsing %s file...";
+    public static final String PARSING_FILE = "Parsing %s file...";
 
     public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n" + LOG_BLUE;
 
@@ -68,6 +68,8 @@ public abstract class C {
     public static final String AO3_PRE_DL = "Ao3 stories occasionally fail to download, just try them again.";
 
     // Non-site-specific errors and warnings.
+    public static final String INVALID_ARGS = "Bad arguments.";
+
     public static final String INVALID_PATH = "Invalid path: \"%s\"\n." + LOG_RED;
 
     public static final String NO_IN_PATH = "[No input file path!]";
@@ -75,6 +77,8 @@ public abstract class C {
     public static final String INVALID_URL = "Invalid URL: \"%s\"\n." + LOG_RED;
 
     public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the %s file: \"%s\"\n" + LOG_RED;
+
+    public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"\n" + C.LOG_RED;
 
     public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it." + LOG_RED;
 
@@ -107,189 +111,6 @@ public abstract class C {
     public static final String HOST_AO3 = "archiveofourown.org";
 
     /*
-    Link strings. Some need parts substituted into them.
-     */
-    /**
-     * Used to search FictionHunt for a story in order to get its summary. Just need to substitute in the title.
-     */
-    public static final String FH_SEARCH_URL = "http://fictionhunt.com/5/0/0/0/0/0/0/0/0/0/0/%s/1";
-
-    /**
-     * FictionHunt story chapter link, just needs the story ID and chapter number substituted into it.
-     */
-    public static final String FH_C_URL = "http://fictionhunt.com/read/%s/%d";
-
-    /**
-     * FFN story link, just needs the story ID string substituted into it.
-     */
-    public static final String FFN_S_URL = "https://www.fanfiction.net/s/%s/1";
-
-    /**
-     * FFN story chapter link, just needs the story ID string and chapter number substituted into it.
-     */
-    public static final String FFN_C_URL = "https://www.fanfiction.net/s/%s/%d";
-
-    /**
-     * SIYE author page link, just needs relative author link string substituted into it.
-     */
-    public static final String SIYE_A_URL = "http://siye.co.uk/%s";
-
-    /**
-     * SIYE story chapter link, just needs the story ID string and chapter number substituted into it.
-     */
-    public static final String SIYE_C_URL = "http://siye.co.uk/viewstory.php?sid=%s&chapter=%d";
-
-    /**
-     * MuggleNet story info link, just needs story ID and warning bypass part substituted into it.
-     */
-    public static final String MN_S_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s%s";
-
-    /**
-     * MuggleNet chapter link, needs story ID and chapter number and warning bypass part substituted into it.
-     */
-    public static final String MN_C_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s&chapter=%d%s";
-
-    /**
-     * MuggleNet URL fragment, adds a warning bypass for "Professors"-rated stories/chapters.
-     */
-    public static final String MN_PART_WARN_3 = "&warning=3";
-
-    /**
-     * MuggleNet URL fragment, adds a warning bypass for "6th-7th Year"-rated stories/chapters.
-     */
-    public static final String MN_PART_WARN_5 = "&warning=5";
-
-    /**
-     * MuggleNet login page link.
-     */
-    public static final String MN_L_URL = "http://fanfiction.mugglenet.com/user.php?action=login";
-
-    /**
-     * Ao3 story info link, just needs story ID substituted into it.
-     */
-    public static final String AO3_S_URL = "http://archiveofourown.org/works/%s?view_adult=true";
-
-    /*
-    Site/Comparison strings, usually used to try and determine what type of error is present when the HTML structure
-    by itself doesn't provide enough info.
-     */
-    /**
-     * Indicates a URL is malformed.
-     */
-    public static final String BAD_URL = "BAD_URL";
-
-    /**
-     * Indicates we couldn't find an ePUB file to download for a story.
-     */
-    public static final String NO_EPUB = "NO_EPUB";
-
-    /**
-     * Error message displayed by MuggleNet when attempting to access a "Professors" rated story while not logged in.
-     */
-    public static final String MN_REG_USERS_ONLY = "Registered Users Only";
-
-    /**
-     * Message displayed in place of a "6th-7th Years"-rated story/chapter if the warning integer isn't 3.
-     */
-    public static final String MN_NEEDS_WARN_5 = "This story may contain some sexuality, violence and or profanity " +
-            "not suitable for younger readers.";
-
-    /**
-     * Message displayed in place of a Professors-rated story/chapter if logged in, but the warning integer isn't 3.
-     */
-    public static final String MN_NEEDS_WARN_3 = "This fic may contain language or imagery unsuitable for persons " +
-            "under the age of 17. You must be logged in to read this fic.";
-
-    /*
-    RegEx Strings
-     */
-
-    /**
-     * Regex to extract storyId from FictionHunt URL. Use .find() then .group(1).
-     */
-    public static final String FH_SID_REGEX = "/read/(d*)";
-
-    /**
-     * Regex to extract the story ID. Use .find() then .group(1).
-     */
-    public static final String SIYE_SID_REGEX = "sid=(d*)";
-
-    /**
-     * Regex to extract SIYE chapter title without the leading "#. " part. Group 2 is the chapter title.
-     */
-    public static final String SIYE_CHAP_TITLE_REGEX = "(d+.s)(.*)";
-
-    /**
-     * Regex to extract story ID from FanFiction.net URL. Use .find() then .group(1).
-     */
-    public static final String FFN_SID_REGEX = "/s/(d*)";
-
-    /**
-     * Regex that matches a FanFiction.net author link of the format "/u/[whatever]"
-     */
-    public static final String FFN_AUTHOR_LINK_REGEX = "/u/.*";
-
-    /**
-     * Regex to extract FFN chapter title without the leading "#. " part. Group 2 is the chapter title.
-     */
-    public static final String FFN_CHAP_TITLE_REGEX = "(d+.s)(.*)";
-
-    /**
-     * Regex to determine if a string contains a valid FFN genre. If .find() returns true, it does.
-     */
-    public static final String FFN_GENRE_REGEX = "\\QAdventure\\E|\\QAngst\\E|\\QCrime\\E|\\QDrama\\E|\\QFamily\\E" +
-            "|\\QFantasy\\E|\\QFriendship\\E|\\QGeneral\\E|\\QHorror\\E|\\QHumor\\E|\\QHurt/Comfort\\E|\\QMystery\\E" +
-            "|\\QParody\\E|\\QPoetry\\E|\\QRomance\\E|\\QSci-Fi\\E|\\QSpiritual\\E|\\QSupernatural\\E|\\QSuspense\\E" +
-            "|\\QTragedy\\E|\\QWestern\\E";
-
-    /**
-     * Regex to extract MuggleNet story ID from a MuggleNet URL. Use .find() then .group(1).
-     */
-    public static final String MN_SID_REGEX = "sid=(d*)";
-
-    /**
-     * Regex to extract MuggleNet chapter title without the leading "#. " part. Group 2 is the chapter title.
-     */
-    public static final String MN_CHAP_TITLE_REGEX = "(d+.s)(.*)";
-
-    /**
-     * Regex to extract story ID from an Ao3 URL. Use .find() then .group(1).
-     */
-    public static final String AO3_SID_REGEX = "/works/(d*)";
-
-    /**
-     * Regex to find all ampersands in a piece of HTML which are actual ampersands and not part of a character code.
-     */
-    public static final String AMP_REGEX = "[\\&](?!(#|amp;|gt;|lt;|quot;|nbsp;))";
-
-    /**
-     * Regex to find all unclosed tags, where the tag type is substituted in, no matter their attributes. Used with
-     * TAG_REGEX_REPL.
-     */
-    public static final String TAG_REGEX_FIND = "(\\<%s[^>]*?(?<!/))(\\>)";
-
-    /**
-     * Used with TAG_REGEX_FIND to replace all > with /> for unclosed tags.
-     */
-    public static final String TAG_REGEX_REPL = "$1/>";
-
-    /*
-    Title Page Part Names (AKA, details for a fic)
-     */
-    public static final String SUMMARY = "Summary";
-    public static final String SERIES = "Series";
-    public static final String FIC_TYPE = "Fic Type";
-    public static final String WARNINGS = "Warnings";
-    public static final String RATING = "Rated";
-    public static final String GENRES = "Genres";
-    public static final String CHARACTERS = "Characters";
-    public static final String WORD_COUNT = "Word Count";
-    public static final String CHAP_COUNT = "Chapter Count";
-    public static final String DATE_PUBL = "Date Published";
-    public static final String DATE_LUPD = "Date Last Updated";
-    public static final String STATUS = "Status";
-
-    /*
     Default/specific detail values.
      */
     /**
@@ -312,14 +133,8 @@ public abstract class C {
      */
     public static final String STAT_I = "Incomplete";
 
-    /**
-     * For FictionHunt stories, used in place of a summary if we can't find the story on the first page of search
-     * results (which is what we do to try and get summaries from FictionHunt).
-     */
-    public static final String FH_NO_SUMMARY = "(Couldn't get summary from FictionHunt, sorry!)";
-
     /*
-    File Template Strings. These are long and would be annoying to have in any specific class.
+    File Template Strings. These are long and would be annoying to have in the EpubCreator class.
      */
     /**
      * Yay CSS. It doesn't honestly matter that much anyway though, ePUB readers can do whatever they want to.

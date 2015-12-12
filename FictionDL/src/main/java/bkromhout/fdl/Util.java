@@ -119,7 +119,7 @@ public abstract class Util {
             doc = connection.get();
         } catch (IOException e) {
             // We're just ignoring the exception really.
-            logf("Failed to download HTML from: \"%s\"\n" + C.LOG_RED, url);
+            logf(C.HTML_DL_FAILED, url);
         }
         return doc;
     }
@@ -162,7 +162,7 @@ public abstract class Util {
      */
     public static String closeTags(String in, String tag) {
         if (in == null) return null;
-        return in.replaceAll(String.format(C.TAG_REGEX_FIND, tag), C.TAG_REGEX_REPL);
+        return in.replaceAll(String.format("(\\<%s[^>]*?(?<!/))(\\>)", tag), "$1/>");
     }
 
     /**
@@ -172,7 +172,7 @@ public abstract class Util {
      */
     public static String escapeAmps(String in) {
         if (in == null) return null;
-        return in.replaceAll(C.AMP_REGEX, "&#x26;");
+        return in.replaceAll("[&](?!(#|amp;|gt;|lt;|quot;|nbsp;))", "&#x26;");
     }
 
     /**

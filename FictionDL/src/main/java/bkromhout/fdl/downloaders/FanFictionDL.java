@@ -15,6 +15,10 @@ import java.util.regex.Pattern;
  * Downloader for FanFiction.net stories.
  */
 public class FanFictionDL extends ParsingDL {
+    /**
+     * Regex to extract FFN chapter title without the leading "#. " part. Group 2 is the chapter title.
+     */
+    private static final String FFN_CHAP_TITLE_REGEX = "(d+.s)(.*)";
 
     /**
      * Create a new FanFiction.net downloader.
@@ -22,7 +26,7 @@ public class FanFictionDL extends ParsingDL {
      * @param urls      List of FanFiction.net URLs.
      */
     public FanFictionDL(FictionDL fictionDL, HashSet<String> urls) {
-        super(fictionDL,FanFictionStory.class, C.NAME_FFN, urls, "div#storytext");
+        super(fictionDL, FanFictionStory.class, C.NAME_FFN, urls, "div#storytext");
     }
 
     /**
@@ -38,7 +42,7 @@ public class FanFictionDL extends ParsingDL {
             // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
             // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
             if (titleElement != null) {
-                Matcher matcher = Pattern.compile(C.FFN_CHAP_TITLE_REGEX).matcher(titleElement.html().trim());
+                Matcher matcher = Pattern.compile(FFN_CHAP_TITLE_REGEX).matcher(titleElement.html().trim());
                 matcher.matches();
                 try {
                     chapter.title = matcher.group(2);

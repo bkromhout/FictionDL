@@ -1,9 +1,9 @@
-package bkromhout.fdl;
+package bkromhout.fdl.parsers;
 
-import java.io.BufferedReader;
+import bkromhout.fdl.C;
+import bkromhout.fdl.Util;
+
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,11 +11,7 @@ import java.util.regex.Pattern;
 /**
  * Parses the input file.
  */
-public class LinkFileParser {
-    /**
-     * The type of file this parser handles.
-     */
-    private static final String TYPE = "URLs";
+public class LinkFileParser extends FileParser {
     /**
      * Regex for extracting host name from a URL.
      */
@@ -46,23 +42,7 @@ public class LinkFileParser {
      * @param storiesFile Link file.
      */
     public LinkFileParser(File storiesFile) {
-        parse(storiesFile);
-    }
-
-    private void parse(File storiesFile) {
-        Util.logf(C.PARSE_FILE, TYPE);
-        // Try to read lines from file into the url list
-        try (BufferedReader br = new BufferedReader(new FileReader(storiesFile))) {
-            String line = br.readLine();
-            while (line != null) {
-                // Process the line.
-                processLine(line.trim());
-                line = br.readLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Util.log(C.DONE);
+        super("URLs", storiesFile);
     }
 
     /**
@@ -70,11 +50,12 @@ public class LinkFileParser {
      * Won't put any invalid or repeat lines in the URL lists.
      * @param line Line from the input file.
      */
-    private void processLine(String line) throws IllegalStateException {
+    @Override
+    protected void processLine(String line) throws IllegalStateException {
         // Try to match this line to a URL so that we can extract the host.
         Matcher hostMatcher = hostRegex.matcher(line);
         if (!hostMatcher.matches()) {
-            if (!line.trim().isEmpty()) Util.loudf(C.PROCESS_LINE_FAILED, TYPE, line);
+            if (!line.trim().isEmpty()) Util.loudf(C.PROCESS_LINE_FAILED, type, line);
             return;
         }
         String hostString = hostMatcher.group(2).toLowerCase();
@@ -84,7 +65,7 @@ public class LinkFileParser {
         else if (hostString.contains(C.HOST_SIYE)) siyeUrls.add(line);
         else if (hostString.contains(C.HOST_MN)) mnUrls.add(line);
         else if (hostString.contains(C.HOST_AO3)) ao3Urls.add(line);
-        else Util.logf(C.PROCESS_LINE_FAILED, TYPE, line); // Malformed or unsupported site URL.
+        else Util.logf(C.PROCESS_LINE_FAILED, type, line); // Malformed or unsupported site URL.
     }
 
     /**
