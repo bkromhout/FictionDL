@@ -1,7 +1,7 @@
-package bkromhout.FictionDL.Downloader;
+package bkromhout.fictiondl.Downloader;
 
-import bkromhout.FictionDL.*;
-import bkromhout.FictionDL.Story.Story;
+import bkromhout.fictiondl.*;
+import bkromhout.fictiondl.Story.Story;
 import org.jsoup.nodes.Document;
 
 import java.util.ArrayList;
@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
  * parsing and cleaning the scraped HTML data.
  */
 public abstract class ParsingDL extends Downloader {
-    /*  */
 
     /**
      * CSS selector to extract chapter text from original HTML.
@@ -47,7 +46,7 @@ public abstract class ParsingDL extends Downloader {
      */
     @Override
     protected void downloadStory(Story story) {
-        Util.logf("Downloading: \"%s\"\n", Util.unEscapeAmps(story.getTitle()));
+        Util.logf(C.DL_CONTENT_FOR, Util.unEscapeAmps(story.getTitle()));
         // Download the chapters and fill in their titles.
         ArrayList<Chapter> chapters = downloadChapters(story);
         // Make sure we got all of the chapters. If we didn't we won't continue.
@@ -57,12 +56,12 @@ public abstract class ParsingDL extends Downloader {
             return;
         }
         // Extract the chapter text and sanitize it so that the chapters are in the expected xhtml format for ePUB.
-        Util.log("Sanitizing chapters...");
+        Util.log(C.SANITIZING_CHAPS);
         for (Chapter chapter : chapters) chapter.content = sanitizeChapter(extractChapText(chapter));
         // Associate the chapters with the story.
         story.setChapters(chapters);
         // Save the story as an ePUB file.
-        Util.logf("Saving Story...");
+        Util.logf(C.SAVING_STORY);
         new EpubCreator(story).makeEpub(FictionDL.outPath);
         Util.log(C.DONE + "\n");
         storyProcessed(); // Update progress.

@@ -1,4 +1,4 @@
-package bkromhout.FictionDL;
+package bkromhout.fictiondl;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,18 +16,29 @@ public class LinkFileParser {
      * The type of file this parser handles.
      */
     private static final String TYPE = "URLs";
-
-    // Regex for extracting host strings.
-    private Pattern hostRegex = Pattern.compile("^(http[s]?://)?([^:/\\s]+)(/.*)?$");
-    // FictionHunt URLs.
+    /**
+     * Regex for extracting host name from a URL.
+     */
+    private static Pattern hostRegex = Pattern.compile("^(http[s]?://)?([^:/\\s]+)(/.*)?$");
+    /**
+     * FictionHunt URLs.
+     */
     private HashSet<String> fictionHuntUrls = new HashSet<>();
-    // FanFiction.net URLs.
+    /**
+     * FanFiction.net URLs.
+     */
     private HashSet<String> ffnUrls = new HashSet<>();
-    // SIYE URLs.
+    /**
+     * SIYE URLs.
+     */
     private HashSet<String> siyeUrls = new HashSet<>();
-    // MuggleNet URLs.
+    /**
+     * MuggleNet URLs.
+     */
     private HashSet<String> mnUrls = new HashSet<>();
-    // Ao3 URLs.
+    /**
+     * Ao3 URLs.
+     */
     private HashSet<String> ao3Urls = new HashSet<>();
 
     /**

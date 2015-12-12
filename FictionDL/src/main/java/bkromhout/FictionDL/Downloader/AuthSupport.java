@@ -1,4 +1,4 @@
-package bkromhout.FictionDL.Downloader;
+package bkromhout.fictiondl.Downloader;
 
 /**
  * Interface which downloaders should implement if it is possible that some stories on their site require a user login

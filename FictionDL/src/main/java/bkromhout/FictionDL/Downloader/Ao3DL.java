@@ -1,8 +1,8 @@
-package bkromhout.FictionDL.Downloader;
+package bkromhout.fictiondl.Downloader;
 
-import bkromhout.FictionDL.C;
-import bkromhout.FictionDL.FictionDL;
-import bkromhout.FictionDL.Story.Ao3Story;
+import bkromhout.fictiondl.C;
+import bkromhout.fictiondl.FictionDL;
+import bkromhout.fictiondl.Story.Ao3Story;
 
 import java.util.HashSet;
 

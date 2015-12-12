@@ -1,4 +1,4 @@
-package bkromhout.FictionDL;
+package bkromhout.fictiondl;
 
 /**
  * Constants file. Only constants which are either used by multiple classes (or are likely to be in the future) or which
@@ -19,30 +19,73 @@ public abstract class C {
     public static final String LOG_BLUE = "!blue!";
     public static final String LOG_GREEN = "!green!";
 
-    /* Keys. */
+    /*
+    Keys.
+     */
     public static final String ARG_IN_PATH = "arg_in_path";
     public static final String ARG_OUT_PATH = "arg_out_path";
     public static final String ARG_CFG_PATH = "arg_cfg_path";
 
-    /* Log output strings which don't belong to any specific class. */
+    /*
+    Log Strings.
+     */
+    // General.
     public static final String DONE = "Done!" + LOG_GREEN;
 
     public static final String PARSE_FILE = "Parsing %s file...";
 
+    public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n" + LOG_BLUE;
+
     public static final String STARTING_SITE_AUTH_PROCESS = "\nAttempting to log in to %s..." + LOG_BLUE;
 
-    // Errors and Warnings
-    public static final String INVALID_URL = "Invalid URL: \"%s\"\n." + LOG_RED;
-    public static final String INVALID_PATH = "Invalid path: \"%s\"\n." + LOG_RED;
-    public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the %s file: \"%s\"\n" + LOG_RED;
-    public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it." + LOG_RED;
-    public static final String NO_EPUB_ON_SITE = "Couldn't find ePUB on %s for story \"%s\". Skipping it." + LOG_RED;
-    public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n" + LOG_RED;
-    public static final String SAVE_FILE_FAILED = "Failed to save file: \"%s\"\n" + LOG_RED;
+    public static final String FETCH_BUILD_MODELS = "Fetching story infos from %s and building story models...\n";
+
+    public static final String DL_STORIES_FROM_SITE = "Downloading stories from %s...\n\n";
+
+    public static final String DL_CONTENT_FOR = "Downloading: \"%s\"\n";
+
+    public static final String SANITIZING_CHAPS = "Sanitizing chapters...";
+
+    public static final String SAVING_STORY = "Saving Story...";
+
+    public static final String DL_EPUB_FOR = "Downloading ePUB for: \"%s\"...";
+
+    public static final String FINISHED_WITH_SITE = "Finished with %s.\n\n" + LOG_BLUE;
+
+    public static final String ALL_FINISHED = "\nAll Finished! :)" + C.LOG_GREEN;
+
+    // FictionHunt-specific.
+    public static final String FH_ON_FFN = "\"%s\" is still available on FanFiction.net; will download from there.\n\n";
+
     public static final String FH_FFN_CHECK_FAILED = "Failed to check if story is still active on FFN. Oh well, " +
             "never hurts to try!" + LOG_RED;
-    public static final String MUST_LOGIN = "You need to provide login info for %s to download story with ID=%s!" +
-            LOG_RED;
+
+    // SIYE-specific.
+    public static final String SIYE_PRE_DL = "SIYE's process is *very slow* due to their horrid HTML structure, " +
+            "please be patient ;)";
+
+    // Ao3-specific.
+    public static final String AO3_PRE_DL = "Ao3 stories occasionally fail to download, just try them again.";
+
+    // Non-site-specific errors and warnings.
+    public static final String INVALID_PATH = "Invalid path: \"%s\"\n." + LOG_RED;
+
+    public static final String NO_IN_PATH = "[No input file path!]";
+
+    public static final String INVALID_URL = "Invalid URL: \"%s\"\n." + LOG_RED;
+
+    public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the %s file: \"%s\"\n" + LOG_RED;
+
+    public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it." + LOG_RED;
+
+    public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n" + LOG_RED;
+
+    public static final String SAVE_FILE_FAILED = "Failed to save file: \"%s\"\n" + LOG_RED;
+
+    public static final String NO_EPUB_ON_SITE = "Couldn't find ePUB on %s for story \"%s\". Skipping it." + LOG_RED;
+
+    public static final String MUST_LOGIN = "You must provide %s login info to download story with ID=%s!" + LOG_RED;
+
     public static final String LOGIN_FAILED = "\nCouldn't log in to %s. Check your login info.\n" + LOG_RED;
 
     /*
@@ -353,6 +396,4 @@ public abstract class C {
      * The end part of the title page.
      */
     public static final String TITLE_PAGE_END = "\n</body>\n</html>";
-    public static final String AO3_PRE_DL = "Ao3 stories occasionally fail to download for some reason, just try " +
-            "again.";
 }

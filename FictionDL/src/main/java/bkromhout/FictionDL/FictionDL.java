@@ -1,6 +1,6 @@
-package bkromhout.FictionDL;
+package bkromhout.fictiondl;
 
-import bkromhout.FictionDL.Downloader.*;
+import bkromhout.fictiondl.Downloader.*;
 import javafx.concurrent.Task;
 
 import java.io.File;
@@ -54,7 +54,7 @@ public class FictionDL {
         // If we're running from a GUI, go ahead and set the progress bar to indeterminate.
         if (task != null) task.updateProgress(-1, 0);
         // Make sure we have an input path.
-        if (args.get(C.ARG_IN_PATH) == null) throw new IllegalArgumentException("[No input file path!]");
+        if (args.get(C.ARG_IN_PATH) == null) throw new IllegalArgumentException(C.NO_IN_PATH);
         // Try to get a file from the input file path.
         inputFile = Util.tryGetFile(args.get(C.ARG_IN_PATH));
         // Figure out the output directory.
@@ -81,7 +81,7 @@ public class FictionDL {
         totalNumStories = parser.getTotalNumStories();
         getStories(parser);
         // All done!
-        Util.log("\nAll Finished! :)" + C.LOG_GREEN);
+        Util.log(C.ALL_FINISHED);
     }
 
     /**

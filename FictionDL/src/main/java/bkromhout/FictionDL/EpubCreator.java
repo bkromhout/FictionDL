@@ -1,6 +1,6 @@
-package bkromhout.FictionDL;
+package bkromhout.fictiondl;
 
-import bkromhout.FictionDL.Story.Story;
+import bkromhout.fictiondl.Story.Story;
 import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubWriter;
 

@@ -1,6 +1,6 @@
-package bkromhout.FictionDL.Gui;
+package bkromhout.fictiondl.Gui;
 
-import bkromhout.FictionDL.C;
+import bkromhout.fictiondl.C;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -23,18 +23,12 @@ public class GuiController {
     private static final String PREF_CFG_FILE_PATH = "key_cfg_file_path";
     private static final String PREF_OUT_DIR_PATH = "key_out_dir_path";
     private static final String PREF_IN_FILE_PATH = "key_in_file_path";
-    /**
-     * Shown in directory chooser dialog.
-     */
+
+    /* Shown in system chooser dialogs */
     private static final String D_CHOOSE_TITLE = "Choose Directory:";
-    /**
-     * Shown in file chooser dialog.
-     */
     private static final String F_CHOOSE_TITLE = "Choose File:";
 
-    /**
-     * The Gui which owns this controller.
-     */
+    /* Gui which owns this controller. */
     private Gui gui;
 
     /* Containers. */

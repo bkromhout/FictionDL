@@ -1,6 +1,6 @@
-package bkromhout.FictionDL;
+package bkromhout.fictiondl;
 
-import bkromhout.FictionDL.Gui.GuiController;
+import bkromhout.fictiondl.Gui.GuiController;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import org.jsoup.Connection;

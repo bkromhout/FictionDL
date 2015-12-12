@@ -1,4 +1,4 @@
-package bkromhout.FictionDL;
+package bkromhout.fictiondl;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,6 +16,7 @@ public class ConfigFileParser {
      * The type of file this parser handles.
      */
     private static final String TYPE = "config";
+
     /* Valid Line Starters */
     private static final String CFG_LS_P = "p";
     private static final String CFG_LS_U = "u";
