@@ -1,4 +1,4 @@
-package bkromhout.fictiondl;
+package bkromhout.fdl;
 
 import org.jsoup.nodes.Document;
 

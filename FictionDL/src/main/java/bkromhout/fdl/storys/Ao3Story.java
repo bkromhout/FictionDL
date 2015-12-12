@@ -1,9 +1,9 @@
-package bkromhout.fictiondl.Story;
+package bkromhout.fdl.storys;
 
-import bkromhout.fictiondl.C;
-import bkromhout.fictiondl.Downloader.EpubDL;
-import bkromhout.fictiondl.Util;
-import bkromhout.fictiondl.ex.InitStoryException;
+import bkromhout.fdl.C;
+import bkromhout.fdl.downloaders.EpubDL;
+import bkromhout.fdl.Util;
+import bkromhout.fdl.ex.InitStoryException;
 import org.jsoup.nodes.Document;
 
 /**

@@ -1,4 +1,4 @@
-package bkromhout.fictiondl.ex;
+package bkromhout.fdl.ex;
 
 /**
  * Exception thrown when a Story object cannot be created for some reason.

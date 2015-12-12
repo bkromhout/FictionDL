@@ -1,4 +1,4 @@
-package bkromhout.fictiondl;
+package bkromhout.fdl;
 
 import java.io.BufferedReader;
 import java.io.File;

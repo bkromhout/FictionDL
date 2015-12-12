@@ -1,4 +1,4 @@
-package bkromhout.fictiondl;
+package bkromhout.fdl;
 
 /**
  * Constants file. Only constants which are either used by multiple classes (or are likely to be in the future) or which

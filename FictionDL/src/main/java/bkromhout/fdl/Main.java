@@ -1,6 +1,6 @@
-package bkromhout.fictiondl;
+package bkromhout.fdl;
 
-import bkromhout.fictiondl.Gui.Gui;
+import bkromhout.fdl.gui.Gui;
 import javafx.application.Application;
 import javafx.application.Platform;
 import org.apache.commons.cli.*;

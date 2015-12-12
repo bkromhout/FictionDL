@@ -1,6 +1,6 @@
-package bkromhout.fictiondl.Gui;
+package bkromhout.fdl.gui;
 
-import bkromhout.fictiondl.C;
+import bkromhout.fdl.C;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;

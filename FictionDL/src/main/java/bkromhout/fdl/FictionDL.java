@@ -1,6 +1,6 @@
-package bkromhout.fictiondl;
+package bkromhout.fdl;
 
-import bkromhout.fictiondl.Downloader.*;
+import bkromhout.fdl.downloaders.*;
 import javafx.concurrent.Task;
 
 import java.io.File;

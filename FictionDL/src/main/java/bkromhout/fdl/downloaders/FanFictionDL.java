@@ -1,9 +1,9 @@
-package bkromhout.fictiondl.Downloader;
+package bkromhout.fdl.downloaders;
 
-import bkromhout.fictiondl.C;
-import bkromhout.fictiondl.Chapter;
-import bkromhout.fictiondl.FictionDL;
-import bkromhout.fictiondl.Story.FanFictionStory;
+import bkromhout.fdl.C;
+import bkromhout.fdl.Chapter;
+import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.storys.FanFictionStory;
 import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;

@@ -1,10 +1,10 @@
-package bkromhout.fictiondl.Downloader;
+package bkromhout.fdl.downloaders;
 
-import bkromhout.fictiondl.C;
-import bkromhout.fictiondl.FictionDL;
-import bkromhout.fictiondl.Story.FictionHuntStory;
-import bkromhout.fictiondl.Story.Story;
-import bkromhout.fictiondl.Util;
+import bkromhout.fdl.C;
+import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.storys.FictionHuntStory;
+import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.Util;
 
 import java.util.HashSet;
 

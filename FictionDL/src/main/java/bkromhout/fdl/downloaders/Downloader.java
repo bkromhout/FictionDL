@@ -1,10 +1,10 @@
-package bkromhout.fictiondl.Downloader;
+package bkromhout.fdl.downloaders;
 
-import bkromhout.fictiondl.C;
-import bkromhout.fictiondl.FictionDL;
-import bkromhout.fictiondl.Main;
-import bkromhout.fictiondl.Story.Story;
-import bkromhout.fictiondl.Util;
+import bkromhout.fdl.C;
+import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.Main;
+import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.Util;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import java.lang.reflect.InvocationTargetException;

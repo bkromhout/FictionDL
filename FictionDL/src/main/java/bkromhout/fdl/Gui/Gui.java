@@ -1,8 +1,8 @@
-package bkromhout.fictiondl.Gui;
+package bkromhout.fdl.gui;
 
-import bkromhout.fictiondl.C;
-import bkromhout.fictiondl.FictionDL;
-import bkromhout.fictiondl.Util;
+import bkromhout.fdl.C;
+import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.Util;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;

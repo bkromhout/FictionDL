@@ -1,10 +1,10 @@
-package bkromhout.fictiondl.Downloader;
+package bkromhout.fdl.downloaders;
 
-import bkromhout.fictiondl.C;
-import bkromhout.fictiondl.Chapter;
-import bkromhout.fictiondl.FictionDL;
-import bkromhout.fictiondl.Story.MuggleNetStory;
-import bkromhout.fictiondl.Util;
+import bkromhout.fdl.C;
+import bkromhout.fdl.Chapter;
+import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.storys.MuggleNetStory;
+import bkromhout.fdl.Util;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;

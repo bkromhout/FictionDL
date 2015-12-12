@@ -1,9 +1,9 @@
-package bkromhout.fictiondl.Story;
+package bkromhout.fdl.storys;
 
-import bkromhout.fictiondl.C;
-import bkromhout.fictiondl.Chapter;
-import bkromhout.fictiondl.Downloader.Downloader;
-import bkromhout.fictiondl.ex.InitStoryException;
+import bkromhout.fdl.C;
+import bkromhout.fdl.Chapter;
+import bkromhout.fdl.downloaders.Downloader;
+import bkromhout.fdl.ex.InitStoryException;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
