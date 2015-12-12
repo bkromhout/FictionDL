@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 /**
  * Downloader for MuggleNet stories.
  */
-public class MuggleNetDL extends ParsingDL {
+public class MuggleNetDL extends ParsingDL implements AuthSupport {
 
     /**
      * Create a new MuggleNet downloader.

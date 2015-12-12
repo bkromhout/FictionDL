@@ -19,5 +19,7 @@ public class Ao3DL extends EpubDL {
     public Ao3DL(FictionDL fictionDL, HashSet<String> urls) {
         // Yes, for Ao3 this really is all that we have to do :)
         super(fictionDL, Ao3Story.class, C.NAME_AO3, urls);
+        // We have extra messages that we'll want printed before the download process starts.
+        this.extraPreDlMsgs = C.AO3_PRE_DL;
     }
 }

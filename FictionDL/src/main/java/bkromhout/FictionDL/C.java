@@ -1,9 +1,8 @@
 package bkromhout.FictionDL;
 
 /**
- * Constants file. Constants which belong here are those which are used by multiple classes (or that might be in the
- * future), as well as any string constants which the user may see. Also appropriate are any string constants which are
- * exceedingly long/unwieldy which would be annoying to have in their specific classes.
+ * Constants file. Only constants which are either used by multiple classes (or are likely to be in the future) or which
+ * are exceedingly long (in the case of strings) belong here. All others should be in a more specific class.
  */
 public abstract class C {
     /**
@@ -20,48 +19,22 @@ public abstract class C {
     public static final String LOG_BLUE = "!blue!";
     public static final String LOG_GREEN = "!green!";
 
-    /*
-    Keys.
-     */
+    /* Keys. */
     public static final String ARG_IN_PATH = "arg_in_path";
     public static final String ARG_OUT_PATH = "arg_out_path";
     public static final String ARG_CFG_PATH = "arg_cfg_path";
-    public static final String PREF_IN_FILE_PATH = "key_in_file_path";
-    public static final String PREF_OUT_DIR_PATH = "key_out_dir_path";
-    public static final String PREF_CFG_FILE_PATH = "key_cfg_file_path";
 
-    /*
-    Log output strings.
-     */
-    // General
+    /* Log output strings which don't belong to any specific class. */
+    public static final String DONE = "Done!" + LOG_GREEN;
+
     public static final String PARSE_FILE = "Parsing %s file...";
 
-    // Auth Process
     public static final String STARTING_SITE_AUTH_PROCESS = "\nAttempting to log in to %s..." + LOG_BLUE;
-
-    // Overall Download Process
-    public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n" + LOG_BLUE;
-    public static final String FETCH_BUILD_MODELS = "Fetching story infos from %s and building story models...\n";
-    public static final String DL_STORIES_FROM_SITE = "Downloading stories from %s...\n\n";
-    public static final String SIYE_SLOW = "SIYE's process is *very slow* due to their horrid HTML structure, please " +
-            "be patient ;)";
-    public static final String DONE = "Done!" + LOG_GREEN;
-    public static final String FINISHED_WITH_SITE = "Finished with %s.\n\n" + LOG_BLUE;
-    public static final String ALL_FINISHED = "\nAll Finished! :)" + LOG_GREEN;
-
-    // Story/Chapter downloading and cleaning process
-    public static final String SAVING_STORY = "Saving Story...";
-    public static final String DL_EPUB_FOR = "Downloading ePUB for: \"%s\"...";
-    public static final String FH_STORY_ON_FFN = "\"%s\" is still available on FanFiction.net; will download from " +
-            "there.\n\n";
-    public static final String DL_CONTENT_FOR = "Downloading: \"%s\"\n";
-    public static final String SANITIZING_CHAPS = "Sanitizing chapters...";
 
     // Errors and Warnings
     public static final String INVALID_URL = "Invalid URL: \"%s\"\n." + LOG_RED;
     public static final String INVALID_PATH = "Invalid path: \"%s\"\n." + LOG_RED;
-    public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the file: \"%s\"\n" + LOG_RED;
-    public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"\n" + LOG_RED;
+    public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the %s file: \"%s\"\n" + LOG_RED;
     public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it." + LOG_RED;
     public static final String NO_EPUB_ON_SITE = "Couldn't find ePUB on %s for story \"%s\". Skipping it." + LOG_RED;
     public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n" + LOG_RED;
@@ -187,40 +160,36 @@ public abstract class C {
     /*
     RegEx Strings
      */
-    /**
-     * Regex to obtain website host from URL. Group 2 is the host.
-     */
-    public static final String HOST_REGEX = "^(http[s]?:\\/\\/)?([^:\\/\\s]+)(\\/.*)?$";
 
     /**
      * Regex to extract storyId from FictionHunt URL. Use .find() then .group(1).
      */
-    public static final String FH_SID_REGEX = "\\/read\\/(\\d*)";
+    public static final String FH_SID_REGEX = "/read/(d*)";
 
     /**
      * Regex to extract the story ID. Use .find() then .group(1).
      */
-    public static final String SIYE_SID_REGEX = "sid=(\\d*)";
+    public static final String SIYE_SID_REGEX = "sid=(d*)";
 
     /**
      * Regex to extract SIYE chapter title without the leading "#. " part. Group 2 is the chapter title.
      */
-    public static final String SIYE_CHAP_TITLE_REGEX = "(\\d+\\.\\s)(.*)";
+    public static final String SIYE_CHAP_TITLE_REGEX = "(d+.s)(.*)";
 
     /**
      * Regex to extract story ID from FanFiction.net URL. Use .find() then .group(1).
      */
-    public static final String FFN_SID_REGEX = "\\/s\\/(\\d*)";
+    public static final String FFN_SID_REGEX = "/s/(d*)";
 
     /**
      * Regex that matches a FanFiction.net author link of the format "/u/[whatever]"
      */
-    public static final String FFN_AUTHOR_LINK_REGEX = "\\/u\\/.*";
+    public static final String FFN_AUTHOR_LINK_REGEX = "/u/.*";
 
     /**
      * Regex to extract FFN chapter title without the leading "#. " part. Group 2 is the chapter title.
      */
-    public static final String FFN_CHAP_TITLE_REGEX = SIYE_CHAP_TITLE_REGEX;
+    public static final String FFN_CHAP_TITLE_REGEX = "(d+.s)(.*)";
 
     /**
      * Regex to determine if a string contains a valid FFN genre. If .find() returns true, it does.
@@ -233,17 +202,17 @@ public abstract class C {
     /**
      * Regex to extract MuggleNet story ID from a MuggleNet URL. Use .find() then .group(1).
      */
-    public static final String MN_SID_REGEX = SIYE_SID_REGEX;
+    public static final String MN_SID_REGEX = "sid=(d*)";
 
     /**
      * Regex to extract MuggleNet chapter title without the leading "#. " part. Group 2 is the chapter title.
      */
-    public static final String MN_CHAP_TITLE_REGEX = SIYE_CHAP_TITLE_REGEX;
+    public static final String MN_CHAP_TITLE_REGEX = "(d+.s)(.*)";
 
     /**
      * Regex to extract story ID from an Ao3 URL. Use .find() then .group(1).
      */
-    public static final String AO3_SID_REGEX = "\\/works\\/(\\d*)";
+    public static final String AO3_SID_REGEX = "/works/(d*)";
 
     /**
      * Regex to find all ampersands in a piece of HTML which are actual ampersands and not part of a character code.
@@ -254,7 +223,7 @@ public abstract class C {
      * Regex to find all unclosed tags, where the tag type is substituted in, no matter their attributes. Used with
      * TAG_REGEX_REPL.
      */
-    public static final String TAG_REGEX_FIND = "(\\<%s[^>]*?(?<!\\/))(\\>)";
+    public static final String TAG_REGEX_FIND = "(\\<%s[^>]*?(?<!/))(\\>)";
 
     /**
      * Used with TAG_REGEX_FIND to replace all > with /> for unclosed tags.
@@ -384,4 +353,6 @@ public abstract class C {
      * The end part of the title page.
      */
     public static final String TITLE_PAGE_END = "\n</body>\n</html>";
+    public static final String AO3_PRE_DL = "Ao3 stories occasionally fail to download for some reason, just try " +
+            "again.";
 }

@@ -19,38 +19,50 @@ import java.util.HashMap;
  * Controller class for the GUI.
  */
 public class GuiController {
+    /* Preference key strings. */
+    private static final String PREF_CFG_FILE_PATH = "key_cfg_file_path";
+    private static final String PREF_OUT_DIR_PATH = "key_out_dir_path";
+    private static final String PREF_IN_FILE_PATH = "key_in_file_path";
+    /**
+     * Shown in directory chooser dialog.
+     */
     private static final String D_CHOOSE_TITLE = "Choose Directory:";
+    /**
+     * Shown in file chooser dialog.
+     */
     private static final String F_CHOOSE_TITLE = "Choose File:";
 
-    // The gui which owns this controller.
+    /**
+     * The Gui which owns this controller.
+     */
     private Gui gui;
 
-    // Containers.
+    /* Containers. */
     public AnchorPane rootView;
     public AnchorPane optsView;
     public TitledPane logView;
 
-    // Input file views.
+    /* Input file views. */
     public Label lblInFile;
     public TextField tfInFile;
     public Button btnChooseInFile;
 
-    // Output dir views.
+    /* Output dir views. */
     public Label lblOutDir;
     public TextField tfOutDir;
     public Button btnChooseOutDir;
     public Button btnDefaultOutDir;
 
-    // Config file views.
+    /* Config file views. */
     public Label lblCfgFile;
     public TextField tfCfgFile;
     public Button btnChooseCfgFile;
 
-    // Start button and progress bar.
+    /* Start button and progress bar. */
     public Button btnStart;
     public ProgressBar pbProgress;
 
-    // Log.
+    /* Log. */
     public ScrollPane spLogCont;
     public static TextFlow flowLog;
 
@@ -145,18 +157,18 @@ public class GuiController {
      * Restore the saved contents of text fields.
      */
     private void restoreFields() {
-        tfInFile.setText(gui.getPref(C.PREF_IN_FILE_PATH));
-        tfOutDir.setText(gui.getPref(C.PREF_OUT_DIR_PATH));
-        tfCfgFile.setText(gui.getPref(C.PREF_CFG_FILE_PATH));
+        tfInFile.setText(gui.getPref(PREF_IN_FILE_PATH));
+        tfOutDir.setText(gui.getPref(PREF_OUT_DIR_PATH));
+        tfCfgFile.setText(gui.getPref(PREF_CFG_FILE_PATH));
     }
 
     /**
      * Save the contents of text fields.
      */
     protected void saveFields() {
-        gui.putPref(C.PREF_IN_FILE_PATH, tfInFile.getText());
-        gui.putPref(C.PREF_OUT_DIR_PATH, tfOutDir.getText());
-        gui.putPref(C.PREF_CFG_FILE_PATH, tfCfgFile.getText());
+        gui.putPref(PREF_IN_FILE_PATH, tfInFile.getText());
+        gui.putPref(PREF_OUT_DIR_PATH, tfOutDir.getText());
+        gui.putPref(PREF_CFG_FILE_PATH, tfCfgFile.getText());
     }
 
     /**

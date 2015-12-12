@@ -23,7 +23,7 @@ public class FictionDL {
     // Path to config file.
     private File configFile;
     // Configuration options.
-    private ConfigFileParser.Config config;
+    private ConfigFileParser.Config cfg;
     // File parser.
     public static LinkFileParser parser;
     // Keep a reference to the FictionDLTask if this is being run from the GUI.
@@ -76,12 +76,12 @@ public class FictionDL {
         // Create a LinkFileParser to get the story URLs from the input file.
         parser = new LinkFileParser(inputFile);
         // If we have a config file, create a ConfigFileParser to get options.
-        if (configFile != null) config = new ConfigFileParser(configFile).getConfig();
+        if (configFile != null) cfg = new ConfigFileParser(configFile).getConfig();
         // Figure out how many stories we're downloading, then download them.
         totalNumStories = parser.getTotalNumStories();
         getStories(parser);
         // All done!
-        Util.log(C.ALL_FINISHED);
+        Util.log("\nAll Finished! :)" + C.LOG_GREEN);
     }
 
     /**
@@ -117,7 +117,8 @@ public class FictionDL {
          */
         if (!parser.getMnUrls().isEmpty()) {
             MuggleNetDL muggleNetDL = new MuggleNetDL(this, parser.getMnUrls());
-            if (config != null && config.hasMnAuth()) muggleNetDL.addAuth(config.mnUsername(), config.mnPassword());
+            if (cfg != null && cfg.hasMnAuth())
+                muggleNetDL.addAuth(cfg.getUsername(C.NAME_MN), cfg.getPassword(C.NAME_MN));
             muggleNetDL.download();
         }
         /*

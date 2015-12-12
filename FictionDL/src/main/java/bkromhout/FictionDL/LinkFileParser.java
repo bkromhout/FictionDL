@@ -12,10 +12,13 @@ import java.util.regex.Pattern;
  * Parses the input file.
  */
 public class LinkFileParser {
-
+    /**
+     * The type of file this parser handles.
+     */
+    private static final String TYPE = "URLs";
 
     // Regex for extracting host strings.
-    private Pattern hostRegex = Pattern.compile(C.HOST_REGEX);
+    private Pattern hostRegex = Pattern.compile("^(http[s]?://)?([^:/\\s]+)(/.*)?$");
     // FictionHunt URLs.
     private HashSet<String> fictionHuntUrls = new HashSet<>();
     // FanFiction.net URLs.
@@ -36,19 +39,13 @@ public class LinkFileParser {
     }
 
     private void parse(File storiesFile) {
-        Util.logf(C.PARSE_FILE, "URLs");
+        Util.logf(C.PARSE_FILE, TYPE);
         // Try to read lines from file into the url list
         try (BufferedReader br = new BufferedReader(new FileReader(storiesFile))) {
             String line = br.readLine();
             while (line != null) {
-                try {
-                    // Process the line.
-                    processLine(line.trim());
-                } catch (IllegalStateException e) {
-                    // If we couldn't match one of the lines, just say which one in the output (or silently skip it if
-                    // it's a blank line.
-                    if (!line.trim().isEmpty()) Util.logf(C.PROCESS_LINE_FAILED, line);
-                }
+                // Process the line.
+                processLine(line.trim());
                 line = br.readLine();
             }
         } catch (IOException e) {
@@ -65,15 +62,18 @@ public class LinkFileParser {
     private void processLine(String line) throws IllegalStateException {
         // Try to match this line to a URL so that we can extract the host.
         Matcher hostMatcher = hostRegex.matcher(line);
-        if (!hostMatcher.matches()) throw new IllegalStateException();
+        if (!hostMatcher.matches()) {
+            if (!line.trim().isEmpty()) Util.loudf(C.PROCESS_LINE_FAILED, TYPE, line);
+            return;
+        }
         String hostString = hostMatcher.group(2).toLowerCase();
-        // ...then add it to it, so long as it isn't a repeat. (Note that since FFN has so many different link styles,
-        // it's totally possible for the same story to get added twice. Maybe I'll add some normalization code later.)
+        // Add story URL to a set, or none of them if it wasn't valid.
         if (hostString.contains(C.HOST_FH)) fictionHuntUrls.add(line);
         else if (hostString.contains(C.HOST_FFN)) ffnUrls.add(line);
         else if (hostString.contains(C.HOST_SIYE)) siyeUrls.add(line);
         else if (hostString.contains(C.HOST_MN)) mnUrls.add(line);
         else if (hostString.contains(C.HOST_AO3)) ao3Urls.add(line);
+        else Util.logf(C.PROCESS_LINE_FAILED, TYPE, line); // Malformed or unsupported site URL.
     }
 
     /**

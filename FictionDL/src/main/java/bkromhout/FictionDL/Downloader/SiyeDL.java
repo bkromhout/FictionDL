@@ -4,7 +4,6 @@ import bkromhout.FictionDL.C;
 import bkromhout.FictionDL.Chapter;
 import bkromhout.FictionDL.FictionDL;
 import bkromhout.FictionDL.Story.SiyeStory;
-import bkromhout.FictionDL.Util;
 import org.jsoup.nodes.Element;
 
 import java.util.ArrayList;
@@ -16,6 +15,11 @@ import java.util.regex.Pattern;
  * Downloader for siye.co.uk ("Sink Into Your Eyes") stories.
  */
 public class SiyeDL extends ParsingDL {
+    /**
+     * Extra messages to print prior to starting the download process.
+     */
+    private static final String PRE_DL_MSGS = "SIYE's process is *very slow* due to their horrid HTML structure, " +
+            "please be patient ;)";
 
     /**
      * Create a new SIYE downloader.
@@ -24,17 +28,7 @@ public class SiyeDL extends ParsingDL {
      */
     public SiyeDL(FictionDL fictionDL, HashSet<String> urls) {
         super(fictionDL, SiyeStory.class, C.NAME_SIYE, urls, null);
-    }
 
-    /**
-     * We have extra messages we want to show prior to starting the download process.
-     */
-    @Override
-    protected void printPreDlMsgs() {
-        Util.logf(C.STARTING_SITE_DL_PROCESS, siteName);
-        // Extra SIYE message; Inform the user that SIYE is slow and has crappy HTML structure.
-        Util.log(C.SIYE_SLOW);
-        Util.logf(C.FETCH_BUILD_MODELS, siteName);
     }
 
     /**

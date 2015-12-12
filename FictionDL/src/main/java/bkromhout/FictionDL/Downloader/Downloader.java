@@ -18,6 +18,12 @@ import java.util.HashSet;
  * should subclass ParsingDL, which itself is a subclass of this class.
  */
 public abstract class Downloader {
+    /* Log Strings */
+    private static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n" + C.LOG_BLUE;
+    private static final String FETCH_BUILD_MODELS = "Fetching story infos from %s and building story models...\n";
+    private static final String DL_STORIES_FROM_SITE = "Downloading stories from %s...\n\n";
+    private static final String FINISHED_WITH_SITE = "Finished with %s.\n\n" + C.LOG_BLUE;
+
     /**
      * This is the class of story which this Downloader interacts with. Must extend Story.
      */
@@ -38,6 +44,10 @@ public abstract class Downloader {
      * Cookies to send with every request this downloader makes. Empty by default.
      */
     protected HashMap<String, String> cookies = new HashMap<>();
+    /**
+     * Any extra messages to print prior to starting the download process.
+     */
+    protected String extraPreDlMsgs;
 
     /**
      * Create a new Downloader.
@@ -58,7 +68,10 @@ public abstract class Downloader {
      * Download the stories whose URLs were passed to this instance of the downloader upon creation.
      */
     public final void download() {
-        printPreDlMsgs();
+        // Pre-download logging.
+        Util.logf(STARTING_SITE_DL_PROCESS, siteName);
+        Util.log(extraPreDlMsgs); // This is null unless a subclass has set it to something.
+        Util.logf(FETCH_BUILD_MODELS, siteName);
         // Create story models from URLs.
         ArrayList<Story> stories = new ArrayList<>();
         for (String url : storyUrls) {
@@ -78,9 +91,10 @@ public abstract class Downloader {
             }
         }
         // Download and save the stories.
-        Util.logf(C.DL_STORIES_FROM_SITE, siteName);
+        Util.logf(DL_STORIES_FROM_SITE, siteName);
         stories.forEach(this::downloadStory);
-        printPostDlMsgs();
+        // Post-download logging.
+        Util.logf(FINISHED_WITH_SITE, siteName);
     }
 
     /**
@@ -95,21 +109,6 @@ public abstract class Downloader {
      */
     protected final void storyProcessed() {
         fictionDL.incrProgress();
-    }
-
-    /**
-     * Prints log messages, first call of .download().
-     */
-    protected void printPreDlMsgs() {
-        Util.logf(C.STARTING_SITE_DL_PROCESS, siteName);
-        Util.logf(C.FETCH_BUILD_MODELS, siteName);
-    }
-
-    /**
-     * Prints log messages, last call of .download().
-     */
-    protected void printPostDlMsgs() {
-        Util.logf(C.FINISHED_WITH_SITE, siteName);
     }
 
     /**

@@ -12,6 +12,10 @@ import java.util.regex.Pattern;
  * Parses the config file.
  */
 public class ConfigFileParser {
+    /**
+     * The type of file this parser handles.
+     */
+    private static final String TYPE = "config";
     /* Valid Line Starters */
     private static final String CFG_LS_P = "p";
     private static final String CFG_LS_U = "u";
@@ -32,17 +36,13 @@ public class ConfigFileParser {
     }
 
     private void parse(File cfgFile) {
-        Util.logf(C.PARSE_FILE, "config");
+        Util.logf(C.PARSE_FILE, TYPE);
         // Try to read lines from file into the url list
         try (BufferedReader br = new BufferedReader(new FileReader(cfgFile))) {
             String line = br.readLine();
             while (line != null) {
-                try {
-                    // Process the line.
-                    processLine(line.trim());
-                } catch (IllegalStateException e) {
-                    // Do nothing, we don't care if config lines are bad.
-                }
+                // Process the line.
+                processLine(line.trim());
                 line = br.readLine();
             }
         } catch (IOException e) {
@@ -81,6 +81,9 @@ public class ConfigFileParser {
                 config.options.put(currSite + prefix, line.substring(line.indexOf('=') + 1));
                 break;
             }
+            default: {
+                Util.loudf(C.PROCESS_LINE_FAILED, TYPE, line);
+            }
         }
     }
 
@@ -101,31 +104,31 @@ public class ConfigFileParser {
          */
         protected HashMap<String, String> options = new HashMap<>();
 
-        /*
-        MuggleNet
-         */
-
         /**
-         * @return MuggleNet username.
+         * Get the username that a user has supplied for a specific site.
+         * @param siteName Human-readable site name to get supplied username for.
+         * @return Username that the user supplied for the given site, or null if it wasn't supplied.
          */
-        public String mnUsername() {
-            return options.get(C.NAME_MN + CFG_LS_U);
+        public String getUsername(String siteName) {
+            return options.get(siteName + CFG_LS_U);
         }
 
         /**
-         * @return MuggleNet password.
+         * Get the password that a user has supplied for a specific site.
+         * @param siteName Human-readable site name to get supplied password for.
+         * @return Password that the user supplied for the given site, or null if it wasn't supplied.
          */
-        public String mnPassword() {
-            return options.get(C.NAME_MN + CFG_LS_P);
+        public String getPassword(String siteName) {
+            return options.get(siteName + CFG_LS_P);
         }
 
         /**
-         * Do we have all we need to try and log in to MuggleNet?
+         * Convenience method to check if we have all we need to try and log in to MuggleNet.
          * @return True if we have a non-empty username and password for MuggleNet, otherwise false.
          */
         public boolean hasMnAuth() {
-            String username = options.get(C.NAME_MN + CFG_LS_U);
-            String password = options.get(C.NAME_MN + CFG_LS_P);
+            String username = getUsername(C.NAME_MN);
+            String password = getPassword(C.NAME_MN);
             return username != null && !username.isEmpty() && password != null && !password.isEmpty();
         }
     }

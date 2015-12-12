@@ -119,7 +119,7 @@ public abstract class Util {
             doc = connection.get();
         } catch (IOException e) {
             // We're just ignoring the exception really.
-            logf(C.HTML_DL_FAILED, url);
+            logf("Failed to download HTML from: \"%s\"\n" + C.LOG_RED, url);
         }
         return doc;
     }
@@ -262,6 +262,7 @@ public abstract class Util {
      * @param str String to log.
      */
     public static void log(String str) {
+        if (str == null) return;
         if (Main.isGui) logString(str + "\n");
         else System.out.println(stripLogStyleTags(str));
     }
@@ -281,6 +282,7 @@ public abstract class Util {
      * @param args   Objects to substitute into format string.
      */
     public static void logf(String format, Object... args) {
+        if (format == null) return;
         if (Main.isGui) logString(String.format(format, args));
         else System.out.printf(stripLogStyleTags(format), args);
     }

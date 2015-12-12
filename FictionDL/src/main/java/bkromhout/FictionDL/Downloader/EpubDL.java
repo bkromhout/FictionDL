@@ -17,6 +17,8 @@ import java.util.HashSet;
  * Base class for downloaders which get stories by downloading ePUBs for them.
  */
 public abstract class EpubDL extends Downloader {
+    /* Log Strings */
+    private static final String DL_EPUB = "Downloading ePUB for: \"%s\"...";
 
     /**
      * Create a new EpubDL.
@@ -36,7 +38,7 @@ public abstract class EpubDL extends Downloader {
      */
     @Override
     protected void downloadStory(Story story) {
-        Util.logf(C.DL_EPUB_FOR, Util.unEscapeAmps(story.getTitle()));
+        Util.logf(DL_EPUB, Util.unEscapeAmps(story.getTitle()));
         // Obviously, this is a rather simple task, which is why this class and its subclasses are so tiny as compared
         // to ParsingDL and its subclasses.
         Path file = FictionDL.outPath.resolve(Util.makeEpubFname(story.getTitle(), story.getAuthor()));
