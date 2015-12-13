@@ -1,14 +1,18 @@
 package bkromhout.fdl;
 
 import bkromhout.fdl.gui.GuiController;
+import com.squareup.okhttp.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import rx.Observable;
+import rx.Subscriber;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -78,16 +82,18 @@ public abstract class Util {
      * @throws IOException if we failed to login for any reason.
      */
     public static Map<String, String> getAuthCookies(String loginUrl, Map<String, String> formData) throws IOException {
+
+
         // Get the login form page
         Connection.Response form = Jsoup.connect(loginUrl)
-                .method(Connection.Method.GET)
-                .execute();
+                                        .method(Connection.Method.GET)
+                                        .execute();
         // Now log in.
         Connection.Response login = Jsoup.connect(loginUrl)
-                .method(Connection.Method.POST)
-                .data(formData)
-                .cookies(form.cookies())
-                .execute();
+                                         .method(Connection.Method.POST)
+                                         .data(formData)
+                                         .cookies(form.cookies())
+                                         .execute();
         // Check and see if we have some sort of useful auth cookie now, and throw an exception if we don't.
         Map<String, String> cookies = login.cookies();
         cookies.putAll(form.cookies()); // Make sure we still have the cookies from the original response too.
@@ -118,10 +124,60 @@ public abstract class Util {
             if (cookies != null) connection.cookies(cookies); // Add cookies if we have them
             doc = connection.get();
         } catch (IOException e) {
+            e.printStackTrace();
             // We're just ignoring the exception really.
             logf(C.HTML_DL_FAILED, url);
         }
         return doc;
+    }
+
+    /**
+     * Download a web page using the given OkHttpClient from the given URL.
+     * @param client OkHttpClient to use.
+     * @param url    URL of page to download.
+     * @return Raw HTML of the web page as an InputStream, or null if we failed to download the page.
+     */
+    public static InputStream downloadRawHtml(OkHttpClient client, String url) {
+        try {
+            Request request = new Request.Builder().url(url).build();
+            Response response = client.newCall(request).execute();
+            return response.body().byteStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // We're just ignoring the exception really.
+            logf(C.HTML_DL_FAILED, url);
+            return null;
+        }
+    }
+
+    /**
+     * Observable which uses OkHttp to execute a request and returns a response.
+     * @param client  The OkHttpClient to use.
+     * @param request The Request to execute.
+     * @return An Observable that returns a Response.
+     */
+    public static Observable<Response> rxHttpRequest(OkHttpClient client, Request request) {
+        return Observable.create((Subscriber<? super Response> sub) -> {
+            // Create call.
+            final Call call = client.newCall(request);
+            // Execute it asynchronously.
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    sub.onError(e);
+                }
+
+                @Override
+                public void onResponse(Response response) throws IOException {
+                    // Make sure we were actually successful. TODO encode the response code in the log string!
+                    if (!response.isSuccessful())
+                        sub.onError(new IOException(String.format(C.HTML_DL_FAILED, response.request().urlString())));
+                    // On success, give subscriber the response, then tell it we're complete.
+                    sub.onNext(response);
+                    sub.onCompleted();
+                }
+            });
+        });
     }
 
     /**
@@ -134,7 +190,7 @@ public abstract class Util {
     public static ArrayList<Document> getDocuments(ArrayList<String> urlList, Map<String, String> cookies) {
         // Loop through the URL list and download from each. Obviously filter out any null elements.
         return new ArrayList<>(urlList.stream().map((url) -> Util.downloadHtml(url, cookies)).filter(out -> out != null)
-                .collect(Collectors.toList()));
+                                      .collect(Collectors.toList()));
     }
 
     /**

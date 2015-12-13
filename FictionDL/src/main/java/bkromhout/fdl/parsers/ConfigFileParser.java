@@ -91,31 +91,25 @@ public class ConfigFileParser extends FileParser {
         protected HashMap<String, String> options = new HashMap<>();
 
         /**
-         * Get the username that a user has supplied for a specific site.
-         * @param siteName Human-readable site name to get supplied username for.
-         * @return Username that the user supplied for the given site, or null if it wasn't supplied.
+         * Gets a String array like ["Username", "Password"], so long as both exist and are non-empty for the given
+         * site name.
+         * @param siteName Name of site to get credentials for.
+         * @return Credentials String array, or null.
          */
-        public String getUsername(String siteName) {
-            return options.get(siteName + CFG_LS_U);
+        public String[] getCreds(String siteName) {
+            String u = options.get(siteName + CFG_LS_U);
+            String p = options.get(siteName + CFG_LS_U);
+            if (u == null || u.isEmpty() || p == null || p.isEmpty()) return null;
+            return new String[] {u, p};
         }
 
         /**
-         * Get the password that a user has supplied for a specific site.
-         * @param siteName Human-readable site name to get supplied password for.
-         * @return Password that the user supplied for the given site, or null if it wasn't supplied.
+         * Check if there are credentials for the given site.
+         * @param siteName Name of site to check credentials for.
+         * @return True if the user supplied us with a non-empty username and password, otherwise false.
          */
-        public String getPassword(String siteName) {
-            return options.get(siteName + CFG_LS_P);
-        }
-
-        /**
-         * Convenience method to check if we have all we need to try and log in to MuggleNet.
-         * @return True if we have a non-empty username and password for MuggleNet, otherwise false.
-         */
-        public boolean hasMnAuth() {
-            String username = getUsername(C.NAME_MN);
-            String password = getPassword(C.NAME_MN);
-            return username != null && !username.isEmpty() && password != null && !password.isEmpty();
+        public boolean hasCreds(String siteName) {
+            return getCreds(siteName) != null;
         }
     }
 }

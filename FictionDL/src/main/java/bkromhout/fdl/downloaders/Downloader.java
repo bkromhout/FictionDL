@@ -5,11 +5,17 @@ import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.Main;
 import bkromhout.fdl.Util;
 import bkromhout.fdl.storys.Story;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -18,15 +24,14 @@ import java.util.HashSet;
  * should subclass ParsingDL, which itself is a subclass of this class.
  */
 public abstract class Downloader {
-
-    /**
-     * This is the class of story which this Downloader interacts with. Must extend Story.
-     */
-    protected Class<? extends Story> storyClass;
     /**
      * The FictionDL instance which owns this downloader.
      */
     protected FictionDL fictionDL;
+    /**
+     * This is the class of story which this Downloader interacts with. Must extend Story.
+     */
+    protected Class<? extends Story> storyClass;
     /**
      * Human-readable site name for this downloader.
      */
@@ -36,9 +41,9 @@ public abstract class Downloader {
      */
     protected HashSet<String> storyUrls;
     /**
-     * Cookies to send with every request this downloader makes. Empty by default.
+     * OkHttpClient for downloading things.
      */
-    protected HashMap<String, String> cookies = new HashMap<>();
+    protected OkHttpClient httpClient;
     /**
      * Any extra messages to print prior to starting the download process.
      */
@@ -57,6 +62,61 @@ public abstract class Downloader {
         this.storyClass = storyClass;
         this.siteName = siteName;
         this.storyUrls = storyUrls;
+        init();
+    }
+
+    /**
+     * Initialize this Downloader.
+     */
+    private void init() {
+        // Set up OkHttpClient.
+        httpClient = new OkHttpClient();
+        httpClient.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+        // TODO may want to bump the number of connections? Not sure.
+    }
+
+    /**
+     * Login to the site using form-based authentication.
+     * @param creds A size 2 array containing [Username, Password]. It is assumed that if this is not null, the username
+     *              and password strings are both nonnull and nonempty.
+     */
+    public final void doFormAuth(String[] creds) {
+        if (creds == null) return;
+        // Try to get site-specific form-data and login URL
+        RequestBody formData = getSiteAuthForm(creds[0], creds[1]);
+        String loginUrl = getSiteLoginUrl();
+        if (formData == null || loginUrl == null) return;
+
+        try {
+            // Get cookies from the login page first.
+            httpClient.newCall(new Request.Builder().url(loginUrl).build()).execute();
+            // Then log in.
+            Response loginResponse = httpClient.newCall(new Request.Builder().post(formData).url(loginUrl).build())
+                                               .execute();
+            // Make sure that login cookies were sent back.
+            if (loginResponse.headers().values("Set-Cookie").isEmpty()) throw new IOException();
+        } catch (IOException e) {
+            Util.logf(C.LOGIN_FAILED, siteName);
+        }
+    }
+
+    /**
+     * Individual site downloaders should override this if they support form-based authentication, returning an OkHttp
+     * RequestBody built using an OkHttp FormEncodingBuilder.
+     * @param u Username.
+     * @param p Password.
+     * @return RequestBody with form data, or null.
+     */
+    protected RequestBody getSiteAuthForm(String u, String p) {
+        return null;
+    }
+
+    /**
+     * Individual site downloaders should override this if they require a login URL.
+     * @return Login URL, or null.
+     */
+    protected String getSiteLoginUrl() {
+        return null;
     }
 
     /**
@@ -112,13 +172,5 @@ public abstract class Downloader {
      */
     public String getSiteName() {
         return siteName;
-    }
-
-    /**
-     * Get the cookies to send with any request to this downloader's site.
-     * @return Cookies.
-     */
-    public HashMap<String, String> getCookies() {
-        return cookies;
     }
 }

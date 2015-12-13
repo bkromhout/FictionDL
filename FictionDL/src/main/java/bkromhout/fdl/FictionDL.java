@@ -3,9 +3,11 @@ package bkromhout.fdl;
 import bkromhout.fdl.downloaders.*;
 import bkromhout.fdl.parsers.ConfigFileParser;
 import bkromhout.fdl.parsers.LinkFileParser;
+import com.squareup.okhttp.OkHttpClient;
 import javafx.concurrent.Task;
 
 import java.io.File;
+import java.net.CookieManager;
 import java.nio.file.Path;
 import java.util.HashMap;
 
@@ -18,6 +20,11 @@ import java.util.HashMap;
  * Scrapes the story HTML and generates an ePUB using that.
  */
 public class FictionDL {
+    private static CookieManager cookieManager;
+    /**
+     * Client for
+     */
+    public static OkHttpClient httpClient;
     // Path to input file.
     private File inputFile;
     // Path where the input file resides, which is where stories will be saved.
@@ -119,8 +126,7 @@ public class FictionDL {
          */
         if (!parser.getMnUrls().isEmpty()) {
             MuggleNetDL muggleNetDL = new MuggleNetDL(this, parser.getMnUrls());
-            if (cfg != null && cfg.hasMnAuth())
-                muggleNetDL.addAuth(cfg.getUsername(C.NAME_MN), cfg.getPassword(C.NAME_MN));
+            if (cfg.hasCreds(C.NAME_MN)) muggleNetDL.doFormAuth(cfg.getCreds(C.NAME_MN));
             muggleNetDL.download();
         }
         /*

@@ -3,13 +3,12 @@ package bkromhout.fdl.downloaders;
 import bkromhout.fdl.C;
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Util;
 import bkromhout.fdl.storys.MuggleNetStory;
+import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.RequestBody;
 import org.jsoup.nodes.Element;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,7 +16,7 @@ import java.util.regex.Pattern;
 /**
  * Downloader for MuggleNet stories.
  */
-public class MuggleNetDL extends ParsingDL implements AuthSupport {
+public class MuggleNetDL extends ParsingDL {
     /**
      * MuggleNet login page link.
      */
@@ -32,30 +31,20 @@ public class MuggleNetDL extends ParsingDL implements AuthSupport {
         super(fictionDL, MuggleNetStory.class, C.NAME_MN, urls, "div.contentLeft");
     }
 
-    /**
-     * Login and get cookies which will be sent with each subsequent request. This will clear the current cookies prior
-     * to storing the new cookies, so if an exception is thrown while getting the new cookies, the current cookies will
-     * be empty.
-     * @param username Username.
-     * @param password Password.
-     */
-    public void addAuth(String username, String password) {
-        Util.logf(C.STARTING_SITE_AUTH_PROCESS, siteName);
-        // Add form-data elements.
-        HashMap<String, String> formData = new HashMap<>();
-        formData.put("penname", username);
-        formData.put("password", password);
-        formData.put("cookiecheck", "1");
-        formData.put("submit", "Submit");
-        // Clear old cookies.
-        cookies.clear();
-        try {
-            // Get new cookies.
-            cookies.putAll(Util.getAuthCookies(MN_L_URL, formData));
-            Util.logf(C.DONE);
-        } catch (IOException e) {
-            Util.logf(C.LOGIN_FAILED, siteName);
-        }
+    @Override
+    protected RequestBody getSiteAuthForm(String u, String p) {
+        if (u == null || u.isEmpty() || p == null || p.isEmpty()) return null;
+        return new FormEncodingBuilder()
+                .add("penname", u)
+                .add("password", p)
+                .add("cookiecheck", "1")
+                .add("submit", "Submit")
+                .build();
+    }
+
+    @Override
+    protected String getSiteLoginUrl() {
+        return MN_L_URL;
     }
 
     /**

@@ -3,12 +3,15 @@ package bkromhout.fdl.downloaders;
 import bkromhout.fdl.*;
 import bkromhout.fdl.storys.Story;
 import com.github.davidmoten.rx.util.MapWithIndex;
+import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.util.async.Async;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -80,20 +83,22 @@ public abstract class ParsingDL extends Downloader {
      * @return ArrayList of Chapter objects with their HTML added and titles generated.
      */
     private ArrayList<Chapter> downloadChapters(Story story) {
-        // Download chapter HTML Documents.
-        //ArrayList<Document> htmls = Util.getDocuments(story.getChapterUrls(), cookies);
-        // Create chapters without titles, those will be filled in by the overridden method.
-        //ArrayList<Chapter> chapters = new ArrayList<>();
-        //for (int i = 0; i < htmls.size(); i++) chapters.add(new Chapter(i, null, htmls.get(i)));
-
+        // Create a future for getting chapters.
         Future<List<Chapter>> futureChaps = Observable
                 .from(story.getChapterUrls())
                 .subscribeOn(Schedulers.newThread())
                 .compose(MapWithIndex.<String>instance())
                 .flatMap(Async.toAsync((Func1<? super MapWithIndex.Indexed<String>, ? extends Chapter>) url -> {
                     Chapter c = new Chapter(url.index(), url.value());
-                    c.html = Util.downloadHtml(c.url, cookies);
-                    return c;
+                    InputStream html = Util.downloadRawHtml(httpClient, url.value());
+                    if (html == null) return null;
+                    try {
+                        c.html = Jsoup.parse(html, null, url.value());
+                        return c;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
                 }, Schedulers.io()))
                 .filter(c -> c.html != null) // Filter out any chapters which we failed to download HTML for.
                 .toSortedList((chapter, chapter2) -> Long.compare(chapter.getIndex(), chapter2.getIndex()))
@@ -105,12 +110,12 @@ public abstract class ParsingDL extends Downloader {
         try {
             chapters = (ArrayList<Chapter>) futureChaps.get();
         } catch (Exception e) {
+            e.printStackTrace();
             // We failed, lol.
             return null;
         }
         // Generate titles.
         generateChapTitles(chapters);
-
         return chapters;
     }
 

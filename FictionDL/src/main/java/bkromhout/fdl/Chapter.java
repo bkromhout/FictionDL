@@ -1,6 +1,8 @@
 package bkromhout.fdl;
 
+import com.squareup.okhttp.OkHttpClient;
 import org.jsoup.nodes.Document;
+import rx.Observable;
 
 /**
  * Chapter model. Very simple, just holds the chapter title and content.
@@ -31,5 +33,9 @@ public class Chapter {
      */
     public long getIndex() {
         return index;
+    }
+
+    public Observable<Chapter> getChapter(OkHttpClient httpClient) {
+
     }
 }
