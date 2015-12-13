@@ -24,8 +24,14 @@ public abstract class FileParser {
      */
     protected FileParser(String type, File file) {
         this.type = type;
+        init();
         parse(file);
     }
+
+    /**
+     * Set up this parser.
+     */
+    protected abstract void init();
 
     /**
      * Parse the file and process it.

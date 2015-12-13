@@ -2,11 +2,17 @@ package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.*;
 import bkromhout.fdl.storys.Story;
+import com.github.davidmoten.rx.util.MapWithIndex;
 import org.jsoup.nodes.Document;
+import rx.Observable;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
+import rx.util.async.Async;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.concurrent.*;
 
 /**
  * Base class for downloaders which get stories by scraping their site HTML, and then generating story EPUB files by
@@ -50,7 +56,7 @@ public abstract class ParsingDL extends Downloader {
         // Download the chapters and fill in their titles.
         ArrayList<Chapter> chapters = downloadChapters(story);
         // Make sure we got all of the chapters. If we didn't we won't continue.
-        if (story.getChapterUrls().size() != chapters.size()) {
+        if (chapters == null || story.getChapterUrls().size() != chapters.size()) {
             Util.log(C.SOME_CHAPS_FAILED);
             storyProcessed(); // Update progress.
             return;
@@ -75,12 +81,36 @@ public abstract class ParsingDL extends Downloader {
      */
     private ArrayList<Chapter> downloadChapters(Story story) {
         // Download chapter HTML Documents.
-        ArrayList<Document> htmls = Util.getDocuments(story.getChapterUrls(), cookies);
+        //ArrayList<Document> htmls = Util.getDocuments(story.getChapterUrls(), cookies);
         // Create chapters without titles, those will be filled in by the overridden method.
-        ArrayList<Chapter> chapters = htmls.stream().map(html -> new Chapter(null, html)).collect(
-                Collectors.toCollection(ArrayList::new));
+        //ArrayList<Chapter> chapters = new ArrayList<>();
+        //for (int i = 0; i < htmls.size(); i++) chapters.add(new Chapter(i, null, htmls.get(i)));
+
+        Future<List<Chapter>> futureChaps = Observable
+                .from(story.getChapterUrls())
+                .subscribeOn(Schedulers.newThread())
+                .compose(MapWithIndex.<String>instance())
+                .flatMap(Async.toAsync((Func1<? super MapWithIndex.Indexed<String>, ? extends Chapter>) url -> {
+                    Chapter c = new Chapter(url.index(), url.value());
+                    c.html = Util.downloadHtml(c.url, cookies);
+                    return c;
+                }, Schedulers.io()))
+                .filter(c -> c.html != null) // Filter out any chapters which we failed to download HTML for.
+                .toSortedList((chapter, chapter2) -> Long.compare(chapter.getIndex(), chapter2.getIndex()))
+                .observeOn(Schedulers.immediate())
+                .toBlocking()
+                .toFuture();
+
+        ArrayList<Chapter> chapters;
+        try {
+            chapters = (ArrayList<Chapter>) futureChaps.get();
+        } catch (Exception e) {
+            // We failed, lol.
+            return null;
+        }
         // Generate titles.
         generateChapTitles(chapters);
+
         return chapters;
     }
 

@@ -19,9 +19,9 @@ public class ConfigFileParser extends FileParser {
     private static final String CFG_LS_HASH = "#";
 
     // Config instance.
-    private Config config = new Config();
+    private Config config;
     // Site which will be given any site-specific preferences.
-    private String currSite = null;
+    private String currSite;
 
     /**
      * Parse the file and create a configuration.
@@ -29,6 +29,11 @@ public class ConfigFileParser extends FileParser {
      */
     public ConfigFileParser(File cfgFile) {
         super("config", cfgFile);
+    }
+
+    @Override
+    protected void init() {
+        config = new Config();
     }
 
     /**

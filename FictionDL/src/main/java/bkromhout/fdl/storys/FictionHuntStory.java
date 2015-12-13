@@ -35,7 +35,7 @@ public class FictionHuntStory extends Story {
         // Set site.
         hostSite = C.HOST_FH;
         // Get FictionHunt story ID.
-        storyId = parseStoryId(url, "/read/(d*)", 1);
+        storyId = parseStoryId(url, "/read/(\\d*)", 1);
         // Get the HTML at the url we've specified to use as the entry point.
         Document infoDoc = Util.downloadHtml(url);
         if (infoDoc == null) throw initEx();

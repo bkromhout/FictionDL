@@ -19,23 +19,23 @@ public class LinkFileParser extends FileParser {
     /**
      * FictionHunt URLs.
      */
-    private HashSet<String> fictionHuntUrls = new HashSet<>();
+    private HashSet<String> fictionHuntUrls;
     /**
      * FanFiction.net URLs.
      */
-    private HashSet<String> ffnUrls = new HashSet<>();
+    private HashSet<String> ffnUrls;
     /**
      * SIYE URLs.
      */
-    private HashSet<String> siyeUrls = new HashSet<>();
+    private HashSet<String> siyeUrls;
     /**
      * MuggleNet URLs.
      */
-    private HashSet<String> mnUrls = new HashSet<>();
+    private HashSet<String> mnUrls;
     /**
      * Ao3 URLs.
      */
-    private HashSet<String> ao3Urls = new HashSet<>();
+    private HashSet<String> ao3Urls;
 
     /**
      * Parse the file, populating the various URL lists for the different sites.
@@ -43,6 +43,15 @@ public class LinkFileParser extends FileParser {
      */
     public LinkFileParser(File storiesFile) {
         super("URLs", storiesFile);
+    }
+
+    @Override
+    protected void init() {
+        fictionHuntUrls = new HashSet<>();
+        ffnUrls = new HashSet<>();
+        siyeUrls = new HashSet<>();
+        mnUrls = new HashSet<>();
+        ao3Urls = new HashSet<>();
     }
 
     /**

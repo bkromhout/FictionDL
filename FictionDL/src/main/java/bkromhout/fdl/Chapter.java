@@ -6,6 +6,10 @@ import org.jsoup.nodes.Document;
  * Chapter model. Very simple, just holds the chapter title and content.
  */
 public class Chapter {
+    // Chapter index, for sorting.
+    private long index;
+    // Chapter url.
+    public String url;
     // Chapter title.
     public String title;
     // Chapter HTML.
@@ -14,12 +18,18 @@ public class Chapter {
     public String content;
 
     /**
-     * Create a new Chapter model (just for convenience, since instance members are public).
-     * @param title The chapter's title.
-     * @param html  The chapter's HTML content.
+     * Create a new Chapter model.
      */
-    public Chapter(String title, Document html) {
-        this.title = title;
-        this.html = html;
+    public Chapter(long index, String url) {
+        this.index = index;
+        this.url = url;
+    }
+
+    /**
+     * Get the original index of this chapter, useful for sorting if chapters were downloaded out of order.
+     * @return Chapter index.
+     */
+    public long getIndex() {
+        return index;
     }
 }

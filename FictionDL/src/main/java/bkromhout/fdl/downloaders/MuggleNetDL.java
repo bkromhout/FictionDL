@@ -71,7 +71,7 @@ public class MuggleNetDL extends ParsingDL implements AuthSupport {
             // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
             // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
             if (titleElement != null) {
-                Matcher matcher = Pattern.compile("(d+.s)(.*)").matcher(titleElement.html().trim());
+                Matcher matcher = Pattern.compile("(\\d+.\\s)(.*)").matcher(titleElement.html().trim());
                 matcher.matches();
                 try {
                     chapter.title = matcher.group(2);

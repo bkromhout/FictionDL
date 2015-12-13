@@ -18,7 +18,7 @@ public class FanFictionDL extends ParsingDL {
     /**
      * Regex to extract FFN chapter title without the leading "#. " part. Group 2 is the chapter title.
      */
-    private static final String FFN_CHAP_TITLE_REGEX = "(d+.s)(.*)";
+    private static final String FFN_CHAP_TITLE_REGEX = "(\\d+.\\s)(.*)";
 
     /**
      * Create a new FanFiction.net downloader.

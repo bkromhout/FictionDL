@@ -63,7 +63,7 @@ public class MuggleNetStory extends Story {
         // Set site.
         hostSite = C.HOST_MN;
         // Get story ID first.
-        storyId = parseStoryId(url, "sid=(d*)", 1);
+        storyId = parseStoryId(url, "sid=(\\d*)", 1);
         // Normalize the URL, since there are many valid MN URL formats.
         url = String.format(MN_S_URL, storyId, warnBypass);
         // Get the story page in order to parse the story info.

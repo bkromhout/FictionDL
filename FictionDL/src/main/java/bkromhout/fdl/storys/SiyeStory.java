@@ -105,7 +105,7 @@ public class SiyeStory extends Story {
     private Document getInfoPage(String url) throws InitStoryException {
         // Need to normalize this URL first to be sure we can get the author ID link.
         // Start by getting the story ID from the URL.
-        storyId = parseStoryId(url, "sid=(d*)", 1);
+        storyId = parseStoryId(url, "sid=(\\d*)", 1);
         // Now download the first chapter's HTML.
         Document chDoc = Util.downloadHtml(String.format(SIYE_C_URL, storyId, 1));
         if (chDoc == null) throw initEx();
