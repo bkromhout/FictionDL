@@ -4,6 +4,7 @@ import bkromhout.fdl.downloaders.*;
 import bkromhout.fdl.parsers.ConfigFileParser;
 import bkromhout.fdl.parsers.LinkFileParser;
 import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 import javafx.concurrent.Task;
 
 import java.io.File;
@@ -93,8 +94,18 @@ public class FictionDL {
         // Set up the OkHttpClient.
         httpClient = new OkHttpClient();
         httpClient.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-        httpClient.getDispatcher().setMaxRequestsPerHost(10);
-        httpClient.setReadTimeout(0, TimeUnit.MILLISECONDS);
+        httpClient.getDispatcher().setMaxRequestsPerHost(10); // Bump this up from 5.
+        httpClient.setReadTimeout(0, TimeUnit.MILLISECONDS); // Sometimes we haven't gotten around to it yet.
+        addOkHttpLogging();
+    }
+
+    /**
+     * Adds a logger to the OkHttpClient. In a method so that it's easy to turn off.
+     */
+    private void addOkHttpLogging() {
+        HttpLoggingInterceptor logger = new HttpLoggingInterceptor();
+        logger.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        httpClient.interceptors().add(logger);
     }
 
     /**
