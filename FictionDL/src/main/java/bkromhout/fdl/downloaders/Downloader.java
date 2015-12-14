@@ -71,9 +71,7 @@ public abstract class Downloader {
 
         try {
             Util.logf(C.STARTING_SITE_AUTH_PROCESS, siteName);
-            // Get cookies from the login page first.
-            C.getHttpClient().newCall(new Request.Builder().url(loginUrl).build()).execute();
-            // Then log in.
+            // Log in.
             Response resp = C.getHttpClient().newCall(new Request.Builder().post(formData).url(loginUrl).build())
                              .execute();
             // Make sure that login cookies were sent back.

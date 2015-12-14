@@ -98,7 +98,7 @@ public class ConfigFileParser extends FileParser {
          */
         public String[] getCreds(String siteName) {
             String u = options.get(siteName + CFG_LS_U);
-            String p = options.get(siteName + CFG_LS_U);
+            String p = options.get(siteName + CFG_LS_P);
             if (u == null || u.isEmpty() || p == null || p.isEmpty()) return null;
             return new String[] {u, p};
         }

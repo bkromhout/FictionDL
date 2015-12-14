@@ -96,7 +96,7 @@ public class FictionDL {
         httpClient.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
         httpClient.getDispatcher().setMaxRequestsPerHost(10); // Bump this up from 5.
         httpClient.setReadTimeout(0, TimeUnit.MILLISECONDS); // Sometimes we haven't gotten around to it yet.
-        addOkHttpLogging();
+        if (Main.isVerbose) addOkHttpLogging(); // Definitely don't do this if we aren't in verbose mode.
     }
 
     /**

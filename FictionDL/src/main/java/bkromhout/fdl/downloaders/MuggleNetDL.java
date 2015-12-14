@@ -4,7 +4,7 @@ import bkromhout.fdl.C;
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.storys.MuggleNetStory;
-import com.squareup.okhttp.FormEncodingBuilder;
+import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
 import org.jsoup.nodes.Element;
 
@@ -34,12 +34,12 @@ public class MuggleNetDL extends ParsingDL {
     @Override
     protected RequestBody getSiteAuthForm(String u, String p) {
         if (u == null || u.isEmpty() || p == null || p.isEmpty()) return null;
-        return new FormEncodingBuilder()
-                .add("penname", u)
-                .add("password", p)
-                .add("cookiecheck", "1")
-                .add("submit", "Submit")
-                .build();
+        return new MultipartBuilder().type(MultipartBuilder.FORM)
+                                     .addFormDataPart("penname", u)
+                                     .addFormDataPart("password", p)
+                                     .addFormDataPart("cookiecheck", "1")
+                                     .addFormDataPart("submit", "Submit")
+                                     .build();
     }
 
     @Override
