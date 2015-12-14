@@ -11,6 +11,7 @@ import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Fan Fiction Downloader. (Not to be confused wih the FanFictionDL, which is an actual site downloader, this class is a
@@ -92,7 +93,8 @@ public class FictionDL {
         // Set up the OkHttpClient.
         httpClient = new OkHttpClient();
         httpClient.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-        // TODO may want to bump the number of connections? Not sure.
+        httpClient.getDispatcher().setMaxRequestsPerHost(10);
+        httpClient.setReadTimeout(0, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -108,6 +110,8 @@ public class FictionDL {
         getStories(parser);
         // All done!
         Util.log(C.ALL_FINISHED);
+        // The dispatcher's threads seems to enjoy sticking around for a while unless we do this >_<
+        httpClient.getDispatcher().getExecutorService().shutdownNow();
     }
 
     /**
