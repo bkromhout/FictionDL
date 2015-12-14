@@ -1,25 +1,20 @@
 package bkromhout.fdl;
 
 import bkromhout.fdl.gui.GuiController;
-import com.squareup.okhttp.*;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import rx.Observable;
-import rx.Subscriber;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Map;
 import java.util.TimeZone;
-import java.util.stream.Collectors;
 
 /**
  * Utility class with static methods.
@@ -74,73 +69,32 @@ public abstract class Util {
     }
 
     /**
-     * Log in to a site using form-data and return the cookies so that we can access pages on the site which are
-     * restricted to registered users.
-     * @param loginUrl Login URL.
-     * @param formData form-data elements to post to the login URL.
-     * @return Cookies from response, or null if it failed.
-     * @throws IOException if we failed to login for any reason.
-     */
-    public static Map<String, String> getAuthCookies(String loginUrl, Map<String, String> formData) throws IOException {
-
-
-        // Get the login form page
-        Connection.Response form = Jsoup.connect(loginUrl)
-                                        .method(Connection.Method.GET)
-                                        .execute();
-        // Now log in.
-        Connection.Response login = Jsoup.connect(loginUrl)
-                                         .method(Connection.Method.POST)
-                                         .data(formData)
-                                         .cookies(form.cookies())
-                                         .execute();
-        // Check and see if we have some sort of useful auth cookie now, and throw an exception if we don't.
-        Map<String, String> cookies = login.cookies();
-        cookies.putAll(form.cookies()); // Make sure we still have the cookies from the original response too.
-        if (cookies.get("PHPSESSID") == null) throw new IOException();
-        // Then return the cookies.
-        return cookies;
-    }
-
-    /**
-     * Download an HTML document from the given URL.
+     * Download an HTML document from the given URL
      * @param url URL to download.
      * @return A Document object, or null if the url was malformed.
      */
     public static Document downloadHtml(String url) {
-        return downloadHtml(url, null);
-    }
-
-    /**
-     * Download an HTML document from the given URL, sending any given cookies along with the request.
-     * @param url     URL to download.
-     * @param cookies Cookies to send with request, or null for no cookies.
-     * @return A Document object, or null if the url was malformed.
-     */
-    public static Document downloadHtml(String url, Map<String, String> cookies) {
-        Document doc = null;
+        InputStream responseBodyStream = downloadRawHtml(url);
+        if (responseBodyStream == null) return null;
         try {
-            Connection connection = Jsoup.connect(url);
-            if (cookies != null) connection.cookies(cookies); // Add cookies if we have them
-            doc = connection.get();
+            return Jsoup.parse(responseBodyStream, null, url);
         } catch (IOException e) {
             e.printStackTrace();
             // We're just ignoring the exception really.
-            logf(C.HTML_DL_FAILED, url);
+            logf(C.PARSE_HTML_FAILED, url);
+            return null;
         }
-        return doc;
     }
 
     /**
      * Download a web page using the given OkHttpClient from the given URL.
-     * @param client OkHttpClient to use.
-     * @param url    URL of page to download.
+     * @param url URL of page to download.
      * @return Raw HTML of the web page as an InputStream, or null if we failed to download the page.
      */
-    public static InputStream downloadRawHtml(OkHttpClient client, String url) {
+    public static InputStream downloadRawHtml(String url) {
         try {
             Request request = new Request.Builder().url(url).build();
-            Response response = client.newCall(request).execute();
+            Response response = C.getHttpClient().newCall(request).execute();
             return response.body().byteStream();
         } catch (IOException e) {
             e.printStackTrace();
@@ -148,49 +102,6 @@ public abstract class Util {
             logf(C.HTML_DL_FAILED, url);
             return null;
         }
-    }
-
-    /**
-     * Observable which uses OkHttp to execute a request and returns a response.
-     * @param client  The OkHttpClient to use.
-     * @param request The Request to execute.
-     * @return An Observable that returns a Response.
-     */
-    public static Observable<Response> rxHttpRequest(OkHttpClient client, Request request) {
-        return Observable.create((Subscriber<? super Response> sub) -> {
-            // Create call.
-            final Call call = client.newCall(request);
-            // Execute it asynchronously.
-            call.enqueue(new Callback() {
-                @Override
-                public void onFailure(Request request, IOException e) {
-                    sub.onError(e);
-                }
-
-                @Override
-                public void onResponse(Response response) throws IOException {
-                    // Make sure we were actually successful. TODO encode the response code in the log string!
-                    if (!response.isSuccessful())
-                        sub.onError(new IOException(String.format(C.HTML_DL_FAILED, response.request().urlString())));
-                    // On success, give subscriber the response, then tell it we're complete.
-                    sub.onNext(response);
-                    sub.onCompleted();
-                }
-            });
-        });
-    }
-
-    /**
-     * Takes in a list of URLs (as strings) and returns a list of Documents downloaded from the URLs. Any malformed URLs
-     * in the input list will be skipped.
-     * @param urlList List of URLs to get Documents for.
-     * @param cookies The cookies to send with this request. May be empty or null.
-     * @return Documents for all valid URLs that were in the input list.
-     */
-    public static ArrayList<Document> getDocuments(ArrayList<String> urlList, Map<String, String> cookies) {
-        // Loop through the URL list and download from each. Obviously filter out any null elements.
-        return new ArrayList<>(urlList.stream().map((url) -> Util.downloadHtml(url, cookies)).filter(out -> out != null)
-                                      .collect(Collectors.toList()));
     }
 
     /**

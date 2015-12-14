@@ -8,6 +8,7 @@ import javafx.concurrent.Task;
 
 import java.io.File;
 import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.nio.file.Path;
 import java.util.HashMap;
 
@@ -20,9 +21,8 @@ import java.util.HashMap;
  * Scrapes the story HTML and generates an ePUB using that.
  */
 public class FictionDL {
-    private static CookieManager cookieManager;
     /**
-     * Client for
+     * Global OkHttpClient.
      */
     public static OkHttpClient httpClient;
     // Path to input file.
@@ -60,12 +60,23 @@ public class FictionDL {
     public FictionDL(HashMap<String, String> args, FictionDLTask task) throws IllegalArgumentException {
         // Store the task (it might be null, that's fine).
         this.task = task;
+        // Initialize.
+        init(args);
+    }
+
+    /**
+     * Initialize this FictionDL.
+     * @param args Arguments to use during initialization.
+     */
+    private void init(HashMap<String, String> args) {
         // If we're running from a GUI, go ahead and set the progress bar to indeterminate.
         if (task != null) task.updateProgress(-1, 0);
+
         // Make sure we have an input path.
         if (args.get(C.ARG_IN_PATH) == null) throw new IllegalArgumentException(C.NO_IN_PATH);
         // Try to get a file from the input file path.
         inputFile = Util.tryGetFile(args.get(C.ARG_IN_PATH));
+
         // Figure out the output directory.
         if (args.get(C.ARG_OUT_PATH) != null) {
             // An output directory was specified.
@@ -74,8 +85,14 @@ public class FictionDL {
             // If an output directory wasn't specified, use the directory of the input file.
             outPath = inputFile.getAbsoluteFile().getParentFile().toPath();
         }
+
         // Figure out the config file.
         if (args.get(C.ARG_CFG_PATH) != null) configFile = Util.tryGetFile(args.get(C.ARG_CFG_PATH));
+
+        // Set up the OkHttpClient.
+        httpClient = new OkHttpClient();
+        httpClient.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+        // TODO may want to bump the number of connections? Not sure.
     }
 
     /**

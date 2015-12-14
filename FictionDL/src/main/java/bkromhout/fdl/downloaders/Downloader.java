@@ -5,7 +5,6 @@ import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.Main;
 import bkromhout.fdl.Util;
 import bkromhout.fdl.storys.Story;
-import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
@@ -13,8 +12,6 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -41,10 +38,6 @@ public abstract class Downloader {
      */
     protected HashSet<String> storyUrls;
     /**
-     * OkHttpClient for downloading things.
-     */
-    protected OkHttpClient httpClient;
-    /**
      * Any extra messages to print prior to starting the download process.
      */
     protected String extraPreDlMsgs;
@@ -62,17 +55,6 @@ public abstract class Downloader {
         this.storyClass = storyClass;
         this.siteName = siteName;
         this.storyUrls = storyUrls;
-        init();
-    }
-
-    /**
-     * Initialize this Downloader.
-     */
-    private void init() {
-        // Set up OkHttpClient.
-        httpClient = new OkHttpClient();
-        httpClient.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-        // TODO may want to bump the number of connections? Not sure.
     }
 
     /**
@@ -88,13 +70,15 @@ public abstract class Downloader {
         if (formData == null || loginUrl == null) return;
 
         try {
+            Util.logf(C.STARTING_SITE_AUTH_PROCESS, siteName);
             // Get cookies from the login page first.
-            httpClient.newCall(new Request.Builder().url(loginUrl).build()).execute();
+            C.getHttpClient().newCall(new Request.Builder().url(loginUrl).build()).execute();
             // Then log in.
-            Response loginResponse = httpClient.newCall(new Request.Builder().post(formData).url(loginUrl).build())
-                                               .execute();
+            Response resp = C.getHttpClient().newCall(new Request.Builder().post(formData).url(loginUrl).build())
+                             .execute();
             // Make sure that login cookies were sent back.
-            if (loginResponse.headers().values("Set-Cookie").isEmpty()) throw new IOException();
+            if (resp.headers().values("Set-Cookie").isEmpty()) throw new IOException();
+            Util.log(C.DONE);
         } catch (IOException e) {
             Util.logf(C.LOGIN_FAILED, siteName);
         }

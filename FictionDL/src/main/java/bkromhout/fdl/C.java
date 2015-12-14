@@ -1,5 +1,7 @@
 package bkromhout.fdl;
 
+import com.squareup.okhttp.OkHttpClient;
+
 /**
  * Constants file. Only constants which are either used by multiple classes (or are likely to be in the future) or which
  * are exceedingly long (in the case of strings) belong here. All others should be in a more specific class.
@@ -9,6 +11,14 @@ public abstract class C {
      * Program version string.
      */
     public static final String VER_STRING = "FictionDL, Version 2.0.1";
+
+    /**
+     * This is here for code-style convenience. Typing C.getHttpClient() is much shorter than FictionDl.httpClient ;)
+     * @return The OkHttpClient from FictionDl.
+     */
+    public static OkHttpClient getHttpClient() {
+        return FictionDL.httpClient;
+    }
 
     /*
     Log style tags. Putting these anywhere within a log string will cause the string to be formatted accordingly if
@@ -52,7 +62,7 @@ public abstract class C {
 
     public static final String FINISHED_WITH_SITE = "Finished with %s.\n\n" + LOG_BLUE;
 
-    public static final String ALL_FINISHED = "\nAll Finished! :)" + C.LOG_GREEN;
+    public static final String ALL_FINISHED = "\nAll Finished! :)" + LOG_GREEN;
 
     // FictionHunt-specific.
     public static final String FH_ON_FFN = "\"%s\" is still available on FanFiction.net; will download from there.\n\n";
@@ -78,7 +88,12 @@ public abstract class C {
 
     public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the %s file: \"%s\"\n" + LOG_RED;
 
-    public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"\n" + C.LOG_RED;
+    public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"\n" + LOG_RED;
+
+    public static final String HTML_UNEXP_RESP =
+            "Unexpected result when trying to download HTML from \"%s\"\n" + LOG_RED;
+
+    public static final String PARSE_HTML_FAILED = "Couldn't parse HTML for \"%s\"" + LOG_RED;
 
     public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it." + LOG_RED;
 

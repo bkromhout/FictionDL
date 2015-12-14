@@ -284,6 +284,17 @@ public abstract class Story {
     }
 
     /**
+     * Compares the two chapters and returns an integer to indicate which comes first. To do this, the Integer.compare()
+     * method is fed the indices of the given chapters' URLs, which are obtained from this story's chapter URL list.
+     * @param c1 Chapter
+     * @param c2 Other chapter
+     * @return Integer which indicates order of chapters.
+     */
+    public int compareChapters(Chapter c1, Chapter c2) {
+        return Integer.compare(chapterUrls.indexOf(c1.url), chapterUrls.indexOf(c2.url));
+    }
+
+    /**
      * Get this story's chapters.
      * @return Story chapters.
      */

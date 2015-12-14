@@ -1,21 +1,17 @@
 package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.*;
+import bkromhout.fdl.rx.RxMakeChapters;
+import bkromhout.fdl.rx.RxOkHttpCall;
 import bkromhout.fdl.storys.Story;
-import com.github.davidmoten.rx.util.MapWithIndex;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import com.squareup.okhttp.Request;
 import rx.Observable;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-import rx.util.async.Async;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Future;
 
 /**
  * Base class for downloaders which get stories by scraping their site HTML, and then generating story EPUB files by
@@ -87,21 +83,11 @@ public abstract class ParsingDL extends Downloader {
         Future<List<Chapter>> futureChaps = Observable
                 .from(story.getChapterUrls())
                 .subscribeOn(Schedulers.newThread())
-                .compose(MapWithIndex.<String>instance())
-                .flatMap(Async.toAsync((Func1<? super MapWithIndex.Indexed<String>, ? extends Chapter>) url -> {
-                    Chapter c = new Chapter(url.index(), url.value());
-                    InputStream html = Util.downloadRawHtml(httpClient, url.value());
-                    if (html == null) return null;
-                    try {
-                        c.html = Jsoup.parse(html, null, url.value());
-                        return c;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                }, Schedulers.io()))
-                .filter(c -> c.html != null) // Filter out any chapters which we failed to download HTML for.
-                .toSortedList((chapter, chapter2) -> Long.compare(chapter.getIndex(), chapter2.getIndex()))
+                .map(url -> new Request.Builder().url(url).build()) // Create OkHttp Requests from URLs.
+                .compose(new RxOkHttpCall()) // Get Responses by executing Requests.
+                .compose(new RxMakeChapters()) // Create Chapter objects.
+                .filter(c -> c.html != null) // Filter out any nulls, they're chapters we failed to make.
+                .toSortedList(story::compareChapters) // Sort chapters back into the correct order
                 .observeOn(Schedulers.immediate())
                 .toBlocking()
                 .toFuture();

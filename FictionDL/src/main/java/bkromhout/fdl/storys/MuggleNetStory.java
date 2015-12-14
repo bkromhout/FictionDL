@@ -67,7 +67,7 @@ public class MuggleNetStory extends Story {
         // Normalize the URL, since there are many valid MN URL formats.
         url = String.format(MN_S_URL, storyId, warnBypass);
         // Get the story page in order to parse the story info.
-        Document infoDoc = Util.downloadHtml(url, ownerDl.getCookies());
+        Document infoDoc = Util.downloadHtml(url);
         // Make sure that we got a Document, that this is a valid story, and that we don't need to login.
         if (infoDoc == null) throw initEx();
         Element errorText = infoDoc.select("div.errorText").first();
@@ -77,13 +77,13 @@ public class MuggleNetStory extends Story {
             warnBypass = MN_PART_WARN_3;
             // Now get the story page again.
             url = String.format(MN_S_URL, storyId, warnBypass);
-            infoDoc = Util.downloadHtml(url, ownerDl.getCookies());
+            infoDoc = Util.downloadHtml(url);
         } else if (errorText != null && errorText.ownText().trim().equals(MN_NEEDS_WARN_5)) {
             // We're logged in, but need to change our warning bypass to 5 for this story.
             warnBypass = MN_PART_WARN_5;
             // Now get the story page again.
             url = String.format(MN_S_URL, storyId, warnBypass);
-            infoDoc = Util.downloadHtml(url, ownerDl.getCookies());
+            infoDoc = Util.downloadHtml(url);
         } else if (errorText != null) throw initEx(errorText.ownText().trim()); // Just throw some exception
         // Get the element that has the title and author of the story in it.
         Elements taElem = infoDoc.select("div#pagetitle a");
