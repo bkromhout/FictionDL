@@ -74,28 +74,23 @@ public class FictionDL {
         // If we're running from a GUI, go ahead and set the progress bar to indeterminate.
         if (task != null) task.updateProgress(-1, 0);
 
-        // Make sure we have an input path.
+        // Make sure we have an input path and that it is valid.
         if (args.get(C.ARG_IN_PATH) == null) throw new IllegalArgumentException(C.NO_IN_PATH);
-        // Try to get a file from the input file path.
         inputFile = Util.tryGetFile(args.get(C.ARG_IN_PATH));
 
-        // Figure out the output directory.
-        if (args.get(C.ARG_OUT_PATH) != null) {
-            // An output directory was specified.
-            outPath = Util.tryGetPath(args.get(C.ARG_OUT_PATH));
-        } else {
-            // If an output directory wasn't specified, use the directory of the input file.
-            outPath = inputFile.getAbsoluteFile().getParentFile().toPath();
-        }
+        // Figure out the output directory. If we were given one, make sure it's valid. If we weren't use the
+        // directory of the input file.
+        if (args.get(C.ARG_OUT_PATH) != null) outPath = Util.tryGetPath(args.get(C.ARG_OUT_PATH));
+        else outPath = inputFile.getAbsoluteFile().getParentFile().toPath();
 
-        // Figure out the config file.
+        // Get the config file path, if present.
         if (args.get(C.ARG_CFG_PATH) != null) configFile = Util.tryGetFile(args.get(C.ARG_CFG_PATH));
 
         // Set up the OkHttpClient.
         httpClient = new OkHttpClient();
         httpClient.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
         httpClient.getDispatcher().setMaxRequestsPerHost(10); // Bump this up from 5.
-        httpClient.setReadTimeout(0, TimeUnit.MILLISECONDS); // Sometimes we haven't gotten around to it yet.
+        httpClient.setReadTimeout(0, TimeUnit.MILLISECONDS);
         if (Main.isVerbose) addOkHttpLogging(); // Definitely don't do this if we aren't in verbose mode.
     }
 
@@ -121,7 +116,7 @@ public class FictionDL {
         getStories(parser);
         // All done!
         Util.log(C.ALL_FINISHED);
-        // The dispatcher's threads seems to enjoy sticking around for a while unless we do this >_<
+        // OkHttpClient dispatcher threads seems to enjoy sticking around for a while unless we do this >_<
         httpClient.getDispatcher().getExecutorService().shutdownNow();
     }
 
