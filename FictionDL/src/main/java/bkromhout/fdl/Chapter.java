@@ -7,16 +7,28 @@ import org.jsoup.nodes.Document;
 import java.io.IOException;
 
 /**
- * Chapter model. Very simple, just holds the chapter title and content.
+ * Chapter model.
  */
 public class Chapter {
-    // Chapter url.
-    public String url;
-    // Chapter title.
+    /**
+     * Chapter URL string.
+     */
+    public final String url;
+    /**
+     * Chapter number.
+     */
+    public int num;
+    /**
+     * Chapter title string.
+     */
     public String title;
-    // Chapter HTML.
-    public Document html;
-    // The chapter's actual content.
+    /**
+     * Raw chapter HTML.
+     */
+    public final Document html;
+    /**
+     * Stringified chapter XHTML which will eventually be put into the ePUB.
+     */
     public String content;
 
     /**

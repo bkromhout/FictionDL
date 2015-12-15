@@ -5,8 +5,8 @@ import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.storys.SiyeStory;
 import org.jsoup.nodes.Element;
+import rx.functions.Action1;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,13 +27,13 @@ public class SiyeDL extends ParsingDL {
     }
 
     /**
-     * Generate chapter titles by parsing real titles from chapter HTML.
-     * @param chapters List of Chapters.
+     * Creates an action which takes a Chapter object and creates a title for it by parsing the real chapter titles from
+     * the raw chapter HTML.
+     * @return An action which generates chapter titles.
      */
     @Override
-    protected void generateChapTitles(ArrayList<Chapter> chapters) {
-        // Parse chapter titles from chapter HTMLs.
-        for (Chapter chapter : chapters) {
+    protected Action1<? super Chapter> generateChapTitle() {
+        return chapter -> {
             // Try to find a <select> element on the page that has chapter titles.
             Element titleElement = chapter.html.select("select[name=\"chapter\"] > option[selected]").first();
             // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
@@ -46,12 +46,12 @@ public class SiyeDL extends ParsingDL {
                 } catch (IllegalStateException e) {
                     // Apparently, it's possible for there to *not* be a title for a chapter, so the title string may
                     // look like "24. " or something. If that happens, title the chapter "Chapter #".
-                    chapter.title = String.format("Chapter %d", chapters.indexOf(chapter) + 1);
+                    chapter.title = String.format("Chapter %d", chapter.num);
                 }
             } else {
                 chapter.title = "Chapter 1";
             }
-        }
+        };
     }
 
     /**

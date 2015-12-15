@@ -82,16 +82,13 @@ public abstract class C {
 
     public static final String INVALID_PATH = "Invalid path: \"%s\"\n." + LOG_RED;
 
-    public static final String NO_IN_PATH = "[No input file path!]";
+    public static final String NO_INPUT_PATH = "[No input file path!]";
 
     public static final String INVALID_URL = "Invalid URL: \"%s\"\n." + LOG_RED;
 
     public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the %s file: \"%s\"\n" + LOG_RED;
 
     public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"\n" + LOG_RED;
-
-    public static final String HTML_UNEXP_RESP =
-            "Unexpected result when trying to download HTML from \"%s\"\n" + LOG_RED;
 
     public static final String PARSE_HTML_FAILED = "Couldn't parse HTML for \"%s\"" + LOG_RED;
 
@@ -106,6 +103,11 @@ public abstract class C {
     public static final String MUST_LOGIN = "You must provide %s login info to download story with ID=%s!" + LOG_RED;
 
     public static final String LOGIN_FAILED = "\nCouldn't log in to %s. Check your login info.\n" + LOG_RED;
+
+    // Error strings used by exceptions which we don't catch. Don't include log tags, they won't be stripped!
+    public static final String HTML_UNEXP_RESP = "Unexpected result when trying to download HTML from \"%s\"\n";
+
+    public static final String CHAP_NUM_NOT_ASSIGNED = "Chapter number hasn't been assigned yet!";
 
     /*
     Domains and human-readable names for supported sites.

@@ -75,7 +75,7 @@ public class FictionDL {
         if (task != null) task.updateProgress(-1, 0);
 
         // Make sure we have an input path and that it is valid.
-        if (args.get(C.ARG_IN_PATH) == null) throw new IllegalArgumentException(C.NO_IN_PATH);
+        if (args.get(C.ARG_IN_PATH) == null) throw new IllegalArgumentException(C.NO_INPUT_PATH);
         inputFile = Util.tryGetFile(args.get(C.ARG_IN_PATH));
 
         // Figure out the output directory. If we were given one, make sure it's valid. If we weren't use the

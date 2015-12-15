@@ -4,6 +4,7 @@ import bkromhout.fdl.C;
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.ex.InitStoryException;
+import rx.functions.Func2;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -284,14 +285,27 @@ public abstract class Story {
     }
 
     /**
-     * Compares the two chapters and returns an integer to indicate which comes first. To do this, the Integer.compare()
-     * method is fed the indices of the given chapters' URLs, which are obtained from this story's chapter URL list.
-     * @param c1 Chapter
-     * @param c2 Other chapter
-     * @return Integer which indicates order of chapters.
+     * Compares the two chapters and returns an integer to indicate which comes first.
+     * <p>
+     * To do this, the Integer.compare() method is fed the indices of the given chapters' URLs, which are obtained from
+     * this story's chapter URL list, which is why this is "slow" chapter sort.
+     * @return Compare function which uses takes in two chapters, c1 and c2, and returns an integer which indicates
+     * order of those two chapters.
      */
-    public int compareChapters(Chapter c1, Chapter c2) {
-        return Integer.compare(chapterUrls.indexOf(c1.url), chapterUrls.indexOf(c2.url));
+    public Func2<Chapter, Chapter, Integer> slowChapSort() {
+        return (c1, c2) -> Integer.compare(chapterUrls.indexOf(c1.url), chapterUrls.indexOf(c2.url));
+    }
+
+    /**
+     * Compares the two chapters and returns an integer to indicate which comes first.
+     * <p>
+     * To do this, the Integer.compare() method is fed the chapter numbers from the Chapter objects. The assumption is
+     * made that the Chapter objects have had their numbers filled in.
+     * @return Compare function which uses takes in two chapters, c1 and c2, and returns an integer which indicates
+     * order of those two chapters.
+     */
+    public static Func2<Chapter, Chapter, Integer> fastChapSort() {
+        return (c1, c2) -> Integer.compare(c1.num, c2.num);
     }
 
     /**
