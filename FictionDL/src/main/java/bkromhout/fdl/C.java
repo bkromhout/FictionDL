@@ -80,23 +80,23 @@ public abstract class C {
     // Non-site-specific errors and warnings.
     public static final String INVALID_ARGS = "Bad arguments.";
 
-    public static final String INVALID_PATH = "Invalid path: \"%s\"\n." + LOG_RED;
+    public static final String INVALID_PATH = "Invalid path: \"%s\".\n" + LOG_RED;
 
     public static final String NO_INPUT_PATH = "[No input file path!]";
 
-    public static final String INVALID_URL = "Invalid URL: \"%s\"\n." + LOG_RED;
+    public static final String INVALID_URL = "Invalid URL: \"%s\".\n" + LOG_RED;
 
-    public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the %s file: \"%s\"\n" + LOG_RED;
+    public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the %s file: \"%s\".\n" + LOG_RED;
 
-    public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"\n" + LOG_RED;
+    public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\".\n" + LOG_RED;
 
-    public static final String PARSE_HTML_FAILED = "Couldn't parse HTML for \"%s\"" + LOG_RED;
+    public static final String PARSE_HTML_FAILED = "Couldn't parse HTML for \"%s\"." + LOG_RED;
 
     public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it." + LOG_RED;
 
     public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n" + LOG_RED;
 
-    public static final String SAVE_FILE_FAILED = "Failed to save file: \"%s\"\n" + LOG_RED;
+    public static final String SAVE_FILE_FAILED = "Failed to save file: \"%s\".\n" + LOG_RED;
 
     public static final String NO_EPUB_ON_SITE = "Couldn't find ePUB on %s for story \"%s\". Skipping it." + LOG_RED;
 
@@ -105,7 +105,7 @@ public abstract class C {
     public static final String LOGIN_FAILED = "\nCouldn't log in to %s. Check your login info.\n" + LOG_RED;
 
     // Error strings used by exceptions which we don't catch. Don't include log tags, they won't be stripped!
-    public static final String HTML_UNEXP_RESP = "Unexpected result when trying to download HTML from \"%s\"\n";
+    public static final String HTML_UNEXP_RESP = "Unexpected result when trying to download HTML from \"%s\".\n";
 
     public static final String CHAP_NUM_NOT_ASSIGNED = "Chapter number hasn't been assigned yet!";
 

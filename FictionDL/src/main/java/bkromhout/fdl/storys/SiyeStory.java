@@ -39,6 +39,8 @@ public class SiyeStory extends Story {
     protected void populateInfo() throws InitStoryException {
         // Set site.
         hostSite = C.HOST_SIYE;
+        // Get SIYE story ID.
+        storyId = parseStoryId(url, "sid=(\\d*)", 1);
         // Get chapter 1 HTML first.
         Document infoDoc = getInfoPage(url);
         Element storyInfoElem = infoDoc.select("td[align=\"left\"][valign=\"top\"]").last();
@@ -103,10 +105,7 @@ public class SiyeStory extends Story {
      * @return Chapter 1 HTML Document.
      */
     private Document getInfoPage(String url) throws InitStoryException {
-        // Need to normalize this URL first to be sure we can get the author ID link.
-        // Start by getting the story ID from the URL.
-        storyId = parseStoryId(url, "sid=(\\d*)", 1);
-        // Now download the first chapter's HTML.
+        // Normalize this URL first to be sure we can get the author ID link, then download the first chapter's HTML.
         Document chDoc = Util.downloadHtml(String.format(SIYE_C_URL, storyId, 1));
         if (chDoc == null) throw initEx();
         return chDoc;

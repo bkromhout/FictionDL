@@ -46,7 +46,7 @@ public class FanFictionStory extends Story {
         // Set site.
         hostSite = C.HOST_FFN;
         // Get story ID first.
-        storyId = parseStoryId(url, "/\\s/(\\d*)", 1);
+        storyId = parseStoryId(url, "/s/(\\d*)", 1);
         // Normalize the URL, since there are many valid FFN URL formats.
         url = String.format(FFN_S_URL, storyId);
         // Get the first chapter in order to parse the story info.
