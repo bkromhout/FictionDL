@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.TextFlow?>
 
-<AnchorPane id="rootView" fx:id="rootView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300.0" minWidth="525.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bkromhout.FictionDL.Gui.GuiController">
+<AnchorPane id="rootView" fx:id="rootView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300.0" minWidth="525.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bkromhout.fdl.gui.GuiController">
     <children>
         <AnchorPane id="optsView" fx:id="optsView" minHeight="0.0" minWidth="0.0" prefHeight="120.0" prefWidth="800.0" AnchorPane.bottomAnchor="445.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
