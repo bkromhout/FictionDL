@@ -1,6 +1,6 @@
 package bkromhout.fdl;
 
-import bkromhout.fdl.gui.GuiController;
+import bkromhout.fdl.ui.GuiController;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import javafx.scene.paint.Color;
