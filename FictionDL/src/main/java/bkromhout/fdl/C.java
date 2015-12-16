@@ -10,7 +10,7 @@ public abstract class C {
     /**
      * Program version string.
      */
-    public static final String VER_STRING = "FictionDL, Version 2.0.1";
+    public static final String VER_STRING = "FictionDL, Version 3.0.0";
 
     /**
      * This is here for code-style convenience. Typing C.getHttpClient() is much shorter than FictionDl.httpClient ;)
