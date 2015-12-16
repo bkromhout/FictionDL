@@ -1,4 +1,4 @@
-package bkromhout.fdl.gui;
+package bkromhout.fdl.ui;
 
 import bkromhout.fdl.C;
 import javafx.application.Platform;
