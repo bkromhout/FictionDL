@@ -7,7 +7,6 @@ import bkromhout.fdl.Util;
 import bkromhout.fdl.storys.FanFictionStory;
 import bkromhout.fdl.storys.FictionHuntStory;
 import bkromhout.fdl.storys.Story;
-import rx.functions.Action1;
 
 import java.util.HashSet;
 
@@ -46,15 +45,13 @@ public class FictionHuntDL extends ParsingDL {
     }
 
     /**
-     * Creates an action which takes a Chapter objects and cleans the String in the {@link Chapter#content content}
-     * field.
-     * <p>
-     * FictionHunt's chapter content HTML can have some odd stuff which is illegal in ePUB XHTML.
-     * @return An action which cleans the string in the {@link Chapter#content content} field of the given Chapter.
-     * @see Chapter
+     * FictionHunt's chapter content HTML can have some odd stuff which is illegal in ePUB XHTML, so we fix those issues
+     * here.
+     * @param chapter Chapter object.
      */
     @Override
-    protected Action1<? super Chapter> sanitizeChap() {
-        return chapter -> chapter.content = chapter.content.replace("noshade", "noshade=\"noshade\"");
+    protected void sanitizeChap(Chapter chapter) {
+        // Ensure that any "noshade" attributes are non-boolean, XHTML doesn't like boolean attributes.
+        chapter.content = chapter.content.replace("noshade", "noshade=\"noshade\"");
     }
 }

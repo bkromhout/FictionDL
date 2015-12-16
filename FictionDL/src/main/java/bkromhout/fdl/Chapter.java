@@ -17,7 +17,7 @@ public class Chapter {
     /**
      * Chapter number.
      */
-    public int num;
+    public int number;
     /**
      * Chapter title string.
      */

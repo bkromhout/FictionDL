@@ -5,7 +5,6 @@ import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.storys.FanFictionStory;
 import org.jsoup.nodes.Element;
-import rx.functions.Action1;
 
 import java.util.HashSet;
 import java.util.regex.Matcher;
@@ -26,43 +25,38 @@ public class FanFictionDL extends ParsingDL {
     }
 
     /**
-     * Creates an action which takes a Chapter object and creates a title for it by parsing the real chapter titles from
-     * the raw chapter HTML.
-     * @return An action which generates chapter titles.
+     * Creates a title for a chapter by parsing the actual title form the raw chapter HTML in the given Chapter object.
+     * @param chapter Chapter object.
      */
     @Override
-    protected Action1<? super Chapter> generateChapTitle() {
-        return chapter -> {
-            // Try to find a <select> element on the page that has chapter titles.
-            Element titleElement = chapter.rawHtml.select("select#chap_select > option[selected]").first();
-            // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
-            // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
-            if (titleElement != null) {
-                Matcher matcher = Pattern.compile("(\\d+.\\s)(.*)").matcher(titleElement.html().trim());
-                matcher.matches();
-                try {
-                    chapter.title = matcher.group(2);
-                } catch (IllegalStateException e) {
-                    // Apparently, it's possible for there to *not* be a title for a chapter, so the title string may
-                    // look like "24. " or something. If that happens, title the chapter "Chapter #".
-                    chapter.title = String.format("Chapter %d", chapter.num);
-                }
-            } else {
-                chapter.title = "Chapter 1";
+    protected void generateChapTitle(Chapter chapter) {
+        // Try to find a <select> element on the page that has chapter titles.
+        Element titleElement = chapter.rawHtml.select("select#chap_select > option[selected]").first();
+        // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
+        // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
+        if (titleElement != null) {
+            Matcher matcher = Pattern.compile("(\\d+.\\s)(.*)").matcher(titleElement.html().trim());
+            matcher.matches();
+            try {
+                chapter.title = matcher.group(2);
+            } catch (IllegalStateException e) {
+                // Apparently, it's possible for there to *not* be a title for a chapter, so the title string may
+                // look like "24. " or something. If that happens, title the chapter "Chapter #".
+                chapter.title = String.format("Chapter %d", chapter.number);
             }
-        };
+        } else {
+            chapter.title = "Chapter 1";
+        }
     }
 
     /**
-     * Creates an action which takes a Chapter objects and cleans the String in the {@link Chapter#content content}
-     * field.
-     * <p>
-     * FanFiction.net's chapter content HTML can have some odd stuff which is illegal in ePUB XHTML.
-     * @return An action which cleans the string in the {@link Chapter#content content} field of the given Chapter.
-     * @see Chapter
+     * FanFiction.net's chapter content HTML can have some odd stuff which is illegal in ePUB XHTML, so we fix those
+     * issues here.
+     * @param chapter Chapter object.
      */
     @Override
-    protected Action1<? super Chapter> sanitizeChap() {
-        return chapter -> chapter.content = chapter.content.replace("noshade", "noshade=\"noshade\"");
+    protected void sanitizeChap(Chapter chapter) {
+        // Ensure that any "noshade" attributes are non-boolean, XHTML doesn't like boolean attributes.
+        chapter.content = chapter.content.replace("noshade", "noshade=\"noshade\"");
     }
 }

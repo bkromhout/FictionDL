@@ -8,8 +8,6 @@ import bkromhout.fdl.storys.Story;
 import com.squareup.okhttp.Request;
 import rx.Observable;
 import rx.Scheduler;
-import rx.functions.Action1;
-import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 import java.util.ArrayList;
@@ -21,7 +19,7 @@ import java.util.HashSet;
  */
 public abstract class ParsingDL extends Downloader {
     /**
-     * CSS selector to extract chapter text from original HTML.
+     * CSS selector to extract chapter content from a chapter's original, raw HTML.
      */
     protected String chapTextSelector;
 
@@ -31,9 +29,9 @@ public abstract class ParsingDL extends Downloader {
      * @param storyClass       The concrete subclass of Story which this downloader uses.
      * @param siteName         Human-readable site name for this downloader.
      * @param storyUrls        List of story URLs to be downloaded.
-     * @param chapTextSelector CSS selector used to extract chapter text from original chapter HTMLs. (If all of the
-     *                         chapter's text cannot be extracted with one CSS selector, the subclass will need to pass
-     *                         null for this and override the {@link #extractChapText()} method.)
+     * @param chapTextSelector CSS selector used to extract chapter content from chapters' raw HTML. (If all of the
+     *                         chapter's text cannot be extracted with one CSS selector, the subclass should pass null
+     *                         for this and override {@link #extractChapText(Chapter)}.)
      */
     protected ParsingDL(FictionDL fictionDL, Class<? extends Story> storyClass, String siteName,
                         HashSet<String> storyUrls, String chapTextSelector) {
@@ -50,11 +48,11 @@ public abstract class ParsingDL extends Downloader {
     @Override
     protected void downloadStory(Story story) {
         // Create Chapter objects.
-        ArrayList<Chapter> chapters = (ArrayList<Chapter>) downloadChapters(story)
-                .doOnNext(generateChapTitle()) // Make titles for the chapters.
-                .doOnNext(extractChapText()) // Extract chapter content from raw HTML.
+        ArrayList<Chapter> chapters = (ArrayList<Chapter>) downloadStoryChaps(story)
+                .doOnNext(this::generateChapTitle) // Make titles for the chapters.
+                .doOnNext(this::extractChapText) // Extract chapter content from raw HTML.
+                .doOnNext(this::sanitizeChap) // Clean up chapter content.
                 .doOnCompleted(() -> Util.log(C.SANITIZING_CHAPS))
-                .doOnNext(sanitizeChap()) // Clean up chapter content.
                 .observeOn(Schedulers.immediate())
                 .toList() // Get the chapters as a list.
                 .toBlocking()
@@ -85,11 +83,11 @@ public abstract class ParsingDL extends Downloader {
      * will allow that to occur silently. Therefore, at some point a check must be made to ensure that the number of
      * Chapters in the stream is equal to the number of chapter URLs in the story.
      * @param story Story to download chapters for.
-     * @return Observable which emits Chapters that have their {@link Chapter#rawHtml rawHtml} and {@link Chapter#num
-     * num} fields filled in.
+     * @return Observable which emits Chapters that have their {@link Chapter#rawHtml rawHtml} and {@link Chapter#number
+     * number} fields filled in.
      * @see Chapter
      */
-    private Observable<Chapter> downloadChapters(Story story) {
+    private Observable<Chapter> downloadStoryChaps(Story story) {
         // Create an observable to generate chapter numbers.
         Observable<Integer> chapNums = Observable.range(1, story.getChapterCount());
         // Get chapters.
@@ -101,76 +99,69 @@ public abstract class ParsingDL extends Downloader {
                 .compose(new RxOkHttpCall()) // Get Responses by executing Requests.
                 .compose(new RxMakeChapters()) // Create Chapter objects.
                 .observeOn(Schedulers.computation())
-                .filter(c -> c.rawHtml != null) // Filter out any nulls, they're chapters we failed to make.
-                .compose(new RxSortChapters(story.slowChapSort())) // Sort chapters back into the correct order.
-                .zipWith(chapNums, assignChapNums()); // Add numbers to the chapters.
+                .filter(chapter -> chapter.rawHtml != null) // Filter out any nulls, they're chapters we failed to make.
+                .compose(new RxSortChapters(story::slowChapSort)) // Sort chapters back into the correct order.
+                .zipWith(chapNums, this::assignChapNums); // Add numbers to the chapters.
     }
 
     /**
-     * Provides a function which puts numbers into Chapters. Yes, this is technically a sneaky side-effect.
-     * @return A function which fills in the {@link Chapter#num num} field of the given Chapter with the given Integer.
+     * Assigns the given number to the given chapter.
+     * @param chapter Chapter object.
+     * @param number  Number of the chapter in the story.
+     * @return The given Chapter object with its {@link Chapter#number number} field filled in.
      * @see Chapter
      */
-    private static Func2<? super Chapter, ? super Integer, Chapter> assignChapNums() {
-        return (chapter, num) -> {
-            // Yes, this is kind of cheating since it's essentially a disguised side-effect.
-            chapter.num = num;
-            return chapter;
-        };
+    private Chapter assignChapNums(Chapter chapter, Integer number) {
+        chapter.number = number;
+        return chapter;
     }
 
     /**
-     * Creates an action which takes a Chapter object and creates a title for it.
+     * Creates a title string for the story chapter that the given Chapter object represents and stores it in its {@link
+     * Chapter#title title} field.
      * <p>
-     * The action assumes that the Chapter object it receives has had both the chapter number and the raw chapter html
-     * filled in.
+     * It is assumed that the given Chapter object has had both the chapter number and the raw chapter html filled in.
      * <p>
-     * By default, the action will simply generate titles like "Chapter 1", "Chapter 2", etc. based on the chapter
-     * number. Subclasses should override this method in order to create an action which generates more specific
-     * titles.
-     * @return An action which fills in the {@link Chapter#title title} field of the given Chapter.
+     * By default, the generated titles will be of the form "Chapter 1", "Chapter 2", etc., based on the chapter number.
+     * Subclasses should override this method in order to generate more specific titles.
+     * @param chapter Chapter object.
      * @see Chapter
      */
-    protected Action1<? super Chapter> generateChapTitle() {
-        return chapter -> {
-            // Make sure the chapter was assigned.
-            if (chapter.num == -1) throw new IllegalStateException();
-            // Create a chapter title using the chapter number.
-            chapter.title = String.format("Chapter %d", chapter.num);
-        };
+    protected void generateChapTitle(Chapter chapter) {
+        // Make sure the chapter was assigned.
+        if (chapter.number == -1) throw new IllegalStateException(C.CHAP_NUM_NOT_ASSIGNED);
+        // Create a chapter title using the chapter number.
+        chapter.title = String.format("Chapter %d", chapter.number);
     }
 
     /**
-     * Creates an action which takes a Chapter objects and fills in its content field by extracting a desired part of
-     * the raw HTML.
+     * Takes the given Chapter objects and fills in its {@link Chapter#content content} field by extracting a portion of
+     * its raw HTML.
      * <p>
-     * By default, this method uses the selector string which this ParsingDL currently has set to choose what part of
-     * the raw HTML to extract. This selector string is set by the concrete subclass when this ParsingDL is created. If
-     * a subclass needs some additional logic to extract chapter content, it should override this method.
-     * @return An action which fills in the {@link Chapter#content content} field of the given Chapter.
+     * By default, this method uses {@link #chapTextSelector the selector string which this ParsingDL currently has set}
+     * to choose what part of the raw HTML to extract. This selector string is set by a concrete subclass when it calls
+     * super in its constructor to create this ParsingDL. If a subclass needs some additional logic to extract chapter
+     * content, it should override this method.
+     * @param chapter Chapter object.
      * @see Chapter
      */
-    protected Action1<? super Chapter> extractChapText() {
-        return chapter -> {
-            // Get the chapter's text, keeping all HTML formatting intact.
-            String chapterText = chapter.rawHtml.select(chapTextSelector).first().html();
-            // Put the chapter's text into a chapter HTML template.
-            chapter.content = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText);
-        };
+    protected void extractChapText(Chapter chapter) {
+        // Get the chapter's text, keeping all HTML formatting intact.
+        String chapterText = chapter.rawHtml.select(chapTextSelector).first().html();
+        // Put the chapter's text into a chapter HTML template.
+        chapter.content = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText);
     }
 
     /**
-     * Creates an action which takes a Chapter objects and cleans the String in the {@link Chapter#content content}
-     * field.
+     * Cleans up the String in the given Chapter's {@link Chapter#content content} field so that it is safe to put in an
+     * ePUB file.
      * <p>
-     * The default implementation doesn't do anything. Subclasses which need to do some sanitizing tasks should override
-     * this method.
-     * @return An action which cleans the string in the {@link Chapter#content content} field of the given Chapter.
+     * This default implementation doesn't do anything. Subclasses which need to do some sanitizing tasks should
+     * override this method.
+     * @param chapter Chapter object.
      * @see Chapter
      */
-    protected Action1<? super Chapter> sanitizeChap() {
-        return chapter -> {
-            // Does nothing.
-        };
+    protected void sanitizeChap(Chapter chapter) {
+        // Does nothing by default.
     }
 }

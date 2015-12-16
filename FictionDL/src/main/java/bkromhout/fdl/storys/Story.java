@@ -4,7 +4,6 @@ import bkromhout.fdl.C;
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.ex.InitStoryException;
-import rx.functions.Func2;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -285,27 +284,32 @@ public abstract class Story {
     }
 
     /**
-     * Compares the two chapters and returns an integer to indicate which comes first.
+     * Compares the two Chapters by their {@link Chapter#url url} fields along with this Story's list of chapter URLs.
+     * Gets the indices of the given Chapters' URLs in this Story's chapter URL list and returns an integer to indicate
+     * which comes first using {@link Integer#compare(int, int)}.
      * <p>
-     * To do this, the Integer.compare() method is fed the indices of the given chapters' URLs, which are obtained from
-     * this story's chapter URL list, which is why this is "slow" chapter sort.
-     * @return Compare function which uses takes in two chapters, c1 and c2, and returns an integer which indicates
-     * order of those two chapters.
+     * We call this "slow" because the sorting requires information outside of the given Chapter objects.
+     * @param c1 One Chapter object.
+     * @param c2 Another Chapter object.
+     * @return Integer which indicates order of c1 and c2.
+     * @see Story
+     * @see Chapter
      */
-    public Func2<Chapter, Chapter, Integer> slowChapSort() {
-        return (c1, c2) -> Integer.compare(chapterUrls.indexOf(c1.url), chapterUrls.indexOf(c2.url));
+    public int slowChapSort(Chapter c1, Chapter c2) {
+        return Integer.compare(chapterUrls.indexOf(c1.url), chapterUrls.indexOf(c2.url));
     }
 
     /**
-     * Compares the two chapters and returns an integer to indicate which comes first.
+     * Compares the two Chapters by their {@link Chapter#number number} fields using {@link Integer#compare(int, int)}.
      * <p>
-     * To do this, the Integer.compare() method is fed the chapter numbers from the Chapter objects. The assumption is
-     * made that the Chapter objects have had their numbers filled in.
-     * @return Compare function which uses takes in two chapters, c1 and c2, and returns an integer which indicates
-     * order of those two chapters.
+     * We call this "fast" because the sorting only needs the Chapter objects.
+     * @param c1 One Chapter object.
+     * @param c2 Another Chapter object.
+     * @return Integer which indicates order of c1 and c2.
+     * @see Chapter
      */
-    public static Func2<Chapter, Chapter, Integer> fastChapSort() {
-        return (c1, c2) -> Integer.compare(c1.num, c2.num);
+    public int fastChapSort(Chapter c1, Chapter c2) {
+        return Integer.compare(c1.number, c2.number);
     }
 
     /**

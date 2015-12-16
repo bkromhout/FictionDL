@@ -9,6 +9,7 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -16,7 +17,7 @@ import java.util.HashSet;
 /**
  * Base downloader class. This shouldn't be extended by site-specific downloaders, but rather by classes which provide
  * additional categories of functionality to a group of sites. For example, sites where we parse and generate stories
- * should subclass ParsingDL, which itself is a subclass of this class.
+ * should subclass {@link ParsingDL}, which itself is a subclass of this class.
  */
 public abstract class Downloader {
     /**
@@ -24,11 +25,12 @@ public abstract class Downloader {
      */
     protected FictionDL fictionDL;
     /**
-     * This is the class of story which this Downloader interacts with. Must extend Story.
+     * This is the class of story which this Downloader interacts with. Must extend {@link Story}.
      */
     protected Class<? extends Story> storyClass;
     /**
      * Human-readable site name for this downloader.
+     * @see C
      */
     protected String siteName;
     /**
@@ -36,7 +38,8 @@ public abstract class Downloader {
      */
     protected HashSet<String> storyUrls;
     /**
-     * Any extra messages to print prior to starting the download process.
+     * Any extra messages to print prior to starting the download process. Can be set by a subclass at some point after
+     * initialization.
      */
     protected String extraPreDlMsgs;
 
@@ -56,25 +59,31 @@ public abstract class Downloader {
     }
 
     /**
-     * Download the stories whose URLs were passed to this instance of the downloader upon creation.
+     * Download the stories whose URLs were passed to this downloader upon creation.
      */
     public final void download() {
         // Pre-download logging.
         Util.logf(C.STARTING_SITE_DL_PROCESS, siteName);
         Util.log(extraPreDlMsgs); // This is null unless a subclass has set it to something.
         Util.logf(C.FETCH_BUILD_MODELS, siteName);
-        // Create story models from URLs.
+
+        // Use RxJava to handle the logic.
         Observable.from(storyUrls)
+                  .subscribeOn(Schedulers.computation())
                   .compose(new RxMakeStories(storyClass, this))
                   .doOnNext(story -> {
-                      // Call storyProcessed() if we failed to download a story (AKA, we got a null).
                       if (story == null) storyProcessed();
                   })
-                  .doOnSubscribe(() -> Util.logf(C.DL_STORIES_FROM_SITE, siteName))
                   .filter(story -> story != null) // Get rid of failed stories.
-                  .toBlocking() // Wait until we have all of the stories...
-                  .forEach(this::downloadStory);  // ...then download them.
-        // Post-download logging.
+                  .toList()
+                  .doOnCompleted(() -> Util.logf(C.DL_STORIES_FROM_SITE, siteName))
+                  .observeOn(Schedulers.immediate())
+                  .toBlocking().single() // Put all of the stories into a List.
+                  // Download the stories. (Note that this is the JDK 8 Iterable.forEach() method, because we want
+                  // our RxJava flow to finish creating the story models before we download any of them.)
+                  .forEach(this::downloadStory);
+
+        //Post-download logging.
         Util.logf(C.FINISHED_WITH_SITE, siteName);
     }
 

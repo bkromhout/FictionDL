@@ -7,7 +7,6 @@ import bkromhout.fdl.storys.MuggleNetStory;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
 import org.jsoup.nodes.Element;
-import rx.functions.Action1;
 
 import java.util.HashSet;
 import java.util.regex.Matcher;
@@ -48,57 +47,53 @@ public class MuggleNetDL extends ParsingDL {
     }
 
     /**
-     * Creates an action which takes a Chapter object and creates a title for it by parsing the real chapter titles from
-     * the raw chapter HTML.
-     * @return An action which generates chapter titles.
+     * Creates a title for a chapter by parsing the actual title form the raw chapter HTML in the given Chapter object.
+     * @param chapter Chapter object.
      */
     @Override
-    protected Action1<? super Chapter> generateChapTitle() {
-        return chapter -> {
-            // Try to find a <select> element on the page that has chapter titles.
-            Element titleElement = chapter.rawHtml.select("select[name=\"chapter\"] > option[selected]").first();
-            // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
-            // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
-            if (titleElement != null) {
-                Matcher matcher = Pattern.compile("(\\d+.\\s)(.*)").matcher(titleElement.html().trim());
-                matcher.matches();
-                try {
-                    chapter.title = matcher.group(2);
-                } catch (IllegalStateException e) {
-                    // Apparently, it's possible for there to *not* be a title for a chapter, so the title string may
-                    // look like "24. " or something. If that happens, title the chapter "Chapter #".
-                    chapter.title = String.format("Chapter %d", chapter.num);
-                }
-            } else {
-                chapter.title = "Chapter 1";
+    protected void generateChapTitle(Chapter chapter) {
+        // Try to find a <select> element on the page that has chapter titles.
+        Element titleElement = chapter.rawHtml.select("select[name=\"chapter\"] > option[selected]").first();
+        // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
+        // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
+        if (titleElement != null) {
+            Matcher matcher = Pattern.compile("(\\d+.\\s)(.*)").matcher(titleElement.html().trim());
+            matcher.matches();
+            try {
+                chapter.title = matcher.group(2);
+            } catch (IllegalStateException e) {
+                // Apparently, it's possible for there to *not* be a title for a chapter, so the title string may
+                // look like "24. " or something. If that happens, title the chapter "Chapter #".
+                chapter.title = String.format("Chapter %d", chapter.number);
             }
-        };
+        } else {
+            chapter.title = "Chapter 1";
+        }
     }
 
     /**
-     * Creates an action which takes a Chapter objects and fills in its content field by extracting a desired part of
-     * the raw HTML.
+     * MuggleNet chapters' raw HTML first needs to have number of extra elements removed from `div.contentLeft` (which
+     * is where the various notes and the chapter content are, alongside the extra elements), then we'll add `&lt;hr
+     * /&gt;`s between chapter content and any notes.
      * <p>
-     * MuggleNet needs to have number of elements removed for div.contentLeft, then we'll add <hr />s between story and
-     * notes.
-     * @return An action which fills in the {@link Chapter#content content} field of the given Chapter.
+     * At most, there can be a section for story notes at the top, followed by a top author's notes section, followed by
+     * the chapter content, followed by another author's notes section at the bottom.
+     * @param chapter Chapter object.
      * @see Chapter
      */
     @Override
-    protected Action1<? super Chapter> extractChapText() {
-        return chapter -> {
-            StringBuilder chapterText = new StringBuilder();
-            // First off, we need to drill down to just the div.contentLeft element.
-            Element content = chapter.rawHtml.select(chapTextSelector).first();
-            // Now, we want to strip out any children of div.contentLeft which are not div.notes or div#story, so select
-            // all of those and remove them.
-            content.select("div.contentLeft > *:not(div.notes, div#story)").remove();
-            // Now, we want to insert <hr /> tags between any remaining divs.
-            content.children().after("<hr />");
-            content.select("hr").last().remove();
-            // Now we can finally output the html.
-            chapterText.append(content.html());
-            chapter.content = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText.toString());
-        };
+    protected void extractChapText(Chapter chapter) {
+        StringBuilder chapterText = new StringBuilder();
+        // First off, we need to drill down to just the div.contentLeft element.
+        Element content = chapter.rawHtml.select(chapTextSelector).first();
+        // Now, we want to strip out any children of div.contentLeft which are not div.notes or div#story, so select
+        // all of those and remove them.
+        content.select("div.contentLeft > *:not(div.notes, div#story)").remove();
+        // Now, we want to insert <hr /> tags between any remaining divs.
+        content.children().after("<hr />");
+        content.select("hr").last().remove();
+        // Now we can finally output the html.
+        chapterText.append(content.html());
+        chapter.content = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText.toString());
     }
 }

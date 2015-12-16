@@ -62,18 +62,22 @@ public class Main {
                 // Run FictionDL.
                 new FictionDL(ficDlArgs).run();
             } catch (IllegalArgumentException e) {
-                Util.logf(C.INVALID_PATH, e.getMessage());
+                Util.log(e.getMessage());
             }
         }
     }
 
     /**
-     * Exit the program, using System.exit() if running in CLI mode and Platform.exit() if running in GUI mode.
+     * Exit the program, using System.exit() if running in CLI mode, but adding Platform.exit() if running in GUI mode.
      * @param returnCode The return code to use.
      */
     public static void exit(int returnCode) {
-        if (isGui) Platform.exit();
-        else System.exit(returnCode);
+        if (isGui) {
+            // TODO whyyyy doesn't closing the GUI stop the app?
+            C.getHttpClient().getDispatcher().getExecutorService().shutdownNow();
+            Platform.exit();
+        }
+        System.exit(returnCode);
     }
 
     /**
@@ -85,38 +89,40 @@ public class Main {
         Options options = new Options();
         // Add input file option.
         options.addOption(Option.builder("i")
-                .hasArg()
-                .argName("INPUT FILE PATH")
-                .desc("Input file path (within quotes if it has spaces). This option is required if none of -g, " +
-                        "--gui, -?, or --help are present.")
-                .build());
+                                .hasArg()
+                                .argName("INPUT FILE PATH")
+                                .desc("Input file path (within quotes if it has spaces). This option is required if " +
+                                        "none of -g, " +
+                                        "--gui, -?, or --help are present.")
+                                .build());
         // Add output file option.
         options.addOption(Option.builder("o")
-                .hasArg()
-                .argName("OUTPUT DIR PATH")
-                .desc("Output directory path (within quotes if it has spaces).")
-                .build());
+                                .hasArg()
+                                .argName("OUTPUT DIR PATH")
+                                .desc("Output directory path (within quotes if it has spaces).")
+                                .build());
         // Add config file option.
         options.addOption(Option.builder("c")
-                .hasArg()
-                .argName("CONFIG FILE PATH")
-                .desc("Config file path (within quotes if it has spaces).")
-                .build());
+                                .hasArg()
+                                .argName("CONFIG FILE PATH")
+                                .desc("Config file path (within quotes if it has spaces).")
+                                .build());
         // Add verbose option.
         options.addOption(Option.builder("v")
-                .desc("Verbose log output. Little of this is useful to most users.")
-                .build());
+                                .desc("Verbose log output. Little of this is useful to most users.")
+                                .build());
         // Add GUI option.
         options.addOption(Option.builder("g")
-                .longOpt("gui")
-                .desc("Explicitly run with the GUI, ignores any path arguments. The same effect can be achieved by " +
-                        "supplying no arguments.")
-                .build());
+                                .longOpt("gui")
+                                .desc("Explicitly run with the GUI, ignores any path arguments. The same effect can " +
+                                        "be achieved by " +
+                                        "supplying no arguments.")
+                                .build());
         // Add help option.
         options.addOption(Option.builder("?")
-                .longOpt("help")
-                .desc("Print this message.")
-                .build());
+                                .longOpt("help")
+                                .desc("Print this message.")
+                                .build());
         return options;
     }
 

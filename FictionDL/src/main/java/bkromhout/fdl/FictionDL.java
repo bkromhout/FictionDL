@@ -91,14 +91,18 @@ public class FictionDL {
         httpClient.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
         httpClient.getDispatcher().setMaxRequestsPerHost(10); // Bump this up from 5.
         httpClient.setReadTimeout(0, TimeUnit.MILLISECONDS);
-        if (Main.isVerbose) addOkHttpLogging(); // Definitely don't do this if we aren't in verbose mode.
+        addOkHttpLogging();
     }
 
     /**
-     * Adds a logger to the OkHttpClient. In a method so that it's easy to turn off.
+     * Adds a logger to the OkHttpClient.
+     * <p>
+     * All log messages will be logged using {@link Util#loud(String)}, so none of them will be printed if verbose mode
+     * isn't enabled.
      */
     private void addOkHttpLogging() {
-        HttpLoggingInterceptor logger = new HttpLoggingInterceptor();
+        // Pass the Util.loud() function to the logger so that it uses our logging methods.
+        HttpLoggingInterceptor logger = new HttpLoggingInterceptor(Util::loud);
         logger.setLevel(HttpLoggingInterceptor.Level.BASIC);
         httpClient.interceptors().add(logger);
     }
