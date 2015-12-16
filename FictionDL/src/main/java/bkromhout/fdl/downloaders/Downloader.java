@@ -2,17 +2,16 @@ package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.C;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Main;
 import bkromhout.fdl.Util;
+import bkromhout.fdl.rx.RxMakeStories;
 import bkromhout.fdl.storys.Story;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
-import org.apache.commons.lang3.reflect.ConstructorUtils;
+import rx.Observable;
+import rx.functions.Action1;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -56,6 +55,60 @@ public abstract class Downloader {
         this.siteName = siteName;
         this.storyUrls = storyUrls;
     }
+
+    /**
+     * Download the stories whose URLs were passed to this instance of the downloader upon creation.
+     */
+    public final void download() {
+        // Pre-download logging.
+        Util.logf(C.STARTING_SITE_DL_PROCESS, siteName);
+        Util.log(extraPreDlMsgs); // This is null unless a subclass has set it to something.
+        Util.logf(C.FETCH_BUILD_MODELS, siteName);
+        // Create story models from URLs.
+        Observable.from(storyUrls)
+                  .compose(new RxMakeStories(storyClass, this))
+                  .doOnNext(story -> {
+                      // Call storyProcessed() if we failed to download a story (AKA, we got a null).
+                      if (story == null) storyProcessed();
+                  })
+                  .doOnSubscribe(() -> Util.logf(C.DL_STORIES_FROM_SITE, siteName))
+                  .filter(story -> story != null) // Get rid of failed stories.
+                  .toBlocking() // Wait until we have all of the stories...
+                  .forEach(this::downloadStory);  // ...then download them.
+        // Post-download logging.
+        Util.logf(C.FINISHED_WITH_SITE, siteName);
+
+        /*ArrayList<Story> stories = new ArrayList<>();
+        for (String url : storyUrls) {
+            try {
+                // Doing a bit of reflection magic here to construct story classes ;)
+                stories.add(ConstructorUtils.invokeConstructor(storyClass, this, url));
+            } catch (InvocationTargetException e) {
+                storyProcessed(); // Call this, since we have "processed" a story by failing to download it.
+                // Now figure out what the heck to put in the log.
+                if (e.getCause() == null) e.printStackTrace();
+                else if (e.getCause().getMessage() == null) e.getCause().printStackTrace();
+                else Util.log(e.getCause().getMessage());
+            } catch (ReflectiveOperationException e) {
+                // Shouldn't hit this at all.
+                e.printStackTrace();
+                Main.exit(1);
+            }
+        }
+        // Download and save the stories.
+        Util.logf(C.DL_STORIES_FROM_SITE, siteName);
+        stories.forEach(this::downloadStory);*/
+    }
+
+    /**
+     * Download a story.
+     * <p>
+     * For subclasses which choose to override this method: Make sure that if a story has been processed to the point
+     * where it won't be touched again, the {@link #storyProcessed()} method is called. This call would not be necessary
+     * if, for example, a story is passed to a different downloader which would call {@link #storyProcessed()} itself.
+     * @param story Story to download and save.
+     */
+    protected abstract void downloadStory(Story story);
 
     /**
      * Login to the site using form-based authentication.
@@ -102,45 +155,6 @@ public abstract class Downloader {
     protected String getSiteLoginUrl() {
         return null;
     }
-
-    /**
-     * Download the stories whose URLs were passed to this instance of the downloader upon creation.
-     */
-    public final void download() {
-        // Pre-download logging.
-        Util.logf(C.STARTING_SITE_DL_PROCESS, siteName);
-        Util.log(extraPreDlMsgs); // This is null unless a subclass has set it to something.
-        Util.logf(C.FETCH_BUILD_MODELS, siteName);
-        // Create story models from URLs.
-        ArrayList<Story> stories = new ArrayList<>();
-        for (String url : storyUrls) {
-            try {
-                // Doing a bit of reflection magic here to construct story classes ;)
-                stories.add(ConstructorUtils.invokeConstructor(storyClass, this, url));
-            } catch (InvocationTargetException e) {
-                storyProcessed(); // Call this, since we have "processed" a story by failing to download it.
-                // Now figure out what the heck to put in the log.
-                if (e.getCause() == null) e.printStackTrace();
-                else if (e.getCause().getMessage() == null) e.getCause().printStackTrace();
-                else Util.log(e.getCause().getMessage());
-            } catch (ReflectiveOperationException e) {
-                // Shouldn't hit this at all.
-                e.printStackTrace();
-                Main.exit(1);
-            }
-        }
-        // Download and save the stories.
-        Util.logf(C.DL_STORIES_FROM_SITE, siteName);
-        stories.forEach(this::downloadStory);
-        // Post-download logging.
-        Util.logf(C.FINISHED_WITH_SITE, siteName);
-    }
-
-    /**
-     * Download a story.
-     * @param story Story to download and save.
-     */
-    protected abstract void downloadStory(Story story);
 
     /**
      * Called each time a story has finished being processed (either has finished downloading or has failed to be

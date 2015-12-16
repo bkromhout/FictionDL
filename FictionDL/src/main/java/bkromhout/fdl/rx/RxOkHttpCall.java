@@ -15,36 +15,36 @@ import java.io.IOException;
 import java.util.concurrent.Executor;
 
 /**
- * Transforms OkHttp Requests to Responses.
+ * Transforms OkHttp Requests to Responses asynchronously.
  */
 public class RxOkHttpCall implements Observable.Transformer<Request, Response> {
 
     @Override
     public Observable<Response> call(Observable<Request> requests) {
-        return requests.flatMap(request -> Observable.create(new OnSubscribeEnqueue(request)));
+        return requests.flatMap(request -> Observable.create(new ExecuteRequest(request)));
     }
 
     /**
      * Allows for easy creation of Observables which return OkHttp Responses.
      */
-    public static final class OnSubscribeEnqueue implements Observable.OnSubscribe<Response> {
+    private static final class ExecuteRequest implements Observable.OnSubscribe<Response> {
         private final Request request;
         private final Executor cancellationExecutor;
 
         /**
-         * Create a new OnSubscribeEnqueue which uses the Executor from the OkHttpClient dispatcher.
+         * Create a new ExecuteRequest which uses the Executor from the OkHttpClient dispatcher.
          * @param request Request to enqueue.
          */
-        public OnSubscribeEnqueue(Request request) {
+        public ExecuteRequest(Request request) {
             this(request, C.getHttpClient().getDispatcher().getExecutorService());
         }
 
         /**
-         * Create a new OnSubscribeEnqueue with a specific Executor.
+         * Create a new ExecuteRequest with a specific Executor.
          * @param request              Request to enqueue.
          * @param cancellationExecutor Executor of the OkHttpClient.
          */
-        public OnSubscribeEnqueue(Request request, Executor cancellationExecutor) {
+        public ExecuteRequest(Request request, Executor cancellationExecutor) {
             this.request = request;
             this.cancellationExecutor = cancellationExecutor;
         }

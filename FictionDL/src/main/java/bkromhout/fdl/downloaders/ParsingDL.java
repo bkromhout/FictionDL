@@ -28,12 +28,12 @@ public abstract class ParsingDL extends Downloader {
     /**
      * Create a new ParsingDL.
      * @param fictionDL        FictionDL object which owns this downloader.
-     * @param storyClass       The class of Story which this downloader uses.
+     * @param storyClass       The concrete subclass of Story which this downloader uses.
      * @param siteName         Human-readable site name for this downloader.
      * @param storyUrls        List of story URLs to be downloaded.
      * @param chapTextSelector CSS selector used to extract chapter text from original chapter HTMLs. (If all of the
      *                         chapter's text cannot be extracted with one CSS selector, the subclass will need to pass
-     *                         null for this and override the extractChapText() method.)
+     *                         null for this and override the {@link #extractChapText()} method.)
      */
     protected ParsingDL(FictionDL fictionDL, Class<? extends Story> storyClass, String siteName,
                         HashSet<String> storyUrls, String chapTextSelector) {
@@ -44,11 +44,8 @@ public abstract class ParsingDL extends Downloader {
     /**
      * Download the chapters of a story, get their titles, extract their content, then process everything and save the
      * story as an ePUB file.
-     * <p>
-     * For subclasses which choose to override this method: Make sure that if a story has been processed to the point
-     * where it won't be touched again, the .storyProcessed() method is called. This call would not be necessary if, for
-     * example, a story is passed to a different downloader which would call .storyProcessed() itself.
      * @param story Story to download and save.
+     * @see Story
      */
     @Override
     protected void downloadStory(Story story) {
@@ -56,8 +53,8 @@ public abstract class ParsingDL extends Downloader {
         ArrayList<Chapter> chapters = (ArrayList<Chapter>) downloadChapters(story)
                 .doOnNext(generateChapTitle()) // Make titles for the chapters.
                 .doOnNext(extractChapText()) // Extract chapter content from raw HTML.
+                .doOnCompleted(() -> Util.log(C.SANITIZING_CHAPS))
                 .doOnNext(sanitizeChap()) // Clean up chapter content.
-                .doOnSubscribe(() -> Util.log(C.SANITIZING_CHAPS))
                 .observeOn(Schedulers.immediate())
                 .toList() // Get the chapters as a list.
                 .toBlocking()
@@ -81,8 +78,8 @@ public abstract class ParsingDL extends Downloader {
      * Downloads the raw HTML from the chapter URLs in the given story, uses them to create Chapter objects, and makes
      * sure that those Chapter objects are assigned the correct chapter numbers.
      * <p>
-     * Important! This method calls {@link rx.Observable#subscribeOn(Scheduler) subscribeOn} and passes it {@link
-     * Schedulers#newThread() Schedulers.newThread()}.
+     * Important! This method calls {@link rx.Observable#subscribeOn(Scheduler)} and passes it {@link
+     * Schedulers#newThread()}.
      * <p>
      * Note that there is no guarantee that all of the chapter HTMLs will be successfully downloaded, and this method
      * will allow that to occur silently. Therefore, at some point a check must be made to ensure that the number of

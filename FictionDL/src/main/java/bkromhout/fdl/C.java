@@ -92,7 +92,7 @@ public abstract class C {
 
     public static final String PARSE_HTML_FAILED = "Couldn't parse HTML for \"%s\"." + LOG_RED;
 
-    public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it." + LOG_RED;
+    public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it.\n" + LOG_RED;
 
     public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n" + LOG_RED;
 

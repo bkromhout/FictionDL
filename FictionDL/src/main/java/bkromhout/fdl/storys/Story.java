@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Base Story class.
+ * Base Story class from which site-specific story classes should extend.
  */
 public abstract class Story {
     /**
