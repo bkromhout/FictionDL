@@ -25,7 +25,7 @@ public class Chapter {
     /**
      * Raw chapter HTML.
      */
-    public final Document html;
+    public final Document rawHtml;
     /**
      * Stringified chapter XHTML which will eventually be put into the ePUB.
      */
@@ -37,7 +37,7 @@ public class Chapter {
     private Chapter(Response response) throws IOException {
         if (response == null) throw new IOException();
         this.url = response.request().urlString();
-        this.html = Jsoup.parse(response.body().byteStream(), null, url);
+        this.rawHtml = Jsoup.parse(response.body().byteStream(), null, url);
     }
 
     /**

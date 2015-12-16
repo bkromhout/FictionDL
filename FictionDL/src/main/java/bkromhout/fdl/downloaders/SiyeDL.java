@@ -35,7 +35,7 @@ public class SiyeDL extends ParsingDL {
     protected Action1<? super Chapter> generateChapTitle() {
         return chapter -> {
             // Try to find a <select> element on the page that has chapter titles.
-            Element titleElement = chapter.html.select("select[name=\"chapter\"] > option[selected]").first();
+            Element titleElement = chapter.rawHtml.select("select[name=\"chapter\"] > option[selected]").first();
             // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
             // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
             if (titleElement != null) {
@@ -55,19 +55,25 @@ public class SiyeDL extends ParsingDL {
     }
 
     /**
-     * "Why is this method overridden?" you ask? Oh, right, it's because trying to parse stuff from SIYE is literally a
-     * giant pain in the ass :)
-     * @param chapter Chapter object.
-     * @return Chapter HTML, with chapter text extracted from original and put into template.
+     * Creates an action which takes a Chapter objects and fills in its content field by extracting a desired part of
+     * the raw HTML.
+     * <p>
+     * For SIYE, we can't capture both the author notes for a chapter and the chapter content with a single selector
+     * string, so we have to use two, and concatenate the contents of each.
+     * @return An action which fills in the {@link Chapter#content content} field of the given Chapter.
+     * @see Chapter
      */
     @Override
-    protected String extractChapText(Chapter chapter) {
-        StringBuilder chapterText = new StringBuilder();
-        // So, we need to get a number of things here. First off, we must grab the author's notes (if there are any).
-        Element anElement = chapter.html.select("div#notes").first();
-        if (anElement != null) chapterText.append(anElement.html()).append("<hr /><br />");
-        // Then, we have to get the actual chapter text itself.
-        chapterText.append(chapter.html.select("td[colspan=\"2\"] span").first().html());
-        return String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText.toString());
+    protected Action1<? super Chapter> extractChapText() {
+        return chapter -> {
+            StringBuilder chapterText = new StringBuilder();
+            // So, we need to get a number of things here. First off, we must grab the author's notes (if there are
+            // any).
+            Element anElement = chapter.rawHtml.select("div#notes").first();
+            if (anElement != null) chapterText.append(anElement.html()).append("<hr /><br />");
+            // Then, we have to get the actual chapter text itself.
+            chapterText.append(chapter.rawHtml.select("td[colspan=\"2\"] span").first().html());
+            chapter.content = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText.toString());
+        };
     }
 }

@@ -1,11 +1,13 @@
 package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.C;
+import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.Util;
 import bkromhout.fdl.storys.FanFictionStory;
 import bkromhout.fdl.storys.FictionHuntStory;
 import bkromhout.fdl.storys.Story;
+import rx.functions.Action1;
 
 import java.util.HashSet;
 
@@ -44,15 +46,15 @@ public class FictionHuntDL extends ParsingDL {
     }
 
     /**
-     * Takes chapter HTML from a FictionHunt chapter and cleans it up, before putting it into the xhtml format required
-     * for an ePUB.
-     * @param chapterString Chapter's text content HTML for a FictionHunt story chapter.
-     * @return Cleaned HTML.
+     * Creates an action which takes a Chapter objects and cleans the String in the {@link Chapter#content content}
+     * field.
+     * <p>
+     * FictionHunt's chapter content HTML can have some odd stuff which is illegal in ePUB XHTML.
+     * @return An action which cleans the string in the {@link Chapter#content content} field of the given Chapter.
+     * @see Chapter
      */
     @Override
-    protected String sanitizeChapter(String chapterString) {
-        // Do some FictionHunt specific cleaning.
-        chapterString = chapterString.replace("noshade", "noshade=\"noshade\"");
-        return chapterString;
+    protected Action1<? super Chapter> sanitizeChap() {
+        return chapter -> chapter.content = chapter.content.replace("noshade", "noshade=\"noshade\"");
     }
 }

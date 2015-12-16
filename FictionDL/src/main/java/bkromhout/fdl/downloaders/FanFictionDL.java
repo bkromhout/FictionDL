@@ -34,7 +34,7 @@ public class FanFictionDL extends ParsingDL {
     protected Action1<? super Chapter> generateChapTitle() {
         return chapter -> {
             // Try to find a <select> element on the page that has chapter titles.
-            Element titleElement = chapter.html.select("select#chap_select > option[selected]").first();
+            Element titleElement = chapter.rawHtml.select("select#chap_select > option[selected]").first();
             // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
             // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
             if (titleElement != null) {
@@ -54,15 +54,15 @@ public class FanFictionDL extends ParsingDL {
     }
 
     /**
-     * Takes chapter HTML from a FanFiction.net chapter and cleans it up, before putting it into the xhtml format
-     * required for an ePUB.
-     * @param chapterString Chapter's text content HTML for a FanFiction.net story chapter.
-     * @return Cleaned HTML.
+     * Creates an action which takes a Chapter objects and cleans the String in the {@link Chapter#content content}
+     * field.
+     * <p>
+     * FanFiction.net's chapter content HTML can have some odd stuff which is illegal in ePUB XHTML.
+     * @return An action which cleans the string in the {@link Chapter#content content} field of the given Chapter.
+     * @see Chapter
      */
     @Override
-    protected String sanitizeChapter(String chapterString) {
-        // Do some FanFiction.net specific cleaning.
-        chapterString = chapterString.replace("noshade", "noshade=\"noshade\"");
-        return chapterString;
+    protected Action1<? super Chapter> sanitizeChap() {
+        return chapter -> chapter.content = chapter.content.replace("noshade", "noshade=\"noshade\"");
     }
 }
