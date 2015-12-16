@@ -9,7 +9,6 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
 import rx.Observable;
-import rx.functions.Action1;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -77,27 +76,6 @@ public abstract class Downloader {
                   .forEach(this::downloadStory);  // ...then download them.
         // Post-download logging.
         Util.logf(C.FINISHED_WITH_SITE, siteName);
-
-        /*ArrayList<Story> stories = new ArrayList<>();
-        for (String url : storyUrls) {
-            try {
-                // Doing a bit of reflection magic here to construct story classes ;)
-                stories.add(ConstructorUtils.invokeConstructor(storyClass, this, url));
-            } catch (InvocationTargetException e) {
-                storyProcessed(); // Call this, since we have "processed" a story by failing to download it.
-                // Now figure out what the heck to put in the log.
-                if (e.getCause() == null) e.printStackTrace();
-                else if (e.getCause().getMessage() == null) e.getCause().printStackTrace();
-                else Util.log(e.getCause().getMessage());
-            } catch (ReflectiveOperationException e) {
-                // Shouldn't hit this at all.
-                e.printStackTrace();
-                Main.exit(1);
-            }
-        }
-        // Download and save the stories.
-        Util.logf(C.DL_STORIES_FROM_SITE, siteName);
-        stories.forEach(this::downloadStory);*/
     }
 
     /**
