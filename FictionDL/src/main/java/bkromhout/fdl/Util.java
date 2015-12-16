@@ -274,6 +274,7 @@ public abstract class Util {
         if (s.contains(C.LOG_RED)) text.setFill(Color.ORANGERED);
         else if (s.contains(C.LOG_BLUE)) text.setFill(Color.ROYALBLUE);
         else if (s.contains(C.LOG_GREEN)) text.setFill(Color.FORESTGREEN);
+        else if (s.contains(C.LOG_PURPLE)) text.setFill(Color.rgb(152, 118, 170));
         text.setText(stripLogStyleTags(s));
         // Send to the TextFlow.
         GuiController.appendLogText(text);
@@ -285,7 +286,7 @@ public abstract class Util {
      * @return Stripped string.
      */
     public static String stripLogStyleTags(String in) {
-        return in.replace(C.LOG_RED, "").replace(C.LOG_BLUE, "").replace(C.LOG_GREEN, "");
+        return in.replace(C.LOG_RED, "").replace(C.LOG_BLUE, "").replace(C.LOG_GREEN, "").replace(C.LOG_PURPLE, "");
     }
 
     /**

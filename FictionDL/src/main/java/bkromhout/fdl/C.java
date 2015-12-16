@@ -28,6 +28,7 @@ public abstract class C {
     public static final String LOG_RED = "!red!";
     public static final String LOG_BLUE = "!blue!";
     public static final String LOG_GREEN = "!green!";
+    public static final String LOG_PURPLE = "!purple!";
 
     /*
     Keys.

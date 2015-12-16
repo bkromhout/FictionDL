@@ -35,7 +35,10 @@ public class Gui extends Application {
         primaryStage.setScene(new Scene(root, 800, 600));
         primaryStage.setMinWidth(525.0);
         primaryStage.setMinHeight(300.0);
-        primaryStage.setOnHiding(handler -> controller.saveFields()); // Save text fields' contents when closing stage.
+        primaryStage.setOnHiding(handler -> {
+            controller.saveFields();
+            fictionDLTask.cancel(); // Make sure we actually stop the JVM when our GUI closes.
+        }); // Save text fields' contents when closing stage.
         // Show the stage.
         primaryStage.show();
     }

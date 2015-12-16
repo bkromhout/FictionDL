@@ -72,11 +72,7 @@ public class Main {
      * @param returnCode The return code to use.
      */
     public static void exit(int returnCode) {
-        if (isGui) {
-            // TODO whyyyy doesn't closing the GUI stop the app?
-            C.getHttpClient().getDispatcher().getExecutorService().shutdownNow();
-            Platform.exit();
-        }
+        if (isGui) Platform.exit();
         System.exit(returnCode);
     }
 

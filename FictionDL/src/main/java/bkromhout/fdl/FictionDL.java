@@ -98,11 +98,11 @@ public class FictionDL {
      * Adds a logger to the OkHttpClient.
      * <p>
      * All log messages will be logged using {@link Util#loud(String)}, so none of them will be printed if verbose mode
-     * isn't enabled.
+     * isn't enabled. Also, they will be purple :)
      */
     private void addOkHttpLogging() {
         // Pass the Util.loud() function to the logger so that it uses our logging methods.
-        HttpLoggingInterceptor logger = new HttpLoggingInterceptor(Util::loud);
+        HttpLoggingInterceptor logger = new HttpLoggingInterceptor(str -> Util.loud(str + C.LOG_PURPLE));
         logger.setLevel(HttpLoggingInterceptor.Level.BASIC);
         httpClient.interceptors().add(logger);
     }
