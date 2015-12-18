@@ -1,6 +1,7 @@
 package bkromhout.fdl.storys;
 
 import bkromhout.fdl.C;
+import bkromhout.fdl.Site;
 import bkromhout.fdl.Util;
 import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
@@ -38,13 +39,11 @@ public class FanFictionStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public FanFictionStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url);
+        super(ownerDl, url, Site.FFN);
     }
 
     @Override
     protected void populateInfo() throws InitStoryException {
-        // Set site.
-        hostSite = C.HOST_FFN;
         // Get story ID first.
         storyId = parseStoryId(url, "/s/(\\d*)", 1);
         // Normalize the url, since there are many valid FFN url formats.
@@ -69,7 +68,7 @@ public class FanFictionStory extends Story {
         // Get the chapter count, remember its index for later.
         int chapCntIdx = findDetailsStringIdx(details, "Chapters: ");
         int chapCount = chapCntIdx == -1 ? 1 : Integer.parseInt(details[chapCntIdx].replace("Chapters: ", "")
-                .replace(",", "").trim());
+                                                                                   .replace(",", "").trim());
         // Get the word count.
         int wordCntIdx = findDetailsStringIdx(details, "Words: ");
         wordCount = Integer.parseInt(details[wordCntIdx].replace("Words: ", "").replace(",", "").trim());

@@ -1,6 +1,7 @@
 package bkromhout.fdl.storys;
 
 import bkromhout.fdl.C;
+import bkromhout.fdl.Site;
 import bkromhout.fdl.Util;
 import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
@@ -54,14 +55,12 @@ public class MuggleNetStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public MuggleNetStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url);
+        super(ownerDl, url, Site.MN);
     }
 
     @Override
     protected void populateInfo() throws InitStoryException {
         String warnBypass = "";
-        // Set site.
-        hostSite = C.HOST_MN;
         // Get story ID first.
         storyId = parseStoryId(url, "sid=(\\d*)", 1);
         // Normalize the url, since there are many valid MN url formats.

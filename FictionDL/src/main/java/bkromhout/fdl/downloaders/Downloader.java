@@ -2,6 +2,7 @@ package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.C;
 import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.Site;
 import bkromhout.fdl.Util;
 import bkromhout.fdl.rx.RxMakeStories;
 import bkromhout.fdl.storys.Story;
@@ -15,24 +16,26 @@ import java.io.IOException;
 import java.util.HashSet;
 
 /**
- * Base downloader class. This shouldn't be extended by site-specific downloaders, but rather by classes which provide
- * additional categories of functionality to a group of sites. For example, sites where we parse and generate stories
- * should subclass {@link ParsingDL}, which itself is a subclass of this class.
+ * Base for all downloader classes.
+ * <p>
+ * This class is meant to be a very broad base, and should be extended to create more specific "base" classes that
+ * site-specific downloaders can extend. For example, sites where we need to parse raw HTML to generate stories should
+ * subclass {@link ParsingDL}, which is a subclass of this class and provides logic that is common to any site
+ * downloader which has to download and parse HTML.
  */
 public abstract class Downloader {
     /**
-     * The FictionDL instance which owns this downloader.
+     * The FictionDL instance which owns this Downloader.
      */
     protected FictionDL fictionDL;
     /**
-     * This is the class of story which this Downloader interacts with. Must extend {@link Story}.
+     * This is the specific {@link Story} subclass whose constructor will be called which creating stories.
      */
     protected Class<? extends Story> storyClass;
     /**
-     * Human-readable site name for this downloader.
-     * @see C
+     * {@link bkromhout.fdl.Site} that this downloader services.
      */
-    protected String siteName;
+    protected Site site;
     /**
      * Story urls.
      */
@@ -47,15 +50,15 @@ public abstract class Downloader {
      * Create a new Downloader.
      * @param fictionDL  FictionDL object which owns this downloader.
      * @param storyClass The class of Story which this downloader uses.
-     * @param siteName   Human-readable site name for this downloader.
+     * @param site       Site that this downloader services.
      * @param storyUrls  Set of story urls to be downloaded.
      */
-    protected Downloader(FictionDL fictionDL, Class<? extends Story> storyClass, String siteName,
-                         HashSet<String> storyUrls) {
+    protected Downloader(FictionDL fictionDL, Class<? extends Story> storyClass, Site site, HashSet<String> storyUrls) {
         this.fictionDL = fictionDL;
         this.storyClass = storyClass;
-        this.siteName = siteName;
+        this.site = site;
         this.storyUrls = storyUrls;
+
     }
 
     /**
@@ -63,9 +66,9 @@ public abstract class Downloader {
      */
     public final void download() {
         // Pre-download logging.
-        Util.logf(C.STARTING_SITE_DL_PROCESS, siteName);
+        Util.logf(C.STARTING_SITE_DL_PROCESS, site.getName());
         Util.log(extraPreDlMsgs); // This is null unless a subclass has set it to something.
-        Util.logf(C.FETCH_BUILD_MODELS, siteName);
+        Util.logf(C.FETCH_BUILD_MODELS, site.getName());
 
         // Use RxJava to handle the logic.
         Observable.from(storyUrls)
@@ -76,7 +79,7 @@ public abstract class Downloader {
                   })
                   .filter(story -> story != null) // Get rid of failed stories.
                   .toList()
-                  .doOnCompleted(() -> Util.logf(C.DL_STORIES_FROM_SITE, siteName))
+                  .doOnCompleted(() -> Util.logf(C.DL_STORIES_FROM_SITE, site.getName()))
                   .observeOn(Schedulers.immediate())
                   .toBlocking().single() // Put all of the stories into a List.
                   // Download the stories. (Note that this is the JDK 8 Iterable.forEach() method, because we want
@@ -84,7 +87,7 @@ public abstract class Downloader {
                   .forEach(this::downloadStory);
 
         //Post-download logging.
-        Util.logf(C.FINISHED_WITH_SITE, siteName);
+        Util.logf(C.FINISHED_WITH_SITE, site.getName());
     }
 
     /**
@@ -110,7 +113,7 @@ public abstract class Downloader {
         if (formData == null || loginUrl == null) return;
 
         try {
-            Util.logf(C.STARTING_SITE_AUTH_PROCESS, siteName);
+            Util.logf(C.STARTING_SITE_AUTH_PROCESS, site.getName());
             // Log in.
             Response resp = C.getHttpClient().newCall(new Request.Builder().post(formData).url(loginUrl).build())
                              .execute();
@@ -120,7 +123,7 @@ public abstract class Downloader {
             if (resp.headers().values("Set-Cookie").isEmpty()) throw new IOException();
             Util.log(C.DONE);
         } catch (IOException e) {
-            Util.logf(C.LOGIN_FAILED, siteName);
+            Util.logf(C.LOGIN_FAILED, site.getName());
         }
     }
 
@@ -149,13 +152,5 @@ public abstract class Downloader {
      */
     protected final void storyProcessed() {
         fictionDL.incrProgress();
-    }
-
-    /**
-     * Get the human-readable name for this downloader's site.
-     * @return Site name.
-     */
-    public String getSiteName() {
-        return siteName;
     }
 }

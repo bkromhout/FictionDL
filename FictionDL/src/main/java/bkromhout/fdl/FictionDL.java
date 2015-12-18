@@ -157,7 +157,7 @@ public class FictionDL {
          */
         if (!parser.getMnUrls().isEmpty()) {
             MuggleNetDL muggleNetDL = new MuggleNetDL(this, parser.getMnUrls());
-            if (cfg.hasCreds(C.NAME_MN)) muggleNetDL.doFormAuth(cfg.getCreds(C.NAME_MN));
+            if (cfg.hasCreds(Site.MN)) muggleNetDL.doFormAuth(cfg.getCreds(Site.MN));
             muggleNetDL.download();
         }
         /*

@@ -27,15 +27,15 @@ public abstract class ParsingDL extends Downloader {
      * Create a new ParsingDL.
      * @param fictionDL        FictionDL object which owns this downloader.
      * @param storyClass       The concrete subclass of Story which this downloader uses.
-     * @param siteName         Human-readable site name for this downloader.
+     * @param site       Site that this downloader services.
      * @param storyUrls        List of story urls to be downloaded.
      * @param chapTextSelector CSS selector used to extract chapter content from chapters' raw HTML. (If all of the
      *                         chapter's text cannot be extracted with one CSS selector, the subclass should pass null
      *                         for this and override {@link #extractChapText(Chapter)}.)
      */
-    protected ParsingDL(FictionDL fictionDL, Class<? extends Story> storyClass, String siteName,
-                        HashSet<String> storyUrls, String chapTextSelector) {
-        super(fictionDL, storyClass, siteName, storyUrls);
+    protected ParsingDL(FictionDL fictionDL, Class<? extends Story> storyClass, Site site, HashSet<String> storyUrls,
+                        String chapTextSelector) {
+        super(fictionDL, storyClass, site, storyUrls);
         this.chapTextSelector = chapTextSelector;
     }
 

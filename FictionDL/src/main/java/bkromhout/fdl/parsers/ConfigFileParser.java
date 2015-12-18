@@ -1,9 +1,12 @@
 package bkromhout.fdl.parsers;
 
 import bkromhout.fdl.C;
+import bkromhout.fdl.Site;
 import bkromhout.fdl.Util;
+import rx.Observable;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +23,8 @@ public class ConfigFileParser extends FileParser {
 
     // Config instance.
     private Config config;
+    // Site name regex.
+    private String siteNameRegex;
     // Site which will be given any site-specific preferences.
     private String currSite;
 
@@ -34,6 +39,7 @@ public class ConfigFileParser extends FileParser {
     @Override
     protected void init() {
         config = new Config();
+        siteNameRegex = buildSitesOrRegex(Site.values());
     }
 
     /**
@@ -51,8 +57,7 @@ public class ConfigFileParser extends FileParser {
         switch (prefix) {
             case CFG_LS_SITE: {
                 // Check to make sure this is a valid site.
-                String siteRegex = Util.buildOrRegex(C.NAME_FFN, C.NAME_FH, C.NAME_SIYE, C.NAME_MN);
-                Matcher siteMatcher = Pattern.compile(siteRegex).matcher(line);
+                Matcher siteMatcher = Pattern.compile(siteNameRegex).matcher(line);
                 // Let's be nice, if a site is misspelled or something, don't potentially overwrite a previous site's
                 // info later. If it is a valid site name, then update the current site.
                 if (!siteMatcher.find()) currSite = null;
@@ -74,6 +79,21 @@ public class ConfigFileParser extends FileParser {
     }
 
     /**
+     * Translates an array of {@link Site Sites} to an OR Regex which uses the sites' names.
+     * @param sites Array of Sites.
+     * @return OR Regex using sites' names.
+     */
+    private String buildSitesOrRegex(Site[] sites) {
+        // Map Sites to site names.
+        ArrayList<String> siteNames = (ArrayList<String>) Observable.from(sites)
+                                                                    .map(Site::getName)
+                                                                    .toList()
+                                                                    .toBlocking()
+                                                                    .single();
+        return Util.buildOrRegex((String[]) siteNames.toArray());
+    }
+
+    /**
      * Get the configuration options parsed from the config file.
      * @return Config options.
      */
@@ -92,24 +112,24 @@ public class ConfigFileParser extends FileParser {
 
         /**
          * Gets a String array like ["Username", "Password"], so long as both exist and are non-empty for the given
-         * site name.
-         * @param siteName Name of site to get credentials for.
+         * site.
+         * @param site Site to get credentials for.
          * @return Credentials String array, or null.
          */
-        public String[] getCreds(String siteName) {
-            String u = options.get(siteName + CFG_LS_U);
-            String p = options.get(siteName + CFG_LS_P);
+        public String[] getCreds(Site site) {
+            String u = options.get(site.getName() + CFG_LS_U);
+            String p = options.get(site.getName() + CFG_LS_P);
             if (u == null || u.isEmpty() || p == null || p.isEmpty()) return null;
             return new String[] {u, p};
         }
 
         /**
          * Check if there are credentials for the given site.
-         * @param siteName Name of site to check credentials for.
+         * @param site Site to check credentials for.
          * @return True if the user supplied us with a non-empty username and password, otherwise false.
          */
-        public boolean hasCreds(String siteName) {
-            return getCreds(siteName) != null;
+        public boolean hasCreds(Site site) {
+            return getCreds(site) != null;
         }
     }
 }

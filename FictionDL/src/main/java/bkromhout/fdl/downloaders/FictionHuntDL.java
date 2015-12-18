@@ -1,9 +1,6 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.C;
-import bkromhout.fdl.Chapter;
-import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Util;
+import bkromhout.fdl.*;
 import bkromhout.fdl.storys.FanFictionStory;
 import bkromhout.fdl.storys.FictionHuntStory;
 import bkromhout.fdl.storys.Story;
@@ -21,7 +18,7 @@ public class FictionHuntDL extends ParsingDL {
      * @param urls      List of FictionHunt urls.
      */
     public FictionHuntDL(FictionDL fictionDL, HashSet<String> urls) {
-        super(fictionDL, FictionHuntStory.class, C.NAME_FH, urls, "div.text");
+        super(fictionDL, FictionHuntStory.class, Site.FH, urls, "div.text");
     }
 
     /**

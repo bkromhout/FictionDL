@@ -3,6 +3,7 @@ package bkromhout.fdl.downloaders;
 import bkromhout.fdl.C;
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.Site;
 import bkromhout.fdl.storys.SiyeStory;
 import org.jsoup.nodes.Element;
 
@@ -21,7 +22,7 @@ public class SiyeDL extends ParsingDL {
      * @param urls      List of SIYE urls.
      */
     public SiyeDL(FictionDL fictionDL, HashSet<String> urls) {
-        super(fictionDL, SiyeStory.class, C.NAME_SIYE, urls, null);
+        super(fictionDL, SiyeStory.class, Site.SIYE, urls, null);
         extraPreDlMsgs = C.SIYE_PRE_DL;
     }
 

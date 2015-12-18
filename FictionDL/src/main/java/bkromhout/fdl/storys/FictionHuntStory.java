@@ -1,6 +1,7 @@
 package bkromhout.fdl.storys;
 
 import bkromhout.fdl.C;
+import bkromhout.fdl.Site;
 import bkromhout.fdl.Util;
 import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
@@ -27,13 +28,11 @@ public class FictionHuntStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public FictionHuntStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url);
+        super(ownerDl, url, Site.FH);
     }
 
     @Override
     protected void populateInfo() throws InitStoryException {
-        // Set site.
-        hostSite = C.HOST_FH;
         // Get FictionHunt story ID.
         storyId = parseStoryId(url, "/read/(\\d*)", 1);
         // Get the HTML at the url we've specified to use as the entry point.
@@ -69,8 +68,9 @@ public class FictionHuntStory extends Story {
         // Get status (it isn't listed if it's incomplete, so just check the length of the details array).
         status = details.length > 9 ? C.STAT_C : C.STAT_I;
         // Generate chapter urls.
-        for (int i = 0; i < chapCount; i++) chapterUrls.add(
-                String.format("http://fictionhunt.com/read/%s/%d", storyId, i + 1));
+        for (int i = 0; i < chapCount; i++)
+            chapterUrls.add(
+                    String.format("http://fictionhunt.com/read/%s/%d", storyId, i + 1));
     }
 
     /**

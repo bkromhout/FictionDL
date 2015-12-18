@@ -1,6 +1,7 @@
 package bkromhout.fdl.storys;
 
 import bkromhout.fdl.C;
+import bkromhout.fdl.Site;
 import bkromhout.fdl.Util;
 import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
@@ -32,17 +33,15 @@ public class SiyeStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public SiyeStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url);
+        super(ownerDl, url, Site.SIYE);
     }
 
     @Override
     protected void populateInfo() throws InitStoryException {
-        // Set site.
-        hostSite = C.HOST_SIYE;
         // Get SIYE story ID.
         storyId = parseStoryId(url, "sid=(\\d*)", 1);
         // Get chapter 1 HTML first.
-        Document infoDoc = getInfoPage(url);
+        Document infoDoc = getInfoPage();
         Element storyInfoElem = infoDoc.select("td[align=\"left\"][valign=\"top\"]").last();
         if (storyInfoElem == null) throw initEx();
         // Get summary.
@@ -101,11 +100,10 @@ public class SiyeStory extends Story {
     /**
      * Get the info page for our story, which in SIYE's case is the normal version of Chapter 1 (though we actually also
      * pull info from both the author page and the printed version of the chapters).
-     * @param url Story url, may not be normalized.
      * @return Chapter 1 HTML Document.
      */
-    private Document getInfoPage(String url) throws InitStoryException {
-        // Normalize this url first to be sure we can get the author ID link, then download the first chapter's HTML.
+    private Document getInfoPage() throws InitStoryException {
+        // Download the first chapter's HTML.
         Document chDoc = Util.downloadHtml(String.format(SIYE_C_URL, storyId, 1));
         if (chDoc == null) throw initEx();
         return chDoc;

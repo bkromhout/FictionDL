@@ -2,6 +2,7 @@ package bkromhout.fdl.storys;
 
 import bkromhout.fdl.C;
 import bkromhout.fdl.Chapter;
+import bkromhout.fdl.Site;
 import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.ex.InitStoryException;
 
@@ -26,14 +27,14 @@ public abstract class Story {
     protected Downloader ownerDl;
     // Story url.
     protected String url;
+    // Site story is from (will be used as "Publisher" metadata).
+    protected Site site;
     // Story ID.
     protected String storyId;
     // Story title.
     protected String title;
     // Story author.
     protected String author;
-    // Site story is from (will be used as "Publisher" metadata).
-    protected String hostSite;
     // Story summary.
     protected String summary;
     // Story series.
@@ -65,11 +66,13 @@ public abstract class Story {
      * Create a new Story.
      * @param ownerDl The downloader which owns this story.
      * @param url     Story url.
+     * @param site    Site that story is from.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    protected Story(Downloader ownerDl, String url) throws InitStoryException {
+    protected Story(Downloader ownerDl, String url, Site site) throws InitStoryException {
         this.ownerDl = ownerDl;
         this.url = url;
+        this.site = site;
         populateInfo();
     }
 
@@ -120,20 +123,20 @@ public abstract class Story {
      */
     protected InitStoryException initEx(String assist, String str1) {
         if (assist == null)
-            return new InitStoryException(String.format(C.STORY_DL_FAILED, ownerDl.getSiteName(), storyId));
+            return new InitStoryException(String.format(C.STORY_DL_FAILED, site.getName(), storyId));
         switch (assist) {
             case BAD_URL:
                 // url was bad. str1 is the malformed url.
                 return new InitStoryException(String.format(C.INVALID_URL, str1));
             case NO_EPUB:
                 // Couldn't find an ePUB file to download. str1 is the story title.
-                return new InitStoryException(String.format(C.NO_EPUB_ON_SITE, ownerDl.getSiteName(), str1));
+                return new InitStoryException(String.format(C.NO_EPUB_ON_SITE, site.getName(), str1));
             case MuggleNetStory.MN_REG_USERS_ONLY:
                 // Need to login to MuggleNet.
-                return new InitStoryException(String.format(C.MUST_LOGIN, ownerDl.getSiteName(), storyId));
+                return new InitStoryException(String.format(C.MUST_LOGIN, site.getName(), storyId));
             default:
                 // Default string.
-                return new InitStoryException(String.format(C.STORY_DL_FAILED, ownerDl.getSiteName(), storyId));
+                return new InitStoryException(String.format(C.STORY_DL_FAILED, site.getName(), storyId));
         }
     }
 
@@ -173,8 +176,8 @@ public abstract class Story {
      * Get story's host site. This string is site domain, not the human readable site name.
      * @return Story site.
      */
-    public String getHostSite() {
-        return hostSite;
+    public String getHost() {
+        return site.getHost();
     }
 
     /**

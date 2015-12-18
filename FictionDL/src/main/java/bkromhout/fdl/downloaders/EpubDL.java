@@ -2,6 +2,7 @@ package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.C;
 import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.Site;
 import bkromhout.fdl.Util;
 import bkromhout.fdl.storys.Story;
 
@@ -22,12 +23,11 @@ public abstract class EpubDL extends Downloader {
      * Create a new EpubDL.
      * @param fictionDL  FictionDL object which owns this downloader.
      * @param storyClass The class of Story which this downloader uses.
-     * @param siteName   Human-readable site name for this downloader.
+     * @param site       Site that this downloader services.
      * @param storyUrls  List of story urls to be downloaded.
      */
-    public EpubDL(FictionDL fictionDL, Class<? extends Story> storyClass, String siteName,
-                  HashSet<String> storyUrls) {
-        super(fictionDL, storyClass, siteName, storyUrls);
+    public EpubDL(FictionDL fictionDL, Class<? extends Story> storyClass, Site site, HashSet<String> storyUrls) {
+        super(fictionDL, storyClass, site, storyUrls);
     }
 
     /**

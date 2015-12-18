@@ -111,24 +111,6 @@ public abstract class C {
     public static final String CHAP_NUM_NOT_ASSIGNED = "Chapter number hasn't been assigned yet!";
 
     /*
-    Domains and human-readable names for supported sites.
-     */
-    public static final String NAME_FFN = "FanFiction.net";
-    public static final String HOST_FFN = "fanfiction.net";
-
-    public static final String NAME_FH = "FictionHunt";
-    public static final String HOST_FH = "fictionhunt.com";
-
-    public static final String NAME_SIYE = "SIYE";
-    public static final String HOST_SIYE = "siye.co.uk";
-
-    public static final String NAME_MN = "MuggleNet";
-    public static final String HOST_MN = "fanfiction.mugglenet.com";
-
-    public static final String NAME_AO3 = "Ao3";
-    public static final String HOST_AO3 = "archiveofourown.org";
-
-    /*
     Default/specific detail values.
      */
     /**

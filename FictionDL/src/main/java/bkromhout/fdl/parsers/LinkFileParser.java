@@ -1,6 +1,7 @@
 package bkromhout.fdl.parsers;
 
 import bkromhout.fdl.C;
+import bkromhout.fdl.Site;
 import bkromhout.fdl.Util;
 
 import java.io.File;
@@ -69,11 +70,11 @@ public class LinkFileParser extends FileParser {
         }
         String hostString = hostMatcher.group(2).toLowerCase();
         // Add story url to a set, or none of them if it wasn't valid.
-        if (hostString.contains(C.HOST_FH)) fictionHuntUrls.add(line);
-        else if (hostString.contains(C.HOST_FFN)) ffnUrls.add(line);
-        else if (hostString.contains(C.HOST_SIYE)) siyeUrls.add(line);
-        else if (hostString.contains(C.HOST_MN)) mnUrls.add(line);
-        else if (hostString.contains(C.HOST_AO3)) ao3Urls.add(line);
+        if (hostString.contains(Site.FH.getHost())) fictionHuntUrls.add(line);
+        else if (hostString.contains(Site.FFN.getHost())) ffnUrls.add(line);
+        else if (hostString.contains(Site.SIYE.getHost())) siyeUrls.add(line);
+        else if (hostString.contains(Site.MN.getHost())) mnUrls.add(line);
+        else if (hostString.contains(Site.AO3.getHost())) ao3Urls.add(line);
         else Util.logf(C.PROCESS_LINE_FAILED, type, line); // Malformed or unsupported site url.
     }
 
@@ -132,6 +133,7 @@ public class LinkFileParser extends FileParser {
      * @return Number of stories.
      */
     public int getTotalNumStories() {
+        // TODO do this smarter somehow.
         return fictionHuntUrls.size() + ffnUrls.size() + siyeUrls.size() + mnUrls.size() + ao3Urls.size();
     }
 }
