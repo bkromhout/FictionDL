@@ -129,7 +129,7 @@ public class GuiController {
     }
 
     /**
-     * Set the Gui which owns this controller.
+     * Set the {@link Gui} which owns this controller.
      * @param gui Gui.
      */
     protected void setGui(Gui gui) {
@@ -138,7 +138,7 @@ public class GuiController {
     }
 
     /**
-     * Called after we have a reference to the Gui which owns us.
+     * Called after we have a reference to the {@link Gui} which owns us.
      */
     private void initGui() {
         // Retrieve the last input and output paths that were used.

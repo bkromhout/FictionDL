@@ -47,7 +47,7 @@ public abstract class Downloader {
     protected String extraPreDlMsgs;
 
     /**
-     * Create a new Downloader.
+     * Create a new {@link Downloader}.
      * @param fictionDL  FictionDL object which owns this downloader.
      * @param storyClass The class of Story which this downloader uses.
      * @param site       Site that this downloader services.
@@ -93,17 +93,16 @@ public abstract class Downloader {
     /**
      * Download a story.
      * <p>
-     * For subclasses which choose to override this method: Make sure that if a story has been processed to the point
-     * where it won't be touched again, the {@link #storyProcessed()} method is called. This call would not be necessary
-     * if, for example, a story is passed to a different downloader which would call {@link #storyProcessed()} itself.
+     * <u>For subclasses which choose to override this method</u>:<br/>Make sure that the {@link #storyProcessed()}
+     * method is called if a {@link Story} has been processed to the point where it won't be mutated again.
      * @param story Story to download and save.
      */
     protected abstract void downloadStory(Story story);
 
     /**
-     * Login to the site using form-based authentication.
-     * @param creds A size 2 array containing [Username, Password]. It is assumed that if this is not null, the username
-     *              and password strings are both nonnull and nonempty.
+     * Log in to the site using form-based authentication.
+     * @param creds An array containing ["Username", "Password"]. It is assumed that if this is non-null, the username
+     *              and password strings are both non-null and non-empty.
      */
     public final void doFormAuth(String[] creds) {
         if (creds == null) return;
@@ -128,8 +127,7 @@ public abstract class Downloader {
     }
 
     /**
-     * Individual site downloaders should override this if they support form-based authentication, returning an OkHttp
-     * RequestBody built using an OkHttp FormEncodingBuilder.
+     * Individual site downloaders should override this if they support form-based authentication.
      * @param u Username.
      * @param p Password.
      * @return RequestBody with form data, or null.
@@ -139,7 +137,7 @@ public abstract class Downloader {
     }
 
     /**
-     * Individual site downloaders should override this if they require a login url.
+     * Individual site downloaders should override this to supply a login url.
      * @return Login url, or null.
      */
     protected String getSiteLoginUrl() {
@@ -147,8 +145,7 @@ public abstract class Downloader {
     }
 
     /**
-     * Called each time a story has finished being processed (either has finished downloading or has failed to be
-     * downloaded).
+     * Called each time a {@link Story} has finished being processed (including failures).
      */
     protected final void storyProcessed() {
         fictionDL.incrProgress();

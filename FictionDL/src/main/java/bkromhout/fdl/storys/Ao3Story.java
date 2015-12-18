@@ -7,7 +7,7 @@ import bkromhout.fdl.ex.InitStoryException;
 import org.jsoup.nodes.Document;
 
 /**
- * Model object for a Ao3 (Archive of Our Own) story.
+ * Model object for an <a href="http://archiveofourown.org/">Ao3</a> story.
  */
 public class Ao3Story extends Story {
     /**
@@ -16,7 +16,7 @@ public class Ao3Story extends Story {
     private static final String AO3_S_URL = "http://archiveofourown.org/works/%s?view_adult=true";
 
     /**
-     * Create a new Ao3Story object based off of a url.
+     * Create a new {@link Ao3Story} based off of a url.
      * @param ownerDl The ePUB downloader which owns this story.
      * @param url     Story url.
      * @throws InitStoryException if we can't create this story object for some reason.

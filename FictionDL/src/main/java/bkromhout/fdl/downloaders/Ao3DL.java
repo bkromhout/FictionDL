@@ -8,12 +8,12 @@ import bkromhout.fdl.storys.Ao3Story;
 import java.util.HashSet;
 
 /**
- * Downloader for Ao3 stories.
+ * Downloader for <a href="http://archiveofourown.org/">Ao3</a> stories.
  */
 public class Ao3DL extends EpubDL {
 
     /**
-     * Create a new Ao3 downloader.
+     * Create a new {@link Ao3DL}.
      * @param fictionDL FictionDL object which owns this downloader.
      * @param urls      List of Ao3 urls.
      */

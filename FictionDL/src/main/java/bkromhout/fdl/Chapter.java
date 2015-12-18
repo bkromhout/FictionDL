@@ -32,7 +32,7 @@ public class Chapter {
     public String content;
 
     /**
-     * Create a new Chapter model.
+     * Create a new {@link Chapter}.
      */
     private Chapter(Response response) throws IOException {
         if (response == null) throw new IOException();
@@ -41,9 +41,9 @@ public class Chapter {
     }
 
     /**
-     * Create a new Chapter using an OkHttp Response obtained from the chapter url.
+     * Create a new {@link Chapter} using an OkHttp Response obtained from the chapter url.
      * @param response Response containing chapter page HTML.
-     * @return New Chapter, or null if there are problems.
+     * @return New {@link Chapter}, or null if there are problems.
      */
     public static Chapter fromResponse(Response response) {
         try {

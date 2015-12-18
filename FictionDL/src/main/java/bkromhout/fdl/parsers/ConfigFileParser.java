@@ -29,11 +29,11 @@ public class ConfigFileParser extends FileParser {
     private String currSite;
 
     /**
-     * Parse the file and create a configuration.
+     * Parse the file and create a {@link Config}.
      * @param cfgFile Config file.
      */
     public ConfigFileParser(File cfgFile) {
-        super("config", cfgFile);
+        super(FileType.CONFIG, cfgFile);
     }
 
     @Override
@@ -43,8 +43,9 @@ public class ConfigFileParser extends FileParser {
     }
 
     /**
-     * Processes a line from the config file, doing different things depending on what the line starts with. Ignores
-     * lines if they don't start with a valid line starter or are malformed.
+     * Processes a line from the config file, doing different things depending on what the line starts with.
+     * <p>
+     * Ignores lines if they don't start with a valid line starter or are malformed.
      * @param line Line from the config file.
      */
     @Override
@@ -112,7 +113,7 @@ public class ConfigFileParser extends FileParser {
 
         /**
          * Gets a String array like ["Username", "Password"], so long as both exist and are non-empty for the given
-         * site.
+         * {@link Site}.
          * @param site Site to get credentials for.
          * @return Credentials String array, or null.
          */
@@ -124,7 +125,7 @@ public class ConfigFileParser extends FileParser {
         }
 
         /**
-         * Check if there are credentials for the given site.
+         * Check if there are credentials for the given {@link Site}.
          * @param site Site to check credentials for.
          * @return True if the user supplied us with a non-empty username and password, otherwise false.
          */

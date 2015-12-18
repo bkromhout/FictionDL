@@ -11,7 +11,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Base Story class from which site-specific story classes should extend.
+ * Base Story class from which site-specific story classes should be extended.
  */
 public abstract class Story {
     /**
@@ -63,7 +63,7 @@ public abstract class Story {
     protected ArrayList<Chapter> chapters = new ArrayList<>();
 
     /**
-     * Create a new Story.
+     * Create a new {@link Story}.
      * @param ownerDl The downloader which owns this story.
      * @param url     Story url.
      * @param site    Site that story is from.
@@ -97,29 +97,29 @@ public abstract class Story {
     }
 
     /**
-     * Throw a InitStoryException with some message about why we couldn't create this story.
-     * @return InitStoryException with the message we figure out.
+     * Throw an {@link InitStoryException} with some message about why we couldn't create this {@link Story}.
+     * @return {@link InitStoryException} with the message we figure out.
      */
     protected InitStoryException initEx() {
         return initEx(null, null);
     }
 
     /**
-     * Throw a InitStoryException with some message about why we couldn't create this story.
+     * Throw an {@link InitStoryException} with some message about why we couldn't create this {@link Story}.
      * @param assist String to help us figure out why we couldn't create this story, and thus what message to put in the
      *               exception.
-     * @return InitStoryException with the message we figure out.
+     * @return {@link InitStoryException} with the message we figure out.
      */
     protected InitStoryException initEx(String assist) {
         return initEx(assist, null);
     }
 
     /**
-     * Throw a InitStoryException with some message about why we couldn't create this story.
+     * Throw an {@link InitStoryException} with some message about why we couldn't create this {@link Story}.
      * @param assist String to help us figure out why we couldn't create this story, and thus what message to put in the
      *               exception.
      * @param str1   The first string to substitute into some message.
-     * @return InitStoryException with the message we figure out.
+     * @return {@link InitStoryException} with the message we figure out.
      */
     protected InitStoryException initEx(String assist, String str1) {
         if (assist == null)
@@ -287,11 +287,10 @@ public abstract class Story {
     }
 
     /**
-     * Compares the two Chapters by their {@link Chapter#url url} fields along with this Story's list of chapter urls.
-     * Gets the indices of the given Chapters' urls in this Story's chapter url list and returns an integer to indicate
-     * which comes first using {@link Integer#compare(int, int)}.
+     * Gets the indices of the given {@link Chapter Chapters}' urls in this Story's chapter url list and returns an
+     * integer to indicate which comes first using {@link Integer#compare(int, int)}.
      * <p>
-     * We call this "slow" because the sorting requires information outside of the given Chapter objects.
+     * We call this "slow" because the sorting requires information outside of the given {@link Chapter} objects.
      * @param c1 One Chapter object.
      * @param c2 Another Chapter object.
      * @return Integer which indicates order of c1 and c2.
@@ -303,9 +302,10 @@ public abstract class Story {
     }
 
     /**
-     * Compares the two Chapters by their {@link Chapter#number number} fields using {@link Integer#compare(int, int)}.
+     * Compares the two {@link Chapter Chapters} by their {@link Chapter#number number} fields using {@link
+     * Integer#compare(int, int)}.
      * <p>
-     * We call this "fast" because the sorting only needs the Chapter objects.
+     * We call this "fast" because the sorting only needs the {@link Chapter} objects.
      * @param c1 One Chapter object.
      * @param c2 Another Chapter object.
      * @return Integer which indicates order of c1 and c2.

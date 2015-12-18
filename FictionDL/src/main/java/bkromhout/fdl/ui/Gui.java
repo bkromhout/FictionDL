@@ -12,12 +12,15 @@ import javafx.stage.Stage;
 import java.util.HashMap;
 import java.util.prefs.Preferences;
 
+/**
+ * Gui for running {@link FictionDL} with.
+ */
 public class Gui extends Application {
     // Preferences object for persisting things across runs.
     Preferences prefs;
     // GUI Controller.
     GuiController controller;
-    // Current task for running FictionDL.
+    // Current task.
     FictionDL.FictionDLTask fictionDLTask = null;
 
     @Override
@@ -44,7 +47,7 @@ public class Gui extends Application {
     }
 
     /**
-     * Create a FictionDL object with the given strings.
+     * Create a {@link FictionDL} object with the given strings.
      * @param args Arguments, mapped to keys.
      */
     protected void runFictionDl(HashMap<String, String> args) {

@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Downloader for MuggleNet stories.
+ * Downloader for <a href="http://fanfiction.mugglenet.com">MuggleNet</a> stories.
  */
 public class MuggleNetDL extends ParsingDL {
     /**
@@ -23,7 +23,7 @@ public class MuggleNetDL extends ParsingDL {
     private static final String MN_L_URL = "http://fanfiction.mugglenet.com/user.php?action=login";
 
     /**
-     * Create a new MuggleNet downloader.
+     * Create a new {@link MuggleNetDL}.
      * @param fictionDL FictionDL object which owns this downloader.
      * @param urls      List of MuggleNet urls.
      */
@@ -48,7 +48,7 @@ public class MuggleNetDL extends ParsingDL {
     }
 
     /**
-     * Creates a title for a chapter by parsing the actual title form the raw chapter HTML in the given Chapter object.
+     * Creates a title for a chapter by parsing the actual title from {@link Chapter#rawHtml}.
      * @param chapter Chapter object.
      */
     @Override
@@ -73,9 +73,9 @@ public class MuggleNetDL extends ParsingDL {
     }
 
     /**
-     * MuggleNet chapters' raw HTML first needs to have number of extra elements removed from `div.contentLeft` (which
-     * is where the various notes and the chapter content are, alongside the extra elements), then we'll add `&lt;hr
-     * /&gt;`s between chapter content and any notes.
+     * MuggleNet chapters' raw HTML first needs to have number of extra elements removed from
+     * <code>div.contentLeft</code> (which is where the various notes and the chapter content are, alongside the extra
+     * elements), then we'll add <code>&lt;hr /&gt;</code>s between chapter content and any notes.
      * <p>
      * At most, there can be a section for story notes at the top, followed by a top author's notes section, followed by
      * the chapter content, followed by another author's notes section at the bottom.

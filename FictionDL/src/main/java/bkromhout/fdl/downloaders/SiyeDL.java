@@ -12,12 +12,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Downloader for siye.co.uk ("Sink Into Your Eyes") stories.
+ * Downloader for <a href="http://siye.co.uk">Sink Into Your Eyes</a> stories.
  */
 public class SiyeDL extends ParsingDL {
 
     /**
-     * Create a new SIYE downloader.
+     * Create a new {@link SiyeDL}.
      * @param fictionDL FictionDL object which owns this downloader.
      * @param urls      List of SIYE urls.
      */
@@ -27,7 +27,7 @@ public class SiyeDL extends ParsingDL {
     }
 
     /**
-     * Creates a title for a chapter by parsing the actual title form the raw chapter HTML in the given Chapter object.
+     * Creates a title for a chapter by parsing the actual title from {@link Chapter#rawHtml}.
      * @param chapter Chapter object.
      */
     @Override
@@ -52,8 +52,8 @@ public class SiyeDL extends ParsingDL {
     }
 
     /**
-     * For SIYE, we can't capture both the author's notes and the chapter content from the raw chapter HTML with a
-     * single selector string, so we have to use two and concatenate the contents of each.
+     * For SIYE, we can't capture both the author's notes and the chapter content from {@link Chapter#rawHtml} with a
+     * single CSS selector string. We have to use two and concatenate the contents of each.
      * @param chapter Chapter object.
      */
     @Override

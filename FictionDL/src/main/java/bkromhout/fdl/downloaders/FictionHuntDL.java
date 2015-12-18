@@ -8,12 +8,12 @@ import bkromhout.fdl.storys.Story;
 import java.util.HashSet;
 
 /**
- * Downloader for FictionHunt stories.
+ * Downloader for <a href="http://www.fictionhunt.com">FictionHunt</a> stories.
  */
 public class FictionHuntDL extends ParsingDL {
 
     /**
-     * Create a new FictionHunt downloader.
+     * Create a new {@link FictionHuntDL}.
      * @param fictionDL FictionDL object which owns this downloader.
      * @param urls      List of FictionHunt urls.
      */
@@ -23,9 +23,12 @@ public class FictionHuntDL extends ParsingDL {
 
     /**
      * Overridden because if this FictionHunt story is still available on FanFiction.net, we'd prefer to download it
-     * from there for a number of reasons. If the story isn't available on FanFiction.net anymore, fall back to the
-     * regular behavior and parse it from FictionHunt.
+     * from there for a number of reasons.
+     * <p>
+     * If the story isn't available on FanFiction.net anymore, fall back to the regular behavior and parse it from
+     * FictionHunt.
      * @param story Story to download.
+     * @see FanFictionDL
      */
     @Override
     protected void downloadStory(Story story) {

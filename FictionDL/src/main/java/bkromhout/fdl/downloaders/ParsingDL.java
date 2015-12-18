@@ -7,29 +7,28 @@ import bkromhout.fdl.rx.RxSortChapters;
 import bkromhout.fdl.storys.Story;
 import com.squareup.okhttp.Request;
 import rx.Observable;
-import rx.Scheduler;
 import rx.schedulers.Schedulers;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
- * Base class for downloaders which get stories by scraping their site HTML, and then generating story EPUB files by
+ * Base class for downloaders which get stories by scraping their site HTML, and then generating story ePUB files by
  * parsing and cleaning the scraped HTML data.
  */
 public abstract class ParsingDL extends Downloader {
     /**
-     * CSS selector to extract chapter content from a chapter's original, raw HTML.
+     * CSS selector string to extract chapter content from {@link Chapter#rawHtml}.
      */
     protected String chapTextSelector;
 
     /**
-     * Create a new ParsingDL.
+     * Create a new {@link ParsingDL}.
      * @param fictionDL        FictionDL object which owns this downloader.
      * @param storyClass       The concrete subclass of Story which this downloader uses.
-     * @param site       Site that this downloader services.
+     * @param site             Site that this downloader services.
      * @param storyUrls        List of story urls to be downloaded.
-     * @param chapTextSelector CSS selector used to extract chapter content from chapters' raw HTML. (If all of the
+     * @param chapTextSelector CSS selector used to extract chapter content from {@link Chapter#rawHtml}. (If all of the
      *                         chapter's text cannot be extracted with one CSS selector, the subclass should pass null
      *                         for this and override {@link #extractChapText(Chapter)}.)
      */
@@ -73,18 +72,17 @@ public abstract class ParsingDL extends Downloader {
     }
 
     /**
-     * Downloads the raw HTML from the chapter urls in the given story, uses them to create Chapter objects, and makes
-     * sure that those Chapter objects are assigned the correct chapter numbers.
+     * Uses {@link Story#chapterUrls} to create {@link Chapter Chapters}.
      * <p>
-     * Important! This method calls {@link rx.Observable#subscribeOn(Scheduler)} and passes it {@link
-     * Schedulers#newThread()}.
+     * The {@link Chapter Chapters} that the returned Observable emits are guaranteed to have {@link Chapter#rawHtml}
+     * and {@link Chapter#number} populated. <i>However</i>, there is no guarantee that <i>all</i> of the urls will be
+     * successfully downloaded and made into {@link Chapter Chapters}, and the numbers assigned may be incorrect if some
+     * downloads fail.
      * <p>
-     * Note that there is no guarantee that all of the chapter HTMLs will be successfully downloaded, and this method
-     * will allow that to occur silently. Therefore, at some point a check must be made to ensure that the number of
-     * Chapters in the stream is equal to the number of chapter urls in the story.
+     * Side-effect: This method calls rx.Observable#subscribeOn(Scheduler) and passes it Schedulers#newThread().
      * @param story Story to download chapters for.
-     * @return Observable which emits Chapters that have their {@link Chapter#rawHtml rawHtml} and {@link Chapter#number
-     * number} fields filled in.
+     * @return Observable which emits {@link Chapter Chapters} that have their {@link Chapter#rawHtml rawHtml} and
+     * {@link Chapter#number number} fields filled in.
      * @see Chapter
      */
     private Observable<Chapter> downloadStoryChaps(Story story) {
@@ -105,10 +103,10 @@ public abstract class ParsingDL extends Downloader {
     }
 
     /**
-     * Assigns the given number to the given chapter.
+     * Populates {@link Chapter#number} with the given integer.
      * @param chapter Chapter object.
      * @param number  Number of the chapter in the story.
-     * @return The given Chapter object with its {@link Chapter#number number} field filled in.
+     * @return The given {@link Chapter} with {@link Chapter#number} populated.
      * @see Chapter
      */
     private Chapter assignChapNums(Chapter chapter, Integer number) {
@@ -117,13 +115,12 @@ public abstract class ParsingDL extends Downloader {
     }
 
     /**
-     * Creates a title string for the story chapter that the given Chapter object represents and stores it in its {@link
-     * Chapter#title title} field.
+     * Populates {@link Chapter#title} with a generated title string.
      * <p>
-     * It is assumed that the given Chapter object has had both the chapter number and the raw chapter html filled in.
+     * By default, the generated titles will be of the form "Chapter 1", "Chapter 2", etc., based on {@link
+     * Chapter#number}. Subclasses should override this method in order to generate more specific titles.
      * <p>
-     * By default, the generated titles will be of the form "Chapter 1", "Chapter 2", etc., based on the chapter number.
-     * Subclasses should override this method in order to generate more specific titles.
+     * It is assumed that both {@link Chapter#number} and {@link Chapter#rawHtml} are populated already.
      * @param chapter Chapter object.
      * @see Chapter
      */
@@ -135,13 +132,14 @@ public abstract class ParsingDL extends Downloader {
     }
 
     /**
-     * Takes the given Chapter objects and fills in its {@link Chapter#content content} field by extracting a portion of
-     * its raw HTML.
+     * Takes the given {@link Chapter} and populates {@link Chapter#content} with a subset of the HTML from {@link
+     * Chapter#rawHtml}.
      * <p>
-     * By default, this method uses {@link #chapTextSelector the selector string which this ParsingDL currently has set}
-     * to choose what part of the raw HTML to extract. This selector string is set by a concrete subclass when it calls
-     * super in its constructor to create this ParsingDL. If a subclass needs some additional logic to extract chapter
-     * content, it should override this method.
+     * By default, this method uses the CSS selector string that this ParsingDL currently has set in {@link
+     * #chapTextSelector} to choose what the subset of the raw HTML to use.<br/>The selector string is set by a concrete
+     * subclass when it calls super() in its constructor to create this ParsingDL.
+     * <p>
+     * If a subclass needs some additional logic to populate {@link Chapter#content}, it should override this method.
      * @param chapter Chapter object.
      * @see Chapter
      */
@@ -153,11 +151,10 @@ public abstract class ParsingDL extends Downloader {
     }
 
     /**
-     * Cleans up the String in the given Chapter's {@link Chapter#content content} field so that it is safe to put in an
-     * ePUB file.
+     * Cleans up the String in {@link Chapter#content} so that it is safe to put in an ePUB file.
      * <p>
-     * This default implementation doesn't do anything. Subclasses which need to do some sanitizing tasks should
-     * override this method.
+     * This default implementation doesn't do anything. Subclasses which actually need to clean the content string
+     * should override this method.
      * @param chapter Chapter object.
      * @see Chapter
      */

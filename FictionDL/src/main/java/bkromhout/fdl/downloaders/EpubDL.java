@@ -20,7 +20,7 @@ import java.util.HashSet;
 public abstract class EpubDL extends Downloader {
 
     /**
-     * Create a new EpubDL.
+     * Create a new {@link EpubDL}.
      * @param fictionDL  FictionDL object which owns this downloader.
      * @param storyClass The class of Story which this downloader uses.
      * @param site       Site that this downloader services.

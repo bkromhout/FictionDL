@@ -43,7 +43,7 @@ public class LinkFileParser extends FileParser {
      * @param storiesFile Link file.
      */
     public LinkFileParser(File storiesFile) {
-        super("URLs", storiesFile);
+        super(FileType.URLS, storiesFile);
     }
 
     @Override

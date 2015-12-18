@@ -11,14 +11,14 @@ import rx.Subscriber;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Creates Story objects from Story urls asynchronously.
+ * Creates {@link Story}s from story urls asynchronously.
  */
 public class RxMakeStories implements Observable.Transformer<String, Story> {
     private final Class<? extends Story> storyClass;
     private final Downloader downloader;
 
     /**
-     * Create Story objects of the given type which will be downloaded by the given Downloader.
+     * Create instances of the given {@link Story} subclass that will be owned by the given {@link Downloader}.
      * @param storyClass Concrete implementation of Story to make.
      * @param downloader Downloader which will own the created stories.
      */
@@ -33,13 +33,13 @@ public class RxMakeStories implements Observable.Transformer<String, Story> {
     }
 
     /**
-     * Creates Stories from story urls.
+     * Creates {@link Story}s from story urls.
      */
     private final class CreateStory implements Observable.OnSubscribe<Story> {
         private final String url;
 
         /**
-         * Create a new Story from the given story url.
+         * Create a new {@link Story} from the given story url.
          * @param url Story url.
          */
         public CreateStory(String url) {

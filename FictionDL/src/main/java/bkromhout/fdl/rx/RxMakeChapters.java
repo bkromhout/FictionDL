@@ -5,7 +5,7 @@ import com.squareup.okhttp.Response;
 import rx.Observable;
 
 /**
- * Converts OkHttp Responses to Chapter objects.
+ * Converts OkHttp Responses to {@link Chapter Chapters}.
  */
 public class RxMakeChapters implements Observable.Transformer<Response, Chapter> {
 

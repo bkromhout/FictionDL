@@ -13,15 +13,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Model object for a FanFiction.net story.
+ * Model object for a <a href="https://www.fanfiction.net">FanFiction.net</a> story.
  */
 public class FanFictionStory extends Story {
     /**
-     * FFN story link, just needs the story ID string substituted into it.
+     * FFN story link template, just needs the story ID string substituted into it.
      */
     public static final String FFN_S_URL = "https://www.fanfiction.net/s/%s/1";
     /**
-     * FFN story chapter link, just needs the story ID string and chapter number substituted into it.
+     * FFN story chapter link template, just needs the story ID string and chapter number substituted into it.
      */
     private static final String FFN_C_URL = "https://www.fanfiction.net/s/%s/%d";
     /**
@@ -33,7 +33,7 @@ public class FanFictionStory extends Story {
             "|\\QTragedy\\E|\\QWestern\\E";
 
     /**
-     * Create a new FanFictionStory object based off of a url.
+     * Create a new {@link FanFictionStory} based off of a url.
      * @param ownerDl The parsing downloader which owns this story.
      * @param url     url of the story this model represents.
      * @throws InitStoryException if we can't create this story object for some reason.

@@ -9,7 +9,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 /**
- * Model object for a FictionHunt story.
+ * Model object for a <a href="http://www.fictionhunt.com">FictionHunt</a> story.
  */
 public class FictionHuntStory extends Story {
     /**
@@ -22,7 +22,7 @@ public class FictionHuntStory extends Story {
     private boolean isOnFfn;
 
     /**
-     * Create a new FictionHuntStory object based off of a url.
+     * Create a new {@link FictionHuntStory} based off of a url.
      * @param ownerDl The parsing downloader which owns this story.
      * @param url     url of the story this model represents.
      * @throws InitStoryException if we can't create this story object for some reason.
@@ -75,7 +75,7 @@ public class FictionHuntStory extends Story {
 
     /**
      * Parse the entry point for the link to FFN and download the page at that link. If it's a valid story (i.e., it
-     * hasn't been taken down), then return its story ID so that we can use p0ody-files to download it later.
+     * hasn't been taken down), then we'll download it from FFN instead of FictionHunt.
      * @return Story ID if on FFN, or null if not.
      */
     private boolean checkIfOnFfn() {

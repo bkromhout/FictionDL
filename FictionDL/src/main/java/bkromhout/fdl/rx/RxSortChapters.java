@@ -5,14 +5,14 @@ import rx.Observable;
 import rx.functions.Func2;
 
 /**
- * Transformation which reorders the order of the Chapters in an observable (this is, it sorts them) by using
- * .toSortedList() followed by .flatmap() which uses Observable.from() to separate them again.
+ * Transformation which reorders the order of the {@link Chapter Chapters} in an observable (this is, it sorts them) by
+ * using .toSortedList() followed by .flatmap() (which uses Observable.from() to separate them again).
  */
 public class RxSortChapters implements Observable.Transformer<Chapter, Chapter> {
     private final Func2<? super Chapter, ? super Chapter, Integer> sortFunction;
 
     /**
-     * Sort Chapter objects using the given sort function.
+     * Sort {@link Chapter Chapters} using the given sort function.
      * @param sortFunction Sort function.
      */
     public RxSortChapters(Func2<? super Chapter, ? super Chapter, Integer> sortFunction) {

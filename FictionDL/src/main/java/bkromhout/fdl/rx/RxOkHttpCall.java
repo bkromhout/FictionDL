@@ -32,7 +32,7 @@ public class RxOkHttpCall implements Observable.Transformer<Request, Response> {
         private final Executor cancellationExecutor;
 
         /**
-         * Create a new ExecuteRequest which uses the Executor from the OkHttpClient dispatcher.
+         * Create a new {@link ExecuteRequest} which uses the Executor from the OkHttpClient dispatcher.
          * @param request Request to enqueue.
          */
         public ExecuteRequest(Request request) {
@@ -40,7 +40,7 @@ public class RxOkHttpCall implements Observable.Transformer<Request, Response> {
         }
 
         /**
-         * Create a new ExecuteRequest with a specific Executor.
+         * Create a new {@link ExecuteRequest} with a specific Executor.
          * @param request              Request to enqueue.
          * @param cancellationExecutor Executor of the OkHttpClient.
          */

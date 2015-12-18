@@ -14,20 +14,20 @@ import org.jsoup.parser.Tag;
 import java.util.List;
 
 /**
- * Model object for a SIYE story.
+ * Model object for a <a href="http://siye.co.uk">Sink Into Your Eyes</a> story.
  */
 public class SiyeStory extends Story {
     /**
-     * SIYE story chapter link, just needs the story ID string and chapter number substituted into it.
+     * SIYE story chapter link template, just needs the story ID string and chapter number substituted into it.
      */
     private static final String SIYE_C_URL = "http://siye.co.uk/viewstory.php?sid=%s&chapter=%d";
     /**
-     * SIYE author page link, just needs relative author link string substituted into it.
+     * SIYE author page link template, just needs relative author link string substituted into it.
      */
     private static final String SIYE_A_URL = "http://siye.co.uk/%s";
 
     /**
-     * Create a new SiyeStory object based off of a url.
+     * Create a new {@link SiyeStory} based off of a url.
      * @param ownerDl The parsing downloader which owns this story.
      * @param url     url of the story this model represents.
      * @throws InitStoryException if we can't create this story object for some reason.
@@ -98,8 +98,7 @@ public class SiyeStory extends Story {
     }
 
     /**
-     * Get the info page for our story, which in SIYE's case is the normal version of Chapter 1 (though we actually also
-     * pull info from both the author page and the printed version of the chapters).
+     * Get the info page for this story, which in SIYE's case is Chapter 1.
      * @return Chapter 1 HTML Document.
      */
     private Document getInfoPage() throws InitStoryException {
@@ -110,7 +109,7 @@ public class SiyeStory extends Story {
     }
 
     /**
-     * Use a valid SIYE story/chapter url (not the printable version!) to find the story's Author ID link.
+     * Use a valid SIYE story/chapter url to find the story's Author ID link.
      * @param chDoc Story's chapter 1 HTML.
      * @return Author ID link (looks like "viewuser.php?uid=[authorId]").
      */

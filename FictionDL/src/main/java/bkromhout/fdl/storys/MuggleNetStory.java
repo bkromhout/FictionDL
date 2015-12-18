@@ -14,15 +14,15 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 
 /**
- * Model object for a MuggleNet story.
+ * Model object for a <a href="http://fanfiction.mugglenet.com">MuggleNet</a> story.
  */
 public class MuggleNetStory extends Story {
     /**
-     * MuggleNet chapter link, needs story ID and chapter number and warning bypass part substituted into it.
+     * MuggleNet chapter link template, needs story ID and chapter number and warning bypass part substituted into it.
      */
     private static final String MN_C_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s&chapter=%d%s";
     /**
-     * MuggleNet story info link, just needs story ID and warning bypass part substituted into it.
+     * MuggleNet story info link template, just needs story ID and warning bypass part substituted into it.
      */
     private static final String MN_S_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s%s";
     /**
@@ -49,7 +49,7 @@ public class MuggleNetStory extends Story {
             "under the age of 17. You must be logged in to read this fic.";
 
     /**
-     * Create a new MuggleNetStory object based off of a url.
+     * Create a new {@link MuggleNetStory} based off of a url.
      * @param ownerDl The parsing downloader which owns this story.
      * @param url     url of the story this model represents.
      * @throws InitStoryException if we can't create this story object for some reason.
@@ -126,8 +126,8 @@ public class MuggleNetStory extends Story {
     }
 
     /**
-     * Return a new div element which contains the child nodes from the parent that correspond to a particular label
-     * element.
+     * Return a new div element which contains the child nodes from the parent element that corresponds to a particular
+     * label element.
      * @param parent   Element to copy nodes from.
      * @param labels   List of label elements from the parent.
      * @param labelIdx Index of label (in labels, not parent!!) which we want to make a div for.

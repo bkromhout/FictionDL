@@ -11,12 +11,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Downloader for FanFiction.net stories.
+ * Downloader for <a href="https://www.fanfiction.net">FanFiction.net</a> stories.
  */
 public class FanFictionDL extends ParsingDL {
 
     /**
-     * Create a new FanFiction.net downloader.
+     * Create a new {@link FanFictionDL}.
      * @param fictionDL FictionDL object which owns this downloader.
      * @param urls      List of FanFiction.net urls.
      */
@@ -25,7 +25,7 @@ public class FanFictionDL extends ParsingDL {
     }
 
     /**
-     * Creates a title for a chapter by parsing the actual title form the raw chapter HTML in the given Chapter object.
+     * Creates a title for a chapter by parsing the actual title from {@link Chapter#rawHtml}.
      * @param chapter Chapter object.
      */
     @Override

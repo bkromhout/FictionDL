@@ -3,7 +3,7 @@ package bkromhout.fdl;
 import com.squareup.okhttp.OkHttpClient;
 
 /**
- * Constants file. Only constants which are either used by multiple classes (or are likely to be in the future) or which
+ * Constants. Only constants which are either used by multiple classes (or are likely to be in the future) or which
  * are exceedingly long (in the case of strings) belong here. All others should be in a more specific class.
  */
 public abstract class C {
@@ -14,7 +14,7 @@ public abstract class C {
 
     /**
      * This is here for code-style convenience. Typing C.getHttpClient() is much shorter than FictionDl.httpClient ;)
-     * @return The OkHttpClient from FictionDl.
+     * @return The OkHttpClient from {@link FictionDL}.
      */
     public static OkHttpClient getHttpClient() {
         return FictionDL.httpClient;

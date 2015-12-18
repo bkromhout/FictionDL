@@ -45,7 +45,7 @@ public class FictionDL {
     private long numStoriesProcessed = 0;
 
     /**
-     * Create a new FictionDL to execute the program logic.
+     * Create a new {@link FictionDL} to execute the program logic.
      * @param args Arguments, mapped to keys.
      * @throws IllegalArgumentException if either of the paths cannot be resolved.
      */
@@ -54,9 +54,9 @@ public class FictionDL {
     }
 
     /**
-     * Create a new FictionDL to execute the program logic.
+     * Create a new {@link FictionDL} to execute the program logic.
      * @param args Arguments, mapped to keys.
-     * @param task FictionDLTask, which won't be null if this FictionDL is being run from a GUI.
+     * @param task {@link FictionDLTask}, which won't be null if this {@link FictionDL} is being run from a GUI.
      * @throws IllegalArgumentException if either of the paths cannot be resolved.
      */
     public FictionDL(HashMap<String, String> args, FictionDLTask task) throws IllegalArgumentException {
@@ -67,7 +67,7 @@ public class FictionDL {
     }
 
     /**
-     * Initialize this FictionDL.
+     * Initialize this {@link FictionDL}.
      * @param args Arguments to use during initialization.
      */
     private void init(HashMap<String, String> args) {
@@ -125,8 +125,9 @@ public class FictionDL {
     }
 
     /**
-     * Takes in a FileParse which has the various sites' url lists and uses it to kick off the downloading process.
-     * @param parser LinkFileParser which has successfully parsed input file.
+     * Takes in a {@link LinkFileParser} which has the various sites' url lists and uses it to kick off the downloading
+     * process.
+     * @param parser {@link LinkFileParser} which has successfully parsed input file.
      */
     private void getStories(LinkFileParser parser) {
         // Set progress bar to 0.
@@ -170,8 +171,9 @@ public class FictionDL {
     }
 
     /**
-     * Called by the downloaders each time a story has finished (or has failed to finish) downloading. If this FictionDL
-     * is being run from a FictionDLTask, then the task's updateProgress() method will be called as a result.
+     * Called by the downloaders each time a story has finished (or has failed to finish) downloading. If this {@link
+     * FictionDL} is being run from a {@link FictionDLTask}, then the task's {@link FictionDLTask#updateProgress(long,
+     * long)} method will be called as a result.
      */
     public void incrProgress() {
         numStoriesProcessed++;
@@ -179,13 +181,13 @@ public class FictionDL {
     }
 
     /**
-     * Subclass of Task so that FictionDL can be used by a JavaFX GUI app.
+     * Subclass of Task so that {@link FictionDL} can be used by a JavaFX GUI app.
      */
     public static class FictionDLTask extends Task {
         private HashMap<String, String> args;
 
         /**
-         * Create a new FictionDLTask.
+         * Create a new {@link FictionDLTask}.
          * @param args Arguments, mapped to keys.
          */
         public FictionDLTask(HashMap<String, String> args) {
