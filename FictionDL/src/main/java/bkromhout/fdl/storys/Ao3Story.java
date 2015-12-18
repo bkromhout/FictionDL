@@ -16,9 +16,9 @@ public class Ao3Story extends Story {
     private static final String AO3_S_URL = "http://archiveofourown.org/works/%s?view_adult=true";
 
     /**
-     * Create a new Ao3Story object based off of a URL.
+     * Create a new Ao3Story object based off of a url.
      * @param ownerDl The ePUB downloader which owns this story.
-     * @param url     Story URL.
+     * @param url     Story url.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public Ao3Story(EpubDL ownerDl, String url) throws InitStoryException {
@@ -31,7 +31,7 @@ public class Ao3Story extends Story {
         hostSite = C.HOST_AO3;
         // Get story ID first.
         storyId = parseStoryId(url, "/works/(\\d*)", 1);
-        // Normalize the URL, since there are many valid FFN URL formats.
+        // Normalize the url, since there are many valid FFN url formats.
         url = String.format(AO3_S_URL, storyId);
         // Get the first chapter in order to parse the story info.
         Document infoDoc = Util.downloadHtml(url);
@@ -40,7 +40,7 @@ public class Ao3Story extends Story {
         // Get the title and author so that we can name the ePUB file we will download.
         title = infoDoc.select("h2[class=\"title heading\"]").first().text().trim();
         author = infoDoc.select("a[rel=\"author\"]").first().text().trim();
-        // Now set the URL to be a link to download the ePUB file with. Find the link to the ePUB file from the page.
+        // Now set the url to be a link to download the ePUB file with. Find the link to the ePUB file from the page.
         url = infoDoc.select("a:contains(EPUB)").first().absUrl("href");
         if (url == null) throw initEx(Story.NO_EPUB, title);
     }

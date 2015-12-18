@@ -69,8 +69,8 @@ public abstract class Util {
     }
 
     /**
-     * Download an HTML document from the given URL
-     * @param url URL to download.
+     * Download an HTML document from the given url
+     * @param url url to download.
      * @return A Document object, or null if the url was malformed.
      */
     public static Document downloadHtml(String url) {
@@ -87,8 +87,8 @@ public abstract class Util {
     }
 
     /**
-     * Download a web page using the given OkHttpClient from the given URL.
-     * @param url URL of page to download.
+     * Download a web page using the given OkHttpClient from the given url.
+     * @param url url of page to download.
      * @return Raw HTML of the web page as an InputStream, or null if we failed to download the page.
      */
     public static InputStream downloadRawHtml(String url) {

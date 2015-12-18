@@ -26,9 +26,9 @@ public class SiyeStory extends Story {
     private static final String SIYE_A_URL = "http://siye.co.uk/%s";
 
     /**
-     * Create a new SiyeStory object based off of a URL.
+     * Create a new SiyeStory object based off of a url.
      * @param ownerDl The parsing downloader which owns this story.
-     * @param url     URL of the story this model represents.
+     * @param url     url of the story this model represents.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public SiyeStory(ParsingDL ownerDl, String url) throws InitStoryException {
@@ -55,7 +55,7 @@ public class SiyeStory extends Story {
         // Figure out the SIYE story ID and author ID link, because we'll get the rest of the general details from
         // there.
         String authorIdLink = findAuthorIdLink(infoDoc);
-        // Get the HTML at the author URL.
+        // Get the HTML at the author url.
         Document doc = Util.downloadHtml(String.format(SIYE_A_URL, authorIdLink));
         if (doc == null) throw initEx();
         // Get the story row from on the author's page.
@@ -88,41 +88,41 @@ public class SiyeStory extends Story {
         wordCount = Integer.parseInt(details[4].replace("Words: ", "").trim());
         // Get status.
         status = details[5].replace("Completed: ", "").trim().equals("Yes") ? C.STAT_C : C.STAT_I;
-        // Get chapter count to generate chapter URLs.
+        // Get chapter count to generate chapter urls.
         int chapCount = Integer.parseInt(details[6].replace("Chapters: ", "").trim());
         // Get date published.
         datePublished = details[7].replace("Published: ", "").trim();
         // Get date last updated.
         dateUpdated = details[8].replace("Updated: ", "").trim();
-        // Generate chapter URLs.
+        // Generate chapter urls.
         for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(SIYE_C_URL, storyId, i + 1));
     }
 
     /**
      * Get the info page for our story, which in SIYE's case is the normal version of Chapter 1 (though we actually also
      * pull info from both the author page and the printed version of the chapters).
-     * @param url Story URL, may not be normalized.
+     * @param url Story url, may not be normalized.
      * @return Chapter 1 HTML Document.
      */
     private Document getInfoPage(String url) throws InitStoryException {
-        // Normalize this URL first to be sure we can get the author ID link, then download the first chapter's HTML.
+        // Normalize this url first to be sure we can get the author ID link, then download the first chapter's HTML.
         Document chDoc = Util.downloadHtml(String.format(SIYE_C_URL, storyId, 1));
         if (chDoc == null) throw initEx();
         return chDoc;
     }
 
     /**
-     * Use a valid SIYE story/chapter URL (not the printable version!) to find the story's Author ID link.
+     * Use a valid SIYE story/chapter url (not the printable version!) to find the story's Author ID link.
      * @param chDoc Story's chapter 1 HTML.
      * @return Author ID link (looks like "viewuser.php?uid=[authorId]").
      */
     private String findAuthorIdLink(Document chDoc) throws InitStoryException {
         // Then find the element that lets us get the relative link to the author's page.
         Element aIdElement = chDoc.select("h3 a").first();
-        // Throw an exception if we couldn't find the link to the author's page, as it likely means that the URL
+        // Throw an exception if we couldn't find the link to the author's page, as it likely means that the url
         // format was valid but that it doesn't point to a real story/chapter on SIYE.
         if (aIdElement == null) throw initEx();
-        // Now return the author page URL.
+        // Now return the author page url.
         return aIdElement.attr("href");
     }
 

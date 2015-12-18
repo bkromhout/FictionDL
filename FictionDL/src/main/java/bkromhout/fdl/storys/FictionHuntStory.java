@@ -21,9 +21,9 @@ public class FictionHuntStory extends Story {
     private boolean isOnFfn;
 
     /**
-     * Create a new FictionHuntStory object based off of a URL.
+     * Create a new FictionHuntStory object based off of a url.
      * @param ownerDl The parsing downloader which owns this story.
-     * @param url     URL of the story this model represents.
+     * @param url     url of the story this model represents.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public FictionHuntStory(ParsingDL ownerDl, String url) throws InitStoryException {
@@ -68,7 +68,7 @@ public class FictionHuntStory extends Story {
         datePublished = details[8].trim().replace("Published: ", "");
         // Get status (it isn't listed if it's incomplete, so just check the length of the details array).
         status = details.length > 9 ? C.STAT_C : C.STAT_I;
-        // Generate chapter URLs.
+        // Generate chapter urls.
         for (int i = 0; i < chapCount; i++) chapterUrls.add(
                 String.format("http://fictionhunt.com/read/%s/%d", storyId, i + 1));
     }
@@ -79,7 +79,7 @@ public class FictionHuntStory extends Story {
      * @return Story ID if on FFN, or null if not.
      */
     private boolean checkIfOnFfn() {
-        // FictionHunt has done a very handy thing with their URLs, their story IDs correspond to the original FFN
+        // FictionHunt has done a very handy thing with their urls, their story IDs correspond to the original FFN
         // story IDs, which makes generating an FFN link easy to do. First, create a FFN link and download the
         // resulting page.
         Document ffnDoc = Util.downloadHtml(String.format(FanFictionStory.FFN_S_URL, storyId));
@@ -99,7 +99,7 @@ public class FictionHuntStory extends Story {
      * @return Story summary.
      */
     private String findSummary() {
-        // Generate a FictionHunt search URL using the title.
+        // Generate a FictionHunt search url using the title.
         String fhSearchUrl = String.format("http://fictionhunt.com/5/0/0/0/0/0/0/0/0/0/0/%s/1", title);
         // Download search page.
         Document fhSearch = Util.downloadHtml(fhSearchUrl);

@@ -18,7 +18,7 @@ public class SiyeDL extends ParsingDL {
     /**
      * Create a new SIYE downloader.
      * @param fictionDL FictionDL object which owns this downloader.
-     * @param urls      List of SIYE URLs.
+     * @param urls      List of SIYE urls.
      */
     public SiyeDL(FictionDL fictionDL, HashSet<String> urls) {
         super(fictionDL, SiyeStory.class, C.NAME_SIYE, urls, null);

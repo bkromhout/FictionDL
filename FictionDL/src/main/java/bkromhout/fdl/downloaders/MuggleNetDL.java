@@ -24,7 +24,7 @@ public class MuggleNetDL extends ParsingDL {
     /**
      * Create a new MuggleNet downloader.
      * @param fictionDL FictionDL object which owns this downloader.
-     * @param urls      List of MuggleNet URLs.
+     * @param urls      List of MuggleNet urls.
      */
     public MuggleNetDL(FictionDL fictionDL, HashSet<String> urls) {
         super(fictionDL, MuggleNetStory.class, C.NAME_MN, urls, "div.contentLeft");

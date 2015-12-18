@@ -18,7 +18,7 @@ public class FanFictionDL extends ParsingDL {
     /**
      * Create a new FanFiction.net downloader.
      * @param fictionDL FictionDL object which owns this downloader.
-     * @param urls      List of FanFiction.net URLs.
+     * @param urls      List of FanFiction.net urls.
      */
     public FanFictionDL(FictionDL fictionDL, HashSet<String> urls) {
         super(fictionDL, FanFictionStory.class, C.NAME_FFN, urls, "div#storytext");

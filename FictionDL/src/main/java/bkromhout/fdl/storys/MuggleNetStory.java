@@ -25,11 +25,11 @@ public class MuggleNetStory extends Story {
      */
     private static final String MN_S_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s%s";
     /**
-     * MuggleNet URL fragment, adds a warning bypass for "6th-7th Year"-rated stories/chapters.
+     * MuggleNet url fragment, adds a warning bypass for "6th-7th Year"-rated stories/chapters.
      */
     private static final String MN_PART_WARN_5 = "&warning=5";
     /**
-     * MuggleNet URL fragment, adds a warning bypass for "Professors"-rated stories/chapters.
+     * MuggleNet url fragment, adds a warning bypass for "Professors"-rated stories/chapters.
      */
     private static final String MN_PART_WARN_3 = "&warning=3";
     /**
@@ -48,9 +48,9 @@ public class MuggleNetStory extends Story {
             "under the age of 17. You must be logged in to read this fic.";
 
     /**
-     * Create a new MuggleNetStory object based off of a URL.
+     * Create a new MuggleNetStory object based off of a url.
      * @param ownerDl The parsing downloader which owns this story.
-     * @param url     URL of the story this model represents.
+     * @param url     url of the story this model represents.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public MuggleNetStory(ParsingDL ownerDl, String url) throws InitStoryException {
@@ -64,7 +64,7 @@ public class MuggleNetStory extends Story {
         hostSite = C.HOST_MN;
         // Get story ID first.
         storyId = parseStoryId(url, "sid=(\\d*)", 1);
-        // Normalize the URL, since there are many valid MN URL formats.
+        // Normalize the url, since there are many valid MN url formats.
         url = String.format(MN_S_URL, storyId, warnBypass);
         // Get the story page in order to parse the story info.
         Document infoDoc = Util.downloadHtml(url);
@@ -111,7 +111,7 @@ public class MuggleNetStory extends Story {
         // Get series. Ignore if "None".
         temp = makeDetailDivForLabel(details, labels, 6).text().trim();
         series = temp.equals("None") ? null : temp;
-        // Get chapter count to generate chapter URLs.
+        // Get chapter count to generate chapter urls.
         int chapCount = Integer.parseInt(makeDetailDivForLabel(details, labels, 7).text().trim());
         // Get status.
         temp = makeDetailDivForLabel(details, labels, 8).text().trim();
@@ -122,7 +122,7 @@ public class MuggleNetStory extends Story {
         datePublished = makeDetailDivForLabel(details, labels, 11).text().trim();
         // Get date last updated.
         dateUpdated = makeDetailDivForLabel(details, labels, 12).text().trim();
-        // Generate chapter URLs.
+        // Generate chapter urls.
         for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(MN_C_URL, storyId, i + 1, warnBypass));
     }
 

@@ -61,7 +61,7 @@ public final class EpubCreator {
     private Book generateEpub() {
         // Create Book.
         Book book = new Book();
-        // Set title, author, description (summary), identifier (story URL), and publisher (story site).
+        // Set title, author, description (summary), identifier (story url), and publisher (story site).
         book.getMetadata().addTitle(Util.unEscapeAmps(story.getTitle()));
         book.getMetadata().addAuthor(new Author(story.getAuthor()));
         book.getMetadata().addDescription(Util.removeControlChars(Util.convertWin1252Chars(story.getSummary())));

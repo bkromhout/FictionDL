@@ -111,7 +111,7 @@ public class FictionDL {
      * Actually do stuff.
      */
     public void run() {
-        // Create a LinkFileParser to get the story URLs from the input file.
+        // Create a LinkFileParser to get the story urls from the input file.
         parser = new LinkFileParser(inputFile);
         // If we have a config file, create a ConfigFileParser to get options.
         if (configFile != null) cfg = new ConfigFileParser(configFile).getConfig();
@@ -125,7 +125,7 @@ public class FictionDL {
     }
 
     /**
-     * Takes in a FileParse which has the various sites' URL lists and uses it to kick off the downloading process.
+     * Takes in a FileParse which has the various sites' url lists and uses it to kick off the downloading process.
      * @param parser LinkFileParser which has successfully parsed input file.
      */
     private void getStories(LinkFileParser parser) {

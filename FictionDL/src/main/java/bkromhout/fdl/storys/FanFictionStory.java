@@ -32,9 +32,9 @@ public class FanFictionStory extends Story {
             "|\\QTragedy\\E|\\QWestern\\E";
 
     /**
-     * Create a new FanFictionStory object based off of a URL.
+     * Create a new FanFictionStory object based off of a url.
      * @param ownerDl The parsing downloader which owns this story.
-     * @param url     URL of the story this model represents.
+     * @param url     url of the story this model represents.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public FanFictionStory(ParsingDL ownerDl, String url) throws InitStoryException {
@@ -47,7 +47,7 @@ public class FanFictionStory extends Story {
         hostSite = C.HOST_FFN;
         // Get story ID first.
         storyId = parseStoryId(url, "/s/(\\d*)", 1);
-        // Normalize the URL, since there are many valid FFN URL formats.
+        // Normalize the url, since there are many valid FFN url formats.
         url = String.format(FFN_S_URL, storyId);
         // Get the first chapter in order to parse the story info.
         Document infoDoc = Util.downloadHtml(url);
@@ -104,7 +104,7 @@ public class FanFictionStory extends Story {
         dateUpdated = dates.size() > 1 ? Util.dateFromFfnTime(dates.first().attr("data-xutime")) : datePublished;
         // Get the status.
         status = findDetailsStringIdx(details, "Status: Complete") != -1 ? C.STAT_C : C.STAT_I;
-        // Generate chapter URLs.
+        // Generate chapter urls.
         for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(FFN_C_URL, storyId, i + 1));
     }
 

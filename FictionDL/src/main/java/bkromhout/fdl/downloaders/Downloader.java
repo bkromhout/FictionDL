@@ -34,7 +34,7 @@ public abstract class Downloader {
      */
     protected String siteName;
     /**
-     * Story URLs.
+     * Story urls.
      */
     protected HashSet<String> storyUrls;
     /**
@@ -48,7 +48,7 @@ public abstract class Downloader {
      * @param fictionDL  FictionDL object which owns this downloader.
      * @param storyClass The class of Story which this downloader uses.
      * @param siteName   Human-readable site name for this downloader.
-     * @param storyUrls  Set of story URLs to be downloaded.
+     * @param storyUrls  Set of story urls to be downloaded.
      */
     protected Downloader(FictionDL fictionDL, Class<? extends Story> storyClass, String siteName,
                          HashSet<String> storyUrls) {
@@ -59,7 +59,7 @@ public abstract class Downloader {
     }
 
     /**
-     * Download the stories whose URLs were passed to this downloader upon creation.
+     * Download the stories whose urls were passed to this downloader upon creation.
      */
     public final void download() {
         // Pre-download logging.
@@ -104,7 +104,7 @@ public abstract class Downloader {
      */
     public final void doFormAuth(String[] creds) {
         if (creds == null) return;
-        // Try to get site-specific form-data and login URL
+        // Try to get site-specific form-data and login url
         RequestBody formData = getSiteAuthForm(creds[0], creds[1]);
         String loginUrl = getSiteLoginUrl();
         if (formData == null || loginUrl == null) return;
@@ -136,8 +136,8 @@ public abstract class Downloader {
     }
 
     /**
-     * Individual site downloaders should override this if they require a login URL.
-     * @return Login URL, or null.
+     * Individual site downloaders should override this if they require a login url.
+     * @return Login url, or null.
      */
     protected String getSiteLoginUrl() {
         return null;

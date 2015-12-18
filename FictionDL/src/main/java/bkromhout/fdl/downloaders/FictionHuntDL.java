@@ -18,7 +18,7 @@ public class FictionHuntDL extends ParsingDL {
     /**
      * Create a new FictionHunt downloader.
      * @param fictionDL FictionDL object which owns this downloader.
-     * @param urls      List of FictionHunt URLs.
+     * @param urls      List of FictionHunt urls.
      */
     public FictionHuntDL(FictionDL fictionDL, HashSet<String> urls) {
         super(fictionDL, FictionHuntStory.class, C.NAME_FH, urls, "div.text");
@@ -33,7 +33,7 @@ public class FictionHuntDL extends ParsingDL {
     @Override
     protected void downloadStory(Story story) {
         if (((FictionHuntStory) story).isOnFfn()) {
-            // Story still on FanFiction.net, which is preferable, so we'll add a FFN URL so it gets downloaded later.
+            // Story still on FanFiction.net, which is preferable, so we'll add a FFN url so it gets downloaded later.
             Util.logf(C.FH_ON_FFN, story.getTitle());
             FictionDL.parser.addFfnUrl(String.format(FanFictionStory.FFN_S_URL, story.getStoryId()));
             // It isn't appropriate to call .storyProcessed() here since FanFictionDL will download the story and

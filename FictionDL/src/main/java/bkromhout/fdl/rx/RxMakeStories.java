@@ -11,7 +11,7 @@ import rx.Subscriber;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Creates Story objects from Story URLs asynchronously.
+ * Creates Story objects from Story urls asynchronously.
  */
 public class RxMakeStories implements Observable.Transformer<String, Story> {
     private final Class<? extends Story> storyClass;
@@ -33,14 +33,14 @@ public class RxMakeStories implements Observable.Transformer<String, Story> {
     }
 
     /**
-     * Creates Stories from story URLs.
+     * Creates Stories from story urls.
      */
     private final class CreateStory implements Observable.OnSubscribe<Story> {
         private final String url;
 
         /**
-         * Create a new Story from the given story URL.
-         * @param url Story URL.
+         * Create a new Story from the given story url.
+         * @param url Story url.
          */
         public CreateStory(String url) {
             this.url = url;

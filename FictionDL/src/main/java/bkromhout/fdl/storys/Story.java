@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  */
 public abstract class Story {
     /**
-     * Indicates a URL is malformed.
+     * Indicates a url is malformed.
      */
     private static final String BAD_URL = "BAD_URL";
     /**
@@ -24,7 +24,7 @@ public abstract class Story {
 
     // The downloader which owns this story.
     protected Downloader ownerDl;
-    // Story URL.
+    // Story url.
     protected String url;
     // Story ID.
     protected String storyId;
@@ -56,7 +56,7 @@ public abstract class Story {
     protected String dateUpdated;
     // Story status ("Complete", "Incomplete", "Abandoned", etc.).
     protected String status;
-    // List of chapter URLs.
+    // List of chapter urls.
     protected ArrayList<String> chapterUrls = new ArrayList<>();
     // List of chapters.
     protected ArrayList<Chapter> chapters = new ArrayList<>();
@@ -64,7 +64,7 @@ public abstract class Story {
     /**
      * Create a new Story.
      * @param ownerDl The downloader which owns this story.
-     * @param url     Story URL.
+     * @param url     Story url.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     protected Story(Downloader ownerDl, String url) throws InitStoryException {
@@ -80,12 +80,12 @@ public abstract class Story {
     protected abstract void populateInfo() throws InitStoryException;
 
     /**
-     * Parse the storyId of a story from its URL using regex.
-     * @param url   URL of story.
+     * Parse the storyId of a story from its url using regex.
+     * @param url   url of story.
      * @param regex Regex that will help extract the story ID.
      * @param group Number of the group from the regex that will contain the story ID.
      * @return Story ID, or null.
-     * @throws InitStoryException if we can't parse the story ID from the URL.
+     * @throws InitStoryException if we can't parse the story ID from the url.
      */
     protected String parseStoryId(String url, String regex, int group) throws InitStoryException {
         Matcher matcher = Pattern.compile(regex).matcher(url);
@@ -123,7 +123,7 @@ public abstract class Story {
             return new InitStoryException(String.format(C.STORY_DL_FAILED, ownerDl.getSiteName(), storyId));
         switch (assist) {
             case BAD_URL:
-                // URL was bad. str1 is the malformed URL.
+                // url was bad. str1 is the malformed url.
                 return new InitStoryException(String.format(C.INVALID_URL, str1));
             case NO_EPUB:
                 // Couldn't find an ePUB file to download. str1 is the story title.
@@ -138,8 +138,8 @@ public abstract class Story {
     }
 
     /**
-     * Get story's URL.
-     * @return Story URL.
+     * Get story's url.
+     * @return Story url.
      */
     public String getUrl() {
         return url;
@@ -276,16 +276,16 @@ public abstract class Story {
     }
 
     /**
-     * Get the chapter URLs for this story.
-     * @return Story chapter URLs.
+     * Get the chapter urls for this story.
+     * @return Story chapter urls.
      */
     public ArrayList<String> getChapterUrls() {
         return chapterUrls;
     }
 
     /**
-     * Compares the two Chapters by their {@link Chapter#url url} fields along with this Story's list of chapter URLs.
-     * Gets the indices of the given Chapters' URLs in this Story's chapter URL list and returns an integer to indicate
+     * Compares the two Chapters by their {@link Chapter#url url} fields along with this Story's list of chapter urls.
+     * Gets the indices of the given Chapters' urls in this Story's chapter url list and returns an integer to indicate
      * which comes first using {@link Integer#compare(int, int)}.
      * <p>
      * We call this "slow" because the sorting requires information outside of the given Chapter objects.

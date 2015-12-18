@@ -23,7 +23,7 @@ public abstract class EpubDL extends Downloader {
      * @param fictionDL  FictionDL object which owns this downloader.
      * @param storyClass The class of Story which this downloader uses.
      * @param siteName   Human-readable site name for this downloader.
-     * @param storyUrls  List of story URLs to be downloaded.
+     * @param storyUrls  List of story urls to be downloaded.
      */
     public EpubDL(FictionDL fictionDL, Class<? extends Story> storyClass, String siteName,
                   HashSet<String> storyUrls) {

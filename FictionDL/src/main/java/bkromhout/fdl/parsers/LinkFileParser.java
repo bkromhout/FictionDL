@@ -13,32 +13,32 @@ import java.util.regex.Pattern;
  */
 public class LinkFileParser extends FileParser {
     /**
-     * Regex for extracting host name from a URL.
+     * Regex for extracting host name from a url.
      */
     private static Pattern hostRegex = Pattern.compile("^(http[s]?://)?([^:/\\s]+)(/.*)?$");
     /**
-     * FictionHunt URLs.
+     * FictionHunt urls.
      */
     private HashSet<String> fictionHuntUrls;
     /**
-     * FanFiction.net URLs.
+     * FanFiction.net urls.
      */
     private HashSet<String> ffnUrls;
     /**
-     * SIYE URLs.
+     * SIYE urls.
      */
     private HashSet<String> siyeUrls;
     /**
-     * MuggleNet URLs.
+     * MuggleNet urls.
      */
     private HashSet<String> mnUrls;
     /**
-     * Ao3 URLs.
+     * Ao3 urls.
      */
     private HashSet<String> ao3Urls;
 
     /**
-     * Parse the file, populating the various URL lists for the different sites.
+     * Parse the file, populating the various url lists for the different sites.
      * @param storiesFile Link file.
      */
     public LinkFileParser(File storiesFile) {
@@ -55,72 +55,72 @@ public class LinkFileParser extends FileParser {
     }
 
     /**
-     * Processes a line from the input file, attempting to parse a story site URL and assign it to one of the URL lists.
-     * Won't put any invalid or repeat lines in the URL lists.
+     * Processes a line from the input file, attempting to parse a story site url and assign it to one of the url lists.
+     * Won't put any invalid or repeat lines in the url lists.
      * @param line Line from the input file.
      */
     @Override
     protected void processLine(String line) throws IllegalStateException {
-        // Try to match this line to a URL so that we can extract the host.
+        // Try to match this line to a url so that we can extract the host.
         Matcher hostMatcher = hostRegex.matcher(line);
         if (!hostMatcher.matches()) {
             if (!line.trim().isEmpty()) Util.loudf(C.PROCESS_LINE_FAILED, type, line);
             return;
         }
         String hostString = hostMatcher.group(2).toLowerCase();
-        // Add story URL to a set, or none of them if it wasn't valid.
+        // Add story url to a set, or none of them if it wasn't valid.
         if (hostString.contains(C.HOST_FH)) fictionHuntUrls.add(line);
         else if (hostString.contains(C.HOST_FFN)) ffnUrls.add(line);
         else if (hostString.contains(C.HOST_SIYE)) siyeUrls.add(line);
         else if (hostString.contains(C.HOST_MN)) mnUrls.add(line);
         else if (hostString.contains(C.HOST_AO3)) ao3Urls.add(line);
-        else Util.logf(C.PROCESS_LINE_FAILED, type, line); // Malformed or unsupported site URL.
+        else Util.logf(C.PROCESS_LINE_FAILED, type, line); // Malformed or unsupported site url.
     }
 
     /**
-     * Adds a FanFiction.net URL to that list. Useful for when we decide to download a FictionHunt story from
+     * Adds a FanFiction.net url to that list. Useful for when we decide to download a FictionHunt story from
      * FanFiction.net instead.
-     * @param ffnUrl FanFiction.net URL.
+     * @param ffnUrl FanFiction.net url.
      */
     public void addFfnUrl(String ffnUrl) {
         ffnUrls.add(ffnUrl);
     }
 
     /**
-     * Get the list of FictionHunt URLs that were parsed.
-     * @return FictionHunt URLs.
+     * Get the list of FictionHunt urls that were parsed.
+     * @return FictionHunt urls.
      */
     public HashSet<String> getFictionHuntUrls() {
         return fictionHuntUrls;
     }
 
     /**
-     * Get the list of FanFiction.net URLs that were parsed.
-     * @return FanFiction.net URLs.
+     * Get the list of FanFiction.net urls that were parsed.
+     * @return FanFiction.net urls.
      */
     public HashSet<String> getFfnUrls() {
         return ffnUrls;
     }
 
     /**
-     * Get the list of SIYE URLs that were parsed.
-     * @return SIYE URLs.
+     * Get the list of SIYE urls that were parsed.
+     * @return SIYE urls.
      */
     public HashSet<String> getSiyeUrls() {
         return siyeUrls;
     }
 
     /**
-     * Get the list of MuggleNet URLs that were parsed.
-     * @return MuggleNet URLs.
+     * Get the list of MuggleNet urls that were parsed.
+     * @return MuggleNet urls.
      */
     public HashSet<String> getMnUrls() {
         return mnUrls;
     }
 
     /**
-     * Get the list of Ao3 URLs that were parsed.
-     * @return Ao3 URLs.
+     * Get the list of Ao3 urls that were parsed.
+     * @return Ao3 urls.
      */
     public HashSet<String> getAo3Urls() {
         return ao3Urls;

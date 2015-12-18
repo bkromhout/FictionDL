@@ -11,7 +11,7 @@ import java.io.IOException;
  */
 public class Chapter {
     /**
-     * Chapter URL string.
+     * Chapter url string.
      */
     public final String url;
     /**
@@ -41,7 +41,7 @@ public class Chapter {
     }
 
     /**
-     * Create a new Chapter using an OkHttp Response obtained from the chapter URL.
+     * Create a new Chapter using an OkHttp Response obtained from the chapter url.
      * @param response Response containing chapter page HTML.
      * @return New Chapter, or null if there are problems.
      */
