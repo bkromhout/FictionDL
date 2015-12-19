@@ -88,7 +88,7 @@ public class ConfigFileParser extends FileParser {
                                                                     .toList()
                                                                     .toBlocking()
                                                                     .single();
-        return Util.buildOrRegex((String[]) siteNames.toArray());
+        return Util.buildOrRegex(siteNames.toArray(new String[siteNames.size()]));
     }
 
     /**
