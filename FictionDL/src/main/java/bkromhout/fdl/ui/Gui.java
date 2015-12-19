@@ -43,7 +43,7 @@ public class Gui extends Application {
         primaryStage.setMinHeight(300.0);
         primaryStage.setOnHiding(handler -> {
             controller.saveFields();
-            fictionDLTask.cancel(); // Make sure we actually stop the JVM when our GUI closes.
+            if (fictionDLTask != null) fictionDLTask.cancel(); // Make sure we actually stop the JVM when GUI closes.
         }); // Save text fields' contents when closing stage.
 
         // Show the stage.

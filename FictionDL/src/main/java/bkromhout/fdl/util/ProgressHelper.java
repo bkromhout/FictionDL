@@ -54,8 +54,9 @@ public class ProgressHelper {
         // In order to keep the progress bar from going down when we update the total number of work units, we double
         // the amount that we add to the total, and then we add half of it to the number of work units completed.
         long num = event.getUnitsToAdd();
-        totalWork += 2 * num;
-        workDone += num;
+        totalWork += num;
+        //totalWork += 2 * num;
+        //workDone += num;
         // Now update the progress bar.
         updateTaskProgress();
     }
