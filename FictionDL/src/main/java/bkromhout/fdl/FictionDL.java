@@ -19,6 +19,7 @@ import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -33,9 +34,13 @@ public final class FictionDL {
      */
     private FictionDLTask task;
     /**
+     * Executor for the async event bus. Have to have a reference to it in order to shut it down when we're done.
+     */
+    private static final ExecutorService eventBusExecutor = Executors.newSingleThreadExecutor();
+    /**
      * Global EventBus.
      */
-    private static final AsyncEventBus eventBus = new AsyncEventBus(Executors.newSingleThreadExecutor());
+    private static final AsyncEventBus eventBus = new AsyncEventBus(eventBusExecutor);
     /**
      * Global OkHttpClient, will be used for all networking.
      */
@@ -146,8 +151,9 @@ public final class FictionDL {
     private void postRun() {
         Util.log(C.ALL_FINISHED);
         Util.loudf(C.RUN_RESULTS, progressHelper.getTotalWork());
-        // OkHttpClient dispatcher threads seems to enjoy sticking around for a while unless we do this >_<
+        // Explicitly shut down executors so that they don't keep the JVM alive.
         httpClient.getDispatcher().getExecutorService().shutdownNow();
+        eventBusExecutor.shutdownNow();
     }
 
     /**
