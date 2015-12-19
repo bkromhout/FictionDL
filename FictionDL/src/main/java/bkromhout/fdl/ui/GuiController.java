@@ -1,6 +1,6 @@
 package bkromhout.fdl.ui;
 
-import bkromhout.fdl.C;
+import bkromhout.fdl.util.C;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -64,14 +64,17 @@ public class GuiController {
     private void initialize() {
         // Specifically set the log TextFlow, since it's static.
         flowLog = (TextFlow) spLogCont.getContent();
+
         // Set up the log TextFlow's ScrollPane to always scroll to the bottom when a new line is added.
         flowLog.getChildren().addListener((ListChangeListener<Node>) listener -> {
             flowLog.layout();
             spLogCont.layout();
             spLogCont.setVvalue(1.0d);
         });
+
         // Set default button to clear dir text field.
         btnDefaultOutDir.setOnAction(event1 -> tfOutDir.clear());
+
         // Set choose in file button's action.
         btnChooseInFile.setOnAction(event -> {
             // Create a file chooser.
@@ -86,6 +89,7 @@ public class GuiController {
             // If the user selected a file, put its path into the text field.
             if (selectedFile != null) tfInFile.setText(selectedFile.getAbsolutePath());
         });
+
         // Set choose out dir button's action.
         btnChooseOutDir.setOnAction(event -> {
             // Create a directory chooser.
@@ -100,6 +104,7 @@ public class GuiController {
             // If the user selected a directory, put its path into the text field.
             if (selectedDir != null) tfOutDir.setText(selectedDir.getAbsolutePath());
         });
+
         // Set choose config file button's action.
         btnChooseCfgFile.setOnAction(event -> {
             // Create a file chooser.
@@ -114,6 +119,7 @@ public class GuiController {
             // If the user selected a file, put its path into the text field.
             if (selectedFile != null) tfCfgFile.setText(selectedFile.getAbsolutePath());
         });
+
         // Set start button action.
         btnStart.setOnAction(event -> {
             // Store the text field values in the prefs file.

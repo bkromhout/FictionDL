@@ -5,6 +5,8 @@ import bkromhout.fdl.rx.RxMakeChapters;
 import bkromhout.fdl.rx.RxOkHttpCall;
 import bkromhout.fdl.rx.RxSortChapters;
 import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Util;
 import com.squareup.okhttp.Request;
 import rx.Observable;
 import rx.schedulers.Schedulers;
@@ -66,7 +68,7 @@ public abstract class ParsingDL extends Downloader {
         story.setChapters(chapters);
         // Save the story as an ePUB file.
         Util.logf(C.SAVING_STORY);
-        new EpubCreator(story).makeEpub(FictionDL.outPath);
+        new EpubCreator(story).makeEpub(FictionDL.getOutPath());
         Util.log(C.DONE + "\n");
         storyProcessed(); // Update progress.
     }

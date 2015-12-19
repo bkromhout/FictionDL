@@ -1,8 +1,8 @@
 package bkromhout.fdl.ui;
 
-import bkromhout.fdl.C;
+import bkromhout.fdl.util.C;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Util;
+import bkromhout.fdl.util.Util;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -27,12 +27,15 @@ public class Gui extends Application {
     public void start(Stage primaryStage) throws Exception {
         // Get preferences.
         prefs = Preferences.userNodeForPackage(FictionDL.class);
+
         // Do first tasks for getting the GUI ready.
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FictionDLGui.fxml"));
         Parent root = loader.load();
         controller = loader.getController();
+
         // Tell the controller we own it.
         controller.setGui(this);
+
         // Configure the stage.
         primaryStage.setTitle(C.VER_STRING);
         primaryStage.setScene(new Scene(root, 800, 600));
@@ -42,6 +45,7 @@ public class Gui extends Application {
             controller.saveFields();
             fictionDLTask.cancel(); // Make sure we actually stop the JVM when our GUI closes.
         }); // Save text fields' contents when closing stage.
+
         // Show the stage.
         primaryStage.show();
     }
@@ -59,10 +63,12 @@ public class Gui extends Application {
             GuiController.flowLog.getChildren().clear();
             controller.setControlsEnabled(false);
         });
+
         fictionDLTask.setOnSucceeded(handler -> {
             controller.pbProgress.progressProperty().unbind();
             controller.setControlsEnabled(true);
         });
+
         fictionDLTask.setOnCancelled(handler -> {
             controller.pbProgress.progressProperty().unbind();
             controller.pbProgress.setProgress(0d);
@@ -73,7 +79,8 @@ public class Gui extends Application {
                 Util.logf(C.INVALID_PATH, fictionDLTask.getException().getMessage());
             }
         });
-        // Do cool stuff.
+
+        // Start the task on a new thread.
         Thread fictionDLThread = new Thread(fictionDLTask);
         fictionDLThread.setDaemon(true);
         fictionDLThread.start();

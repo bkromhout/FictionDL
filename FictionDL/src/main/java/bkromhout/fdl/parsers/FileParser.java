@@ -1,7 +1,7 @@
 package bkromhout.fdl.parsers;
 
-import bkromhout.fdl.C;
-import bkromhout.fdl.Util;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Util;
 
 import java.io.BufferedReader;
 import java.io.File;

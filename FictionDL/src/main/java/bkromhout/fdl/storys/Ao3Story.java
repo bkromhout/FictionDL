@@ -1,7 +1,7 @@
 package bkromhout.fdl.storys;
 
 import bkromhout.fdl.Site;
-import bkromhout.fdl.Util;
+import bkromhout.fdl.util.Util;
 import bkromhout.fdl.downloaders.EpubDL;
 import bkromhout.fdl.ex.InitStoryException;
 import org.jsoup.nodes.Document;

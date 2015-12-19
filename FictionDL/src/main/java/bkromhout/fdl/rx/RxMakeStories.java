@@ -1,7 +1,7 @@
 package bkromhout.fdl.rx;
 
 import bkromhout.fdl.Main;
-import bkromhout.fdl.Util;
+import bkromhout.fdl.util.Util;
 import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.storys.Story;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
@@ -50,6 +50,7 @@ public class RxMakeStories implements Observable.Transformer<String, Story> {
         public void call(Subscriber<? super Story> sub) {
             try {
                 // Doing a bit of reflection magic here to construct story classes ;)
+                // TODO see if we can do this using Guava so that we don't have to have both Guava and commons-lang3.
                 sub.onNext(ConstructorUtils.invokeConstructor(storyClass, downloader, url));
                 sub.onCompleted();
             } catch (InvocationTargetException e) {

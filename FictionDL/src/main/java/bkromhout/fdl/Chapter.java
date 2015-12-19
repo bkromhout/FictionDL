@@ -1,5 +1,7 @@
 package bkromhout.fdl;
 
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Util;
 import com.squareup.okhttp.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

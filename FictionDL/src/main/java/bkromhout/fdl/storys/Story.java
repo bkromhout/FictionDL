@@ -1,6 +1,6 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.C;
+import bkromhout.fdl.util.C;
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.Site;
 import bkromhout.fdl.downloaders.Downloader;

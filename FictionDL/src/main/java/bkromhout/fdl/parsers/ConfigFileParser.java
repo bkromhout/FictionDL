@@ -1,8 +1,8 @@
 package bkromhout.fdl.parsers;
 
-import bkromhout.fdl.C;
 import bkromhout.fdl.Site;
-import bkromhout.fdl.Util;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Util;
 import rx.Observable;
 
 import java.io.File;
@@ -29,7 +29,7 @@ public class ConfigFileParser extends FileParser {
     private String currSite;
 
     /**
-     * Parse the file and create a {@link Config}.
+     * Parses the config file and create a {@link Config}.
      * @param cfgFile Config file.
      */
     public ConfigFileParser(File cfgFile) {
@@ -96,7 +96,7 @@ public class ConfigFileParser extends FileParser {
 
     /**
      * Get the configuration options parsed from the config file.
-     * @return Config options.
+     * @return Config options. Never null.
      */
     public Config getConfig() {
         return config;

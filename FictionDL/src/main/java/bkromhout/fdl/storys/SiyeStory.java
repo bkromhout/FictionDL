@@ -1,8 +1,8 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.C;
+import bkromhout.fdl.util.C;
 import bkromhout.fdl.Site;
-import bkromhout.fdl.Util;
+import bkromhout.fdl.util.Util;
 import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
 import org.jsoup.nodes.Document;

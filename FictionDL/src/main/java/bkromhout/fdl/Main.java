@@ -1,6 +1,8 @@
 package bkromhout.fdl;
 
 import bkromhout.fdl.ui.Gui;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Util;
 import javafx.application.Application;
 import javafx.application.Platform;
 import org.apache.commons.cli.*;
@@ -21,6 +23,8 @@ public class Main {
     public static boolean isVerbose = false;
 
     public static void main(String[] args) {
+        // Init the event bus.
+
         // Make sure we start the GUI if the jar was run with no arguments at all (AKA, it was double-clicked).
         if (args.length == 0) {
             isGui = true;
@@ -68,7 +72,8 @@ public class Main {
     }
 
     /**
-     * Exit the program, using System.exit() if running in CLI mode, but adding Platform.exit() if running in GUI mode.
+     * Exits the program after cleaning up. Can be called safely whether running the CLI or the GUI version of the
+     * program.
      * @param returnCode The return code to use.
      */
     public static void exit(int returnCode) {

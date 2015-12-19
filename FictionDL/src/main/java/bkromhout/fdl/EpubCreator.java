@@ -1,6 +1,8 @@
 package bkromhout.fdl;
 
 import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Util;
 import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubWriter;
 

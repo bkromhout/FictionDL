@@ -1,9 +1,9 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.C;
+import bkromhout.fdl.util.C;
 import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.Site;
-import bkromhout.fdl.Util;
+import bkromhout.fdl.util.Util;
 import bkromhout.fdl.storys.Story;
 
 import java.io.IOException;
@@ -39,7 +39,7 @@ public abstract class EpubDL extends Downloader {
         Util.logf(C.DL_EPUB_FOR, Util.unEscapeAmps(story.getTitle()));
         // Obviously, this is a rather simple task, which is why this class and its subclasses are so tiny as compared
         // to ParsingDL and its subclasses.
-        Path file = FictionDL.outPath.resolve(Util.makeEpubFname(story.getTitle(), story.getAuthor()));
+        Path file = FictionDL.getOutPath().resolve(Util.makeEpubFname(story.getTitle(), story.getAuthor()));
         URI dlUrl = URI.create(story.getUrl());
         try (final InputStream in = dlUrl.toURL().openStream()) {
             // Download the ePUB file.

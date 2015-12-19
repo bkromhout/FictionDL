@@ -1,10 +1,17 @@
-package bkromhout.fdl;
+package bkromhout.fdl.util;
 
+import bkromhout.fdl.FictionDL;
+import com.google.common.eventbus.EventBus;
 import com.squareup.okhttp.OkHttpClient;
 
 /**
- * Constants. Only constants which are either used by multiple classes (or are likely to be in the future) or which
- * are exceedingly long (in the case of strings) belong here. All others should be in a more specific class.
+ * Constants
+ * <p>
+ * Only constants which are either used by multiple classes (or are likely to be in the future) or which are exceedingly
+ * long (in the case of strings) belong here. All others should be in a more specific class.
+ * <p>
+ * This class may also be used as a central place from which static variables in other classes may be accessed (that is,
+ * this class is a middle-man) for the sole purpose of convenience (typing "C" is quicker than any other class name).
  */
 public abstract class C {
     /**
@@ -17,7 +24,7 @@ public abstract class C {
      * @return The OkHttpClient from {@link FictionDL}.
      */
     public static OkHttpClient getHttpClient() {
-        return FictionDL.httpClient;
+        return FictionDL.getHttpClient();
     }
 
     /*

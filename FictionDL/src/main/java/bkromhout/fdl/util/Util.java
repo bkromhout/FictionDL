@@ -1,5 +1,6 @@
-package bkromhout.fdl;
+package bkromhout.fdl.util;
 
+import bkromhout.fdl.Main;
 import bkromhout.fdl.ui.GuiController;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;

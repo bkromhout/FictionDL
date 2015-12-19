@@ -1,6 +1,6 @@
 package bkromhout.fdl.rx;
 
-import bkromhout.fdl.C;
+import bkromhout.fdl.util.C;
 import bkromhout.fdl.ex.RequestException;
 import bkromhout.fdl.ex.ResponseException;
 import com.squareup.okhttp.Call;

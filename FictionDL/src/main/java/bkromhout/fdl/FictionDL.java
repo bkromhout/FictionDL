@@ -1,8 +1,14 @@
 package bkromhout.fdl;
 
 import bkromhout.fdl.downloaders.*;
+import bkromhout.fdl.events.UpdateTaskProgressEvent;
 import bkromhout.fdl.parsers.ConfigFileParser;
 import bkromhout.fdl.parsers.LinkFileParser;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.ProgressHelper;
+import bkromhout.fdl.util.Util;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 import javafx.concurrent.Task;
@@ -15,34 +21,47 @@ import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Fan Fiction Downloader. (Not to be confused wih the FanFictionDL, which is an actual site downloader, this class is a
- * main class which the program is named after.)
- * <p>
- * Originally only supported FictionHunt, but has been expanded to support other sites now as well.
- * <p>
- * Scrapes the story HTML and generates an ePUB using that.
+ * This class is responsible for orchestrating the whole fiction download process. It is given everything it needs to do
+ * its job when it is created, and then {@link FictionDL#run()} is called.
  */
-public class FictionDL {
+public final class FictionDL {
     /**
-     * Global OkHttpClient.
+     * If running from the {@link bkromhout.fdl.ui.Gui Gui}, a reference to the {@link FictionDLTask} hosting us. Null
+     * if running from the CLI.
      */
-    public static OkHttpClient httpClient;
-    // Path to input file.
-    private File inputFile;
-    // Path where the input file resides, which is where stories will be saved.
-    public static Path outPath;
-    // Path to config file.
-    private File configFile;
-    // Configuration options.
-    private ConfigFileParser.Config cfg;
-    // File parser.
-    public static LinkFileParser parser;
-    // Keep a reference to the FictionDLTask if this is being run from the GUI.
     private FictionDLTask task;
-    // Total number of stories which are to be downloaded, across all sites.
-    private long totalNumStories;
-    // Number of stories which have been processed (either have been downloaded or have failed to download).
-    private long numStoriesProcessed = 0;
+    /**
+     * Global EventBus.
+     */
+    private static final EventBus eventBus = new EventBus();
+    /**
+     * Global OkHttpClient, will be used for all networking.
+     */
+    private static OkHttpClient httpClient;
+    /**
+     * Represents the input (link) file which has a list of story urls
+     */
+    private File inputFile;
+    /**
+     * Represents the location where we want downloaded stories to be saved.
+     */
+    private static Path outPath;
+    /**
+     * Represents the configuration file. Might be null if one wasn't supplied.
+     */
+    private File configFile;
+    /**
+     * Config options parsed from the config file. Never null, but it might not contain any options.
+     */
+    private ConfigFileParser.Config cfg;
+    /**
+     * Link file parser.
+     */
+    private static LinkFileParser linkFileParser;
+    /**
+     * {@link ProgressHelper} for keeping track of our overall progress.
+     */
+    private static ProgressHelper progressHelper;
 
     /**
      * Create a new {@link FictionDL} to execute the program logic.
@@ -71,8 +90,8 @@ public class FictionDL {
      * @param args Arguments to use during initialization.
      */
     private void init(HashMap<String, String> args) {
-        // If we're running from a GUI, go ahead and set the progress bar to indeterminate.
-        if (task != null) task.updateProgress(-1, 0);
+        // If we're running from a GUI, register the task with the EventBus so it will receive progress update events.
+        if (task != null) eventBus.register(task);
 
         // Make sure we have an input path and that it is valid.
         if (args.get(C.ARG_IN_PATH) == null) throw new IllegalArgumentException(C.NO_INPUT_PATH);
@@ -112,12 +131,13 @@ public class FictionDL {
      */
     public void run() {
         // Create a LinkFileParser to get the story urls from the input file.
-        parser = new LinkFileParser(inputFile);
+        linkFileParser = new LinkFileParser(inputFile);
         // If we have a config file, create a ConfigFileParser to get options.
         if (configFile != null) cfg = new ConfigFileParser(configFile).getConfig();
-        // Figure out how many stories we're downloading, then download them.
-        totalNumStories = parser.getTotalNumStories();
-        getStories(parser);
+        // Create a ProgressHelper, passing in the total number of stories to process.
+        progressHelper = new ProgressHelper(linkFileParser.getTotalNumStories());
+        // Download stories.
+        getStories(linkFileParser);
         // All done!
         Util.log(C.ALL_FINISHED);
         // OkHttpClient dispatcher threads seems to enjoy sticking around for a while unless we do this >_<
@@ -130,8 +150,6 @@ public class FictionDL {
      * @param parser {@link LinkFileParser} which has successfully parsed input file.
      */
     private void getStories(LinkFileParser parser) {
-        // Set progress bar to 0.
-        if (task != null) task.updateProgress(numStoriesProcessed, totalNumStories);
         /*
         Download FictionHunt stories.
           */
@@ -171,19 +189,44 @@ public class FictionDL {
     }
 
     /**
-     * Called by the downloaders each time a story has finished (or has failed to finish) downloading. If this {@link
-     * FictionDL} is being run from a {@link FictionDLTask}, then the task's {@link FictionDLTask#updateProgress(long,
-     * long)} method will be called as a result.
+     * Provide access to the event bus.
+     * @return Event bus.
      */
-    public void incrProgress() {
-        numStoriesProcessed++;
-        if (task != null) task.updateProgress(numStoriesProcessed, totalNumStories);
+    public static EventBus getEventBus() {
+        return eventBus;
     }
 
     /**
-     * Subclass of Task so that {@link FictionDL} can be used by a JavaFX GUI app.
+     * Get the Path that represents the location where everything should be saved.
+     * @return Out path.
+     */
+    public static Path getOutPath() {
+        return outPath;
+    }
+
+    /**
+     * Get the parser responsible for parsing the link file.
+     * @return Link file parser.
+     */
+    public static LinkFileParser getLinkFileParser() {
+        return linkFileParser;
+    }
+
+    /**
+     * Get the OkHttpClient in use for this run.
+     * @return OkHttpClient.
+     */
+    public static OkHttpClient getHttpClient() {
+        return httpClient;
+    }
+
+    /**
+     * Subclass of Task so that {@link FictionDL} can be used by a JavaFX GUI app without running on the UI thread.
      */
     public static class FictionDLTask extends Task {
+        /**
+         * Arguments to pass to {@link FictionDL}.
+         */
         private HashMap<String, String> args;
 
         /**
@@ -192,6 +235,7 @@ public class FictionDL {
          */
         public FictionDLTask(HashMap<String, String> args) {
             this.args = args;
+
         }
 
         @Override
@@ -202,12 +246,12 @@ public class FictionDL {
         }
 
         /**
-         * Update the progress of the task.
-         * @param done  Amount done.
-         * @param total Total amount.
+         * Calls {@link FictionDLTask#updateProgress(long, long)} when an {@link UpdateTaskProgressEvent} is received.
+         * @param event Event instance.
          */
-        public void updateProgress(long done, long total) {
-            super.updateProgress(done, total);
+        @Subscribe
+        public void onUpdateTaskProgressEvent(UpdateTaskProgressEvent event) {
+            super.updateProgress(event.getWorkDone(), event.getTotalWork());
         }
     }
 }

@@ -1,9 +1,9 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.C;
+import bkromhout.fdl.util.C;
 import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.Site;
-import bkromhout.fdl.Util;
+import bkromhout.fdl.util.Util;
 import bkromhout.fdl.rx.RxMakeStories;
 import bkromhout.fdl.storys.Story;
 import com.squareup.okhttp.Request;
@@ -148,6 +148,6 @@ public abstract class Downloader {
      * Called each time a {@link Story} has finished being processed (including failures).
      */
     protected final void storyProcessed() {
-        fictionDL.incrProgress();
+        // TODO this needs to be more robust.
     }
 }
