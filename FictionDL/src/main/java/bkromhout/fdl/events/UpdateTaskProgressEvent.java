@@ -8,18 +8,18 @@ public class UpdateTaskProgressEvent {
     /**
      * Number of work units completed.
      */
-    private long workDone;
+    private double workDone;
     /**
      * Total number of work units.
      */
-    private long totalWork;
+    private double totalWork;
 
     /**
      * Create a new {@link UpdateTaskProgressEvent}.
      * @param workDone Number of work units completed.
      * @param totalWork Total number of work units.
      */
-    public UpdateTaskProgressEvent(long workDone, long totalWork) {
+    public UpdateTaskProgressEvent(double workDone, double totalWork) {
         this.workDone = workDone;
         this.totalWork = totalWork;
     }
@@ -28,7 +28,7 @@ public class UpdateTaskProgressEvent {
      * Get number of work units completed.
      * @return Work done count.
      */
-    public long getWorkDone() {
+    public double getWorkDone() {
         return workDone;
     }
 
@@ -36,7 +36,7 @@ public class UpdateTaskProgressEvent {
      * Get total number of work units.
      * @return Total work count.
      */
-    public long getTotalWork() {
+    public double getTotalWork() {
         return totalWork;
     }
 }

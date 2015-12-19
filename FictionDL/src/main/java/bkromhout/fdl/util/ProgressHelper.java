@@ -14,11 +14,17 @@ public class ProgressHelper {
     /**
      * Number of work units done so far, regardless of success.
      */
-    private long workDone;
+    private double workDone;
     /**
      * Total number of work units.
      */
-    private long totalWork;
+    private double totalWork;
+    /**
+     * How much of the progress meter is one story worth? Will be equal to
+     */
+    private double oneStoryWorth;
+
+
 
     /**
      * Create a new {@link ProgressHelper} using the total number of stories to download as a baseline for the amount of
@@ -29,9 +35,7 @@ public class ProgressHelper {
         // Register with the event bus.
         FictionDL.getEventBus().register(this);
         // Set work done to 0.
-        this.workDone = 0L;
-        // At the time of initialization, we only have knowledge of the total number of stories, across all sites,
-        // that we will attempt to process. Thus, we use that as our initial value for totalWork.
+        this.workDone = 0.0;
         this.totalWork = totalStories;
         // Update GUI progress bar.
         updateTaskProgress();
@@ -45,6 +49,8 @@ public class ProgressHelper {
         FictionDL.getEventBus().post(new UpdateTaskProgressEvent(workDone, totalWork));
     }
 
+
+
     /**
      * Adds some number of work units to {@link #totalWork} when received.
      * @param event Event instance.
@@ -54,9 +60,8 @@ public class ProgressHelper {
         // In order to keep the progress bar from going down when we update the total number of work units, we double
         // the amount that we add to the total, and then we add half of it to the number of work units completed.
         long num = event.getUnitsToAdd();
-        totalWork += num;
-        //totalWork += 2 * num;
-        //workDone += num;
+        totalWork += 2 * num;
+        workDone += num;
         // Now update the progress bar.
         updateTaskProgress();
     }
@@ -108,5 +113,6 @@ public class ProgressHelper {
      */
     public static void finishedWorkUnit() {
         FictionDL.getEventBus().post(new IncWorkDoneEvent(1L));
+        Util.loud("Finished Work Unit");
     }
 }
