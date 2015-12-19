@@ -54,6 +54,8 @@ public class ProgressHelper {
         this.currUnitWorth = oneStoryWorth;
         // Update GUI progress bar.
         updateTaskProgress();
+
+        Util.loudf("TotalWork=%f\nOneStoryWorth=%f\n" + C.LOG_GOLD + C.LOG_ULINE, totalWork, oneStoryWorth);
     }
 
     /**
@@ -82,6 +84,7 @@ public class ProgressHelper {
         if (event.getDivisorVal() <= 0L) currUnitWorth = oneStoryWorth;
         else currUnitWorth = oneStoryWorth / (double) event.getDivisorVal();
         needsRecalc = false;
+        Util.loudf("CurrUnitWorth=%f\n" + C.LOG_GOLD + C.LOG_ULINE, currUnitWorth);
     }
 
     /**

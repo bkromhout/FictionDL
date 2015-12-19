@@ -31,10 +31,12 @@ public abstract class C {
     it's printed to the TextFlow log in the GUI. The tags are stripped before the string is printed. One color and
     multiple styles can apply, and apply to the *whole* string.
      */
+    public static final String LOG_ULINE = "!underline!";
     public static final String LOG_RED = "!red!";
     public static final String LOG_BLUE = "!blue!";
     public static final String LOG_GREEN = "!green!";
     public static final String LOG_PURPLE = "!purple!";
+    public static final String LOG_GOLD = "!gold!";
 
     /*
     Keys.
