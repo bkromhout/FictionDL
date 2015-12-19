@@ -38,10 +38,11 @@ public abstract class EpubDL extends Downloader {
     @Override
     protected void downloadStory(Story story) {
         Util.logf(C.DL_EPUB_FOR, Util.unEscapeAmps(story.getTitle()));
-        // Obviously, this is a rather simple task, which is why this class and its subclasses are so tiny as compared
-        // to ParsingDL and its subclasses.
+        ProgressHelper.recalcUnitWorth(0L); // Set unit worth to one story's worth.
+        // Figure out save file path and download URI.
         Path file = FictionDL.getOutPath().resolve(Util.makeEpubFname(story.getTitle(), story.getAuthor()));
         URI dlUrl = URI.create(story.getUrl());
+
         try (final InputStream in = dlUrl.toURL().openStream()) {
             // Download the ePUB file.
             Files.copy(in, file, StandardCopyOption.REPLACE_EXISTING);
@@ -49,7 +50,7 @@ public abstract class EpubDL extends Downloader {
         } catch (IOException e) {
             Util.logf(C.SAVE_FILE_FAILED, file.toAbsolutePath().toString());
         }
-        // Update progress bar.
+        // We update the progress bar whether we succeed or not.
         ProgressHelper.finishedWorkUnit();
     }
 }

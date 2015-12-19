@@ -1,8 +1,8 @@
 package bkromhout.fdl.util;
 
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.events.IncTotalWorkEvent;
 import bkromhout.fdl.events.IncWorkDoneEvent;
+import bkromhout.fdl.events.RecalcUnitWorthEvent;
 import bkromhout.fdl.events.UpdateTaskProgressEvent;
 import bkromhout.fdl.storys.Story;
 import com.google.common.eventbus.Subscribe;
@@ -12,19 +12,29 @@ import com.google.common.eventbus.Subscribe;
  */
 public class ProgressHelper {
     /**
-     * Number of work units done so far, regardless of success.
+     * Amount of work so far, regardless of success.
      */
     private double workDone;
     /**
-     * Total number of work units.
+     * Total amount of work.
      */
-    private double totalWork;
+    private final double totalWork;
     /**
-     * How much of the progress meter is one story worth? Will be equal to
+     * How much of the overall progress percentage is one story worth? Will always be equal to 1/{@link #totalWork}.
      */
-    private double oneStoryWorth;
-
-
+    private final double oneStoryWorth;
+    /**
+     * How much of the overall progress percentage is one work unit currently worth? This can change over the time, but
+     * it will always be <= the value of {@link #oneStoryWorth}.
+     */
+    private double currUnitWorth;
+    /**
+     * If true, an IllegalStateException will be thrown if an event received in {@link
+     * #onIncWorkDoneEvent(IncWorkDoneEvent)} has a value of >= 0.
+     * <p>
+     * {@link #onRecalcUnitWorthEvent(RecalcUnitWorthEvent)} will set this back to false when called.
+     */
+    private boolean needsRecalc = false;
 
     /**
      * Create a new {@link ProgressHelper} using the total number of stories to download as a baseline for the amount of
@@ -36,7 +46,12 @@ public class ProgressHelper {
         FictionDL.getEventBus().register(this);
         // Set work done to 0.
         this.workDone = 0.0;
+        // Set total work to the number of stories.
         this.totalWork = totalStories;
+        // Calculate how much of the total work one story's worth of work is.
+        this.oneStoryWorth = 1.0 / totalWork;
+        // Set the current work unit worth to be equal to one story's worth of work. For now.
+        this.currUnitWorth = oneStoryWorth;
         // Update GUI progress bar.
         updateTaskProgress();
     }
@@ -49,40 +64,42 @@ public class ProgressHelper {
         FictionDL.getEventBus().post(new UpdateTaskProgressEvent(workDone, totalWork));
     }
 
-
-
     /**
-     * Adds some number of work units to {@link #totalWork} when received.
-     * @param event Event instance.
+     * Get the total amount of work.
+     * @return Total work.
      */
-    @Subscribe
-    public void onIncTotalWorkEvent(IncTotalWorkEvent event) {
-        // In order to keep the progress bar from going down when we update the total number of work units, we double
-        // the amount that we add to the total, and then we add half of it to the number of work units completed.
-        long num = event.getUnitsToAdd();
-        totalWork += 2 * num;
-        workDone += num;
-        // Now update the progress bar.
-        updateTaskProgress();
+    public double getTotalWork() {
+        return totalWork;
     }
 
     /**
-     * Adds some number of work units to {@link #workDone} when received.
+     * When received, recalculated the value of {@link #currUnitWorth} by dividing {@link #oneStoryWorth} by {@link
+     * RecalcUnitWorthEvent#divisorVal}.
+     * @param event Event instance.
+     */
+    @Subscribe
+    public void onRecalcUnitWorthEvent(RecalcUnitWorthEvent event) {
+        if (event.getDivisorVal() <= 0L) currUnitWorth = oneStoryWorth;
+        else currUnitWorth = oneStoryWorth / (double) event.getDivisorVal();
+        needsRecalc = false;
+    }
+
+    /**
+     * When received, adds some amount to {@link #workDone} based on the value of {@link
+     * IncWorkDoneEvent#getUnitsToAdd()}. If value is <= 0, adds {@link #oneStoryWorth}. If value is > 0, adds value
+     * times {@link #currUnitWorth}.
      * @param event Event instance.
      */
     @Subscribe
     public void onIncWorkDoneEvent(IncWorkDoneEvent event) {
-        workDone += event.getUnitsToAdd();
+        if (event.getUnitsToAdd() <= 0L) workDone += oneStoryWorth;
+        else {
+            if (needsRecalc) throw new IllegalStateException(C.STALE_UNIT_WORTH);
+            workDone += currUnitWorth * (double) event.getUnitsToAdd();
+        }
+        if (event.didFail()) needsRecalc = true;
         // Update progress bar.
         updateTaskProgress();
-    }
-
-    /**
-     * Get the total number of work units.
-     * @return Total work count.
-     */
-    public long getTotalWork() {
-        return totalWork;
     }
 
     /*
@@ -90,26 +107,35 @@ public class ProgressHelper {
     */
 
     /**
-     * Adds the chapter count of a story to the number of total work units.
-     * @param chapCount Number of chapters in some story.
-     */
-    public static void addChapsToTotalWork(long chapCount) {
-        FictionDL.getEventBus().post(new IncTotalWorkEvent(chapCount));
-    }
-
-    /**
-     * Called each time a {@link Story} has finished being processed (including failures).
+     * Recalculates the current worth of a single work unit based on the divisor value given.
      * <p>
-     * Adds any work units relevant to that story to the number of completed work units.
-     * @param workUnitsLeft Number of work units that are still left at this point. These might represent failed
-     *                      chapters, a single ePUB file that was downloaded, etc.
+     * Keeping in mind that the worth of one work unit is always <= one story's worth of work, the value passed must be
+     * the max possible number of times that {@link #finishedWorkUnit()} will be called before this method is called
+     * again.
+     * @param divisorVal Value to divide {@link ProgressHelper#oneStoryWorth} by in order to calculate the new worth of
+     *                   one work unit. If this is set to <= 0, the worth of one unit will be set to {@link
+     *                   ProgressHelper#oneStoryWorth}.
      */
-    public static void storyProcessed(long workUnitsLeft) {
-        FictionDL.getEventBus().post(new IncWorkDoneEvent(workUnitsLeft));
+    public static void recalcUnitWorth(long divisorVal) {
+        FictionDL.getEventBus().post(new RecalcUnitWorthEvent(divisorVal));
     }
 
     /**
-     * Called each time a single unit of work has been finished. For example, a chapter
+     * Call if a {@link Story} has failed to be successfully downloaded and saved.
+     * <p>
+     * If the value passed for workUnitsLeft is > 0, {@link #recalcUnitWorth(long)} <i>must</i> be called again prior to
+     * calling either {@link #finishedWorkUnit()} or this method again with workUnitsLeft > 0.
+     * @param workUnitsLeft Number of work units that are still left at this point.
+     */
+    public static void storyFailed(long workUnitsLeft) {
+        FictionDL.getEventBus().post(new IncWorkDoneEvent(workUnitsLeft, true));
+    }
+
+    /**
+     * Call to indicate a single unit of work has been finished.
+     * <p>
+     * Callers should take care not to call a greater number of times than the value which was last passed to {@link
+     * #recalcUnitWorth(long)} so that the progress bar stays accurate.
      */
     public static void finishedWorkUnit() {
         FictionDL.getEventBus().post(new IncWorkDoneEvent(1L));

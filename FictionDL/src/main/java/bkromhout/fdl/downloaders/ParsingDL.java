@@ -70,7 +70,7 @@ public abstract class ParsingDL extends Downloader {
             Util.log(C.SOME_CHAPS_FAILED);
             // Add the number of chapters which failed to download to the number of work units completed so that the
             // progress bar remains accurate.
-            ProgressHelper.storyProcessed(chapters == null? 1L : story.getChapterCount() - chapters.size());
+            ProgressHelper.storyFailed(chapters == null? 1L : story.getChapterCount() - chapters.size());
         } else {
             // Associate the chapters with the story.
             story.setChapters(chapters);

@@ -1,7 +1,6 @@
 package bkromhout.fdl.util;
 
 import bkromhout.fdl.FictionDL;
-import com.google.common.eventbus.EventBus;
 import com.squareup.okhttp.OkHttpClient;
 
 /**
@@ -72,7 +71,7 @@ public abstract class C {
 
     public static final String ALL_FINISHED = "\nAll Finished! :)" + LOG_GREEN;
 
-    public static final String RUN_RESULTS = "This run generated %d total units of work.\n" + LOG_PURPLE;
+    public static final String RUN_RESULTS = "This run generated %f total units of work.\n" + LOG_PURPLE;
 
     // FictionHunt-specific.
     public static final String FH_ON_FFN = "\"%s\" is still available on FanFiction.net; will download from there.\n\n";
@@ -118,6 +117,8 @@ public abstract class C {
     public static final String HTML_UNEXP_RESP = "Unexpected result when trying to download HTML from \"%s\".\n";
 
     public static final String CHAP_NUM_NOT_ASSIGNED = "Chapter number hasn't been assigned yet!";
+
+    public static final String STALE_UNIT_WORTH = "Unit worth wasn't recalculated prior to use!";
 
     /*
     Default/specific detail values.
