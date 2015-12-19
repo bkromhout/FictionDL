@@ -1,11 +1,12 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.util.C;
 import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.Site;
-import bkromhout.fdl.util.Util;
 import bkromhout.fdl.rx.RxMakeStories;
 import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.ProgressHelper;
+import bkromhout.fdl.util.Util;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import com.squareup.okhttp.Response;
@@ -58,7 +59,6 @@ public abstract class Downloader {
         this.storyClass = storyClass;
         this.site = site;
         this.storyUrls = storyUrls;
-
     }
 
     /**
@@ -75,7 +75,11 @@ public abstract class Downloader {
                   .subscribeOn(Schedulers.computation())
                   .compose(new RxMakeStories(storyClass, this))
                   .doOnNext(story -> {
-                      if (story == null) storyProcessed();
+                      // If a story failed, we just add one completed work unit.
+                      if (story == null) ProgressHelper.storyProcessed(1L);
+                          // Otherwise, update the total work count by adding the number of chapters that will be
+                          // downloaded for this story.
+                      else ProgressHelper.addChapsToTotalWork(story.getChapterCount());
                   })
                   .filter(story -> story != null) // Get rid of failed stories.
                   .toList()
@@ -93,8 +97,8 @@ public abstract class Downloader {
     /**
      * Download a story.
      * <p>
-     * <u>For subclasses which choose to override this method</u>:<br/>Make sure that the {@link #storyProcessed()}
-     * method is called if a {@link Story} has been processed to the point where it won't be mutated again.
+     * <u>For subclasses which choose to override this method</u>:<br/>Make sure that the appropriate static methods in
+     * {@link ProgressHelper} are called as needed.
      * @param story Story to download and save.
      */
     protected abstract void downloadStory(Story story);
@@ -142,12 +146,5 @@ public abstract class Downloader {
      */
     protected String getSiteLoginUrl() {
         return null;
-    }
-
-    /**
-     * Called each time a {@link Story} has finished being processed (including failures).
-     */
-    protected final void storyProcessed() {
-        // TODO this needs to be more robust.
     }
 }

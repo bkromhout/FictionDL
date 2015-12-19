@@ -55,6 +55,7 @@ public class RxOkHttpCall implements Observable.Transformer<Request, Response> {
             final Call call = C.getHttpClient().newCall(request);
             // Make sure that the request is cancelled when unsubscribing.
             sub.add(Subscriptions.create(() -> cancellationExecutor.execute(call::cancel)));
+
             // Enqueue the call.
             call.enqueue(new Callback() {
                 @Override

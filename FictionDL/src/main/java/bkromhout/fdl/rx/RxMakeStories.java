@@ -58,14 +58,13 @@ public class RxMakeStories implements Observable.Transformer<String, Story> {
                 if (e.getCause() == null) e.printStackTrace();
                 else if (e.getCause().getMessage() == null) e.getCause().printStackTrace();
                 else Util.log(e.getCause().getMessage());
-                // We'll return null so that Downloader knows to call .storyProcessed() for us.
+                // We just return null if a story fails.
                 sub.onNext(null);
                 sub.onCompleted();
             } catch (ReflectiveOperationException e) {
                 // Shouldn't hit this at all. Fail hard if it happens.
                 e.printStackTrace();
                 Main.exit(1);
-                //sub.onError(e);
             }
         }
     }

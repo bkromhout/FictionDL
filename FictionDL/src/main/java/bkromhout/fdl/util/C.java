@@ -72,6 +72,8 @@ public abstract class C {
 
     public static final String ALL_FINISHED = "\nAll Finished! :)" + LOG_GREEN;
 
+    public static final String RUN_RESULTS = "This run generated %d total units of work.\n" + LOG_PURPLE;
+
     // FictionHunt-specific.
     public static final String FH_ON_FFN = "\"%s\" is still available on FanFiction.net; will download from there.\n\n";
 

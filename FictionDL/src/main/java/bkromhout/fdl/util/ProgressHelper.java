@@ -4,6 +4,7 @@ import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.events.IncTotalWorkEvent;
 import bkromhout.fdl.events.IncWorkDoneEvent;
 import bkromhout.fdl.events.UpdateTaskProgressEvent;
+import bkromhout.fdl.storys.Story;
 import com.google.common.eventbus.Subscribe;
 
 /**
@@ -11,7 +12,7 @@ import com.google.common.eventbus.Subscribe;
  */
 public class ProgressHelper {
     /**
-     * Number of work units done so far.
+     * Number of work units done so far, regardless of success.
      */
     private long workDone;
     /**
@@ -68,5 +69,43 @@ public class ProgressHelper {
         workDone += event.getUnitsToAdd();
         // Update progress bar.
         updateTaskProgress();
+    }
+
+    /**
+     * Get the total number of work units.
+     * @return Total work count.
+     */
+    public long getTotalWork() {
+        return totalWork;
+    }
+
+    /*
+    Static methods to post events to this progress helper. Collected here because the context is immediately obvious.
+    */
+
+    /**
+     * Adds the chapter count of a story to the number of total work units.
+     * @param chapCount Number of chapters in some story.
+     */
+    public static void addChapsToTotalWork(long chapCount) {
+        FictionDL.getEventBus().post(new IncTotalWorkEvent(chapCount));
+    }
+
+    /**
+     * Called each time a {@link Story} has finished being processed (including failures).
+     * <p>
+     * Adds any work units relevant to that story to the number of completed work units.
+     * @param workUnitsLeft Number of work units that are still left at this point. These might represent failed
+     *                      chapters, a single ePUB file that was downloaded, etc.
+     */
+    public static void storyProcessed(long workUnitsLeft) {
+        FictionDL.getEventBus().post(new IncWorkDoneEvent(workUnitsLeft));
+    }
+
+    /**
+     * Called each time a single unit of work has been finished. For example, a chapter
+     */
+    public static void finishedWorkUnit() {
+        FictionDL.getEventBus().post(new IncWorkDoneEvent(1L));
     }
 }

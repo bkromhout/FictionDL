@@ -32,6 +32,7 @@ public class FanFictionDL extends ParsingDL {
     protected void generateChapTitle(Chapter chapter) {
         // Try to find a <select> element on the page that has chapter titles.
         Element titleElement = chapter.rawHtml.select("select#chap_select > option[selected]").first();
+
         // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
         // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
         if (titleElement != null) {

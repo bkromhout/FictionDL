@@ -7,6 +7,7 @@ import bkromhout.fdl.parsers.LinkFileParser;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
 import bkromhout.fdl.util.Util;
+import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.squareup.okhttp.OkHttpClient;
@@ -18,6 +19,7 @@ import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -33,7 +35,7 @@ public final class FictionDL {
     /**
      * Global EventBus.
      */
-    private static final EventBus eventBus = new EventBus();
+    private static final AsyncEventBus eventBus = new AsyncEventBus(Executors.newSingleThreadExecutor());
     /**
      * Global OkHttpClient, will be used for all networking.
      */
@@ -127,65 +129,67 @@ public final class FictionDL {
     }
 
     /**
-     * Actually do stuff.
+     * Tasks to do before running.
      */
-    public void run() {
+    private void preRun() {
         // Create a LinkFileParser to get the story urls from the input file.
         linkFileParser = new LinkFileParser(inputFile);
         // If we have a config file, create a ConfigFileParser to get options.
         if (configFile != null) cfg = new ConfigFileParser(configFile).getConfig();
         // Create a ProgressHelper, passing in the total number of stories to process.
         progressHelper = new ProgressHelper(linkFileParser.getTotalNumStories());
-        // Download stories.
-        getStories(linkFileParser);
-        // All done!
+    }
+
+    /**
+     * Tasks to do after running.
+     */
+    private void postRun() {
         Util.log(C.ALL_FINISHED);
+        Util.loudf(C.RUN_RESULTS, progressHelper.getTotalWork());
         // OkHttpClient dispatcher threads seems to enjoy sticking around for a while unless we do this >_<
         httpClient.getDispatcher().getExecutorService().shutdownNow();
     }
 
     /**
-     * Takes in a {@link LinkFileParser} which has the various sites' url lists and uses it to kick off the downloading
-     * process.
-     * @param parser {@link LinkFileParser} which has successfully parsed input file.
+     * Do the fun stuff.
      */
-    private void getStories(LinkFileParser parser) {
-        /*
-        Download FictionHunt stories.
-          */
-        if (!parser.getFictionHuntUrls().isEmpty()) {
-            FictionHuntDL fictionHuntDL = new FictionHuntDL(this, parser.getFictionHuntUrls());
+    public void run() {
+        // Do pre-run tasks.
+        preRun();
+        // TODO Wouldn't it be cool if we could just iterate instead of calling each one? Yeah...
+        // Download FictionHunt stories.
+        if (!linkFileParser.getFictionHuntUrls().isEmpty()) {
+            FictionHuntDL fictionHuntDL = new FictionHuntDL(this, linkFileParser.getFictionHuntUrls());
             fictionHuntDL.download();
         }
-        /*
-        Download FanFiction.net stories.
-          */
-        if (!parser.getFfnUrls().isEmpty()) {
-            FanFictionDL fanFictionDL = new FanFictionDL(this, parser.getFfnUrls());
+
+        // Download FanFiction.net stories.
+        if (!linkFileParser.getFfnUrls().isEmpty()) {
+            FanFictionDL fanFictionDL = new FanFictionDL(this, linkFileParser.getFfnUrls());
             fanFictionDL.download();
         }
-        /*
-        Download SIYE stories.
-          */
-        if (!parser.getSiyeUrls().isEmpty()) {
-            SiyeDL siyeDL = new SiyeDL(this, parser.getSiyeUrls());
+
+        // Download SIYE stories.
+        if (!linkFileParser.getSiyeUrls().isEmpty()) {
+            SiyeDL siyeDL = new SiyeDL(this, linkFileParser.getSiyeUrls());
             siyeDL.download();
         }
-        /*
-        Download MuggleNet stories.
-         */
-        if (!parser.getMnUrls().isEmpty()) {
-            MuggleNetDL muggleNetDL = new MuggleNetDL(this, parser.getMnUrls());
+
+        // Download MuggleNet stories.
+        if (!linkFileParser.getMnUrls().isEmpty()) {
+            MuggleNetDL muggleNetDL = new MuggleNetDL(this, linkFileParser.getMnUrls());
             if (cfg.hasCreds(Site.MN)) muggleNetDL.doFormAuth(cfg.getCreds(Site.MN));
             muggleNetDL.download();
         }
-        /*
-        Download Ao3 stories.
-         */
-        if (!parser.getAo3Urls().isEmpty()) {
-            Ao3DL ao3DL = new Ao3DL(this, parser.getAo3Urls());
+
+        // Download Ao3 stories.
+        if (!linkFileParser.getAo3Urls().isEmpty()) {
+            Ao3DL ao3DL = new Ao3DL(this, linkFileParser.getAo3Urls());
             ao3DL.download();
         }
+
+        // Do post-run tasks.
+        postRun();
     }
 
     /**

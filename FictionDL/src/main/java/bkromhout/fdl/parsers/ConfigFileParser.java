@@ -53,24 +53,21 @@ public class ConfigFileParser extends FileParser {
         // Sometimes we don't care...
         if (line == null || line.isEmpty() || line.startsWith(CFG_LS_HASH) || !line.contains("=") ||
                 line.indexOf('=') == line.length() - 1) return;
+
         // Do different things based on what the line starts with (the option prefix).
         String prefix = line.substring(0, line.indexOf('='));
         switch (prefix) {
             case CFG_LS_SITE: {
-                // Check to make sure this is a valid site.
-                Matcher siteMatcher = Pattern.compile(siteNameRegex).matcher(line);
+                Matcher siteMatcher = Pattern.compile(siteNameRegex).matcher(line); // Ensure valid site.
                 // Let's be nice, if a site is misspelled or something, don't potentially overwrite a previous site's
                 // info later. If it is a valid site name, then update the current site.
-                if (!siteMatcher.find()) currSite = null;
-                else currSite = siteMatcher.group();
+                currSite = siteMatcher.find() ? siteMatcher.group() : null;
                 break;
             }
             case CFG_LS_U:
             case CFG_LS_P: {
-                // Save a username or password for the current site.
-                if (currSite == null) break; // Ignore this if it comes before a valid site.
-                // We take the rest of the line wholesale, so any spaces will be kept.
-                config.options.put(currSite + prefix, line.substring(line.indexOf('=') + 1));
+                // Save a username or password for the current site, unless the current site is unset.
+                if (currSite != null) config.options.put(currSite + prefix, line.substring(line.indexOf('=') + 1));
                 break;
             }
             default: {

@@ -6,6 +6,7 @@ import rx.Observable;
 
 /**
  * Converts OkHttp Responses to {@link Chapter Chapters}.
+ * @see Chapter#fromResponse(Response)
  */
 public class RxMakeChapters implements Observable.Transformer<Response, Chapter> {
 

@@ -68,6 +68,7 @@ public class LinkFileParser extends FileParser {
             if (!line.trim().isEmpty()) Util.loudf(C.PROCESS_LINE_FAILED, type, line);
             return;
         }
+
         String hostString = hostMatcher.group(2).toLowerCase();
         // Add story url to a set, or none of them if it wasn't valid.
         if (hostString.contains(Site.FH.getHost())) fictionHuntUrls.add(line);

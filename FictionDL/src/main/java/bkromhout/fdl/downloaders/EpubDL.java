@@ -3,6 +3,7 @@ package bkromhout.fdl.downloaders;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.Site;
+import bkromhout.fdl.util.ProgressHelper;
 import bkromhout.fdl.util.Util;
 import bkromhout.fdl.storys.Story;
 
@@ -48,6 +49,7 @@ public abstract class EpubDL extends Downloader {
         } catch (IOException e) {
             Util.logf(C.SAVE_FILE_FAILED, file.toAbsolutePath().toString());
         }
-        storyProcessed(); // Update progress.
+        // Update progress bar. We want to add 1 work unit in any case.
+        ProgressHelper.storyProcessed(1L);
     }
 }

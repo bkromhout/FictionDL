@@ -1,11 +1,15 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.*;
+import bkromhout.fdl.Chapter;
+import bkromhout.fdl.EpubCreator;
+import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.Site;
 import bkromhout.fdl.rx.RxMakeChapters;
 import bkromhout.fdl.rx.RxOkHttpCall;
 import bkromhout.fdl.rx.RxSortChapters;
 import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.ProgressHelper;
 import bkromhout.fdl.util.Util;
 import com.squareup.okhttp.Request;
 import rx.Observable;
@@ -53,24 +57,28 @@ public abstract class ParsingDL extends Downloader {
                 .doOnNext(this::generateChapTitle) // Make titles for the chapters.
                 .doOnNext(this::extractChapText) // Extract chapter content from raw HTML.
                 .doOnNext(this::sanitizeChap) // Clean up chapter content.
+                .doOnNext(chapter -> ProgressHelper.finishedWorkUnit()) // Update progress.
                 .doOnCompleted(() -> Util.log(C.SANITIZING_CHAPS))
                 .observeOn(Schedulers.immediate())
                 .toList() // Get the chapters as a list.
                 .toBlocking()
                 .single();
-        // Make sure we got all of the chapters. If we didn't we won't continue.
-        if (chapters == null || story.getChapterUrls().size() != chapters.size()) {
+
+        // Make sure we got all of the chapters. If we didn't we won't continue with this story, it fails.
+        // TODO not sure this would ever be null due to RxJava's toList() call, so may not need this null check.
+        if (chapters == null || story.getChapterCount() != chapters.size()) {
             Util.log(C.SOME_CHAPS_FAILED);
-            storyProcessed(); // Update progress.
-            return;
+            // Add the number of chapters which failed to download to the number of work units completed so that the
+            // progress bar remains accurate.
+            ProgressHelper.storyProcessed(chapters == null? 1L : story.getChapterCount() - chapters.size());
+        } else {
+            // Associate the chapters with the story.
+            story.setChapters(chapters);
+            // Save the story as an ePUB file.
+            Util.logf(C.SAVING_STORY);
+            new EpubCreator(story).makeEpub(FictionDL.getOutPath());
+            Util.log(C.DONE + "\n");
         }
-        // Associate the chapters with the story.
-        story.setChapters(chapters);
-        // Save the story as an ePUB file.
-        Util.logf(C.SAVING_STORY);
-        new EpubCreator(story).makeEpub(FictionDL.getOutPath());
-        Util.log(C.DONE + "\n");
-        storyProcessed(); // Update progress.
     }
 
     /**

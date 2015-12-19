@@ -247,7 +247,7 @@ public abstract class Story {
     }
 
     /**
-     * Get this story's chapter count.
+     * Get this story's chapter count based off of the number of chapter urls there are.
      * @return Story chapter count.
      */
     public int getChapterCount() {
