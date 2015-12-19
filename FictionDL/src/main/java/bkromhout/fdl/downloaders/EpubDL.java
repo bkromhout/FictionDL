@@ -49,7 +49,7 @@ public abstract class EpubDL extends Downloader {
         } catch (IOException e) {
             Util.logf(C.SAVE_FILE_FAILED, file.toAbsolutePath().toString());
         }
-        // Update progress bar. We want to add 1 work unit in any case.
-        ProgressHelper.storyProcessed(1L);
+        // Update progress bar.
+        ProgressHelper.finishedWorkUnit();
     }
 }

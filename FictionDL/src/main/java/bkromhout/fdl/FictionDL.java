@@ -151,7 +151,13 @@ public final class FictionDL {
     private void postRun() {
         Util.log(C.ALL_FINISHED);
         Util.loudf(C.RUN_RESULTS, progressHelper.getTotalWork());
-        // Explicitly shut down executors so that they don't keep the JVM alive.
+        shutdownExecutors();
+    }
+
+    /**
+     * Explicitly shut down executors so that they don't keep the JVM alive.
+     */
+    private void shutdownExecutors() {
         httpClient.getDispatcher().getExecutorService().shutdownNow();
         eventBusExecutor.shutdownNow();
     }
@@ -235,6 +241,10 @@ public final class FictionDL {
      */
     public static class FictionDLTask extends Task {
         /**
+         * Reference to the instance of {@link FictionDL} that this task is running.
+         */
+        private FictionDL fictionDL;
+        /**
          * Arguments to pass to {@link FictionDL}.
          */
         private HashMap<String, String> args;
@@ -251,8 +261,15 @@ public final class FictionDL {
         @Override
         protected Object call() throws Exception {
             // Do cool stuff.
-            new FictionDL(args, this).run();
+            fictionDL = new FictionDL(args, this);
+            fictionDL.run();
             return null;
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            fictionDL.shutdownExecutors();
+            return super.cancel(mayInterruptIfRunning);
         }
 
         /**

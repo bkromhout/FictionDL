@@ -67,6 +67,7 @@ public class Gui extends Application {
         fictionDLTask.setOnSucceeded(handler -> {
             controller.pbProgress.progressProperty().unbind();
             controller.setControlsEnabled(true);
+            fictionDLTask = null;
         });
 
         fictionDLTask.setOnCancelled(handler -> {
@@ -78,6 +79,7 @@ public class Gui extends Application {
                 // invalid, so we only print this message in that case.
                 Util.logf(C.INVALID_PATH, fictionDLTask.getException().getMessage());
             }
+            fictionDLTask = null;
         });
 
         // Start the task on a new thread.
