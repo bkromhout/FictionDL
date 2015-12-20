@@ -139,6 +139,5 @@ public class ProgressHelper {
      */
     public static void finishedWorkUnit() {
         C.getEventBus().post(new IncWorkDoneEvent(1L));
-        Util.loud("Finished Work Unit");
     }
 }

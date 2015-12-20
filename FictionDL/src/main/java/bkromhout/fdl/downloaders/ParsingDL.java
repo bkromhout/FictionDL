@@ -7,7 +7,6 @@ import bkromhout.fdl.Site;
 import bkromhout.fdl.rx.RxChapAction;
 import bkromhout.fdl.rx.RxMakeChapters;
 import bkromhout.fdl.rx.RxOkHttpCall;
-import bkromhout.fdl.rx.RxSortChapters;
 import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
@@ -59,13 +58,9 @@ public abstract class ParsingDL extends Downloader {
                 .compose(new RxChapAction(this::extractChapText))
                 .compose(new RxChapAction(this::sanitizeChap))
                 .compose(new RxChapAction(chapter -> ProgressHelper.finishedWorkUnit()))
-                //.doOnNext(this::generateChapTitle) // Make titles for the chapters.
-                //.doOnNext(this::extractChapText) // Extract chapter content from raw HTML.
-                //.doOnNext(this::sanitizeChap) // Clean up chapter content.
-                //.doOnNext(chapter -> ProgressHelper.finishedWorkUnit()) // Update progress.
                 .doOnCompleted(() -> Util.log(C.SANITIZING_CHAPS))
                 .observeOn(Schedulers.immediate())
-                .toSortedList(Story::fastChapSort) // Get the chapters as a list.
+                .toSortedList(Chapter::sort) // Get the chapters as a list.
                 .toBlocking()
                 .single();
         // Make sure we got all of the chapters. If we didn't we won't continue with this story, it fails.
@@ -100,8 +95,6 @@ public abstract class ParsingDL extends Downloader {
      * @see Chapter
      */
     private Observable<Chapter> downloadStoryChaps(Story story) {
-        // Create an observable to generate chapter numbers.
-        Observable<Integer> chapNums = Observable.range(1, story.getChapterCount());
         // Get chapters.
         return Observable
                 .from(story.getChapterUrls()) // Create an observable using the chapter urls from the story.
@@ -109,23 +102,9 @@ public abstract class ParsingDL extends Downloader {
                 .subscribeOn(Schedulers.newThread())
                 .map(url -> new Request.Builder().url(url).build()) // Create OkHttp Requests from urls.
                 .compose(new RxOkHttpCall()) // Get Responses by executing Requests.
-                .compose(new RxMakeChapters()) // Create Chapter objects.
+                .compose(new RxMakeChapters(story)) // Create Chapter objects.
                 .observeOn(Schedulers.computation())
-                .filter(chapter -> chapter.rawHtml != null) // Filter out any nulls, they're chapters we failed to make.
-                .compose(new RxSortChapters(story::slowChapSort)) // Sort chapters back into the correct order.
-                .zipWith(chapNums, this::assignChapNums); // Add numbers to the chapters.
-    }
-
-    /**
-     * Populates {@link Chapter#number} with the given integer.
-     * @param chapter Chapter object.
-     * @param number  Number of the chapter in the story.
-     * @return The given {@link Chapter} with {@link Chapter#number} populated.
-     * @see Chapter
-     */
-    private Chapter assignChapNums(Chapter chapter, Integer number) {
-        chapter.number = number;
-        return chapter;
+                .filter(chap -> chap.rawHtml != null); // Filter out any nulls, they're chapters we failed to make.
     }
 
     /**

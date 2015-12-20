@@ -1,10 +1,10 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.util.C;
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.Site;
 import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.util.C;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -284,35 +284,6 @@ public abstract class Story {
      */
     public ArrayList<String> getChapterUrls() {
         return chapterUrls;
-    }
-
-    /**
-     * Gets the indices of the given {@link Chapter Chapters}' urls in this Story's chapter url list and returns an
-     * integer to indicate which comes first using {@link Integer#compare(int, int)}.
-     * <p>
-     * We call this "slow" because the sorting requires information outside of the given {@link Chapter} objects.
-     * @param c1 One Chapter object.
-     * @param c2 Another Chapter object.
-     * @return Integer which indicates order of c1 and c2.
-     * @see Story
-     * @see Chapter
-     */
-    public int slowChapSort(Chapter c1, Chapter c2) {
-        return Integer.compare(chapterUrls.indexOf(c1.url), chapterUrls.indexOf(c2.url));
-    }
-
-    /**
-     * Compares the two {@link Chapter Chapters} by their {@link Chapter#number number} fields using {@link
-     * Integer#compare(int, int)}.
-     * <p>
-     * We call this "fast" because the sorting only needs the {@link Chapter} objects.
-     * @param c1 One Chapter object.
-     * @param c2 Another Chapter object.
-     * @return Integer which indicates order of c1 and c2.
-     * @see Chapter
-     */
-    public static int fastChapSort(Chapter c1, Chapter c2) {
-        return Integer.compare(c1.number, c2.number);
     }
 
     /**

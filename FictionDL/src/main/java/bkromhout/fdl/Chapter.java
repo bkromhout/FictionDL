@@ -36,23 +36,36 @@ public class Chapter {
     /**
      * Create a new {@link Chapter}.
      */
-    private Chapter(Response response) throws IOException {
+    private Chapter(Response response, int number) throws IOException {
         if (response == null) throw new IOException();
-        this.url = response.request().urlString();
+        this.url = response.request().url().toString();
         this.rawHtml = Jsoup.parse(response.body().byteStream(), null, url);
+        this.number = number;
     }
 
     /**
      * Create a new {@link Chapter} using an OkHttp Response obtained from the chapter url.
      * @param response Response containing chapter page HTML.
+     * @param number   Chapter number.
      * @return New {@link Chapter}, or null if there are problems.
      */
-    public static Chapter fromResponse(Response response) {
+    public static Chapter fromResponse(Response response, int number) {
         try {
-            return new Chapter(response);
+            return new Chapter(response, number);
         } catch (IOException e) {
             Util.loudf(C.PARSE_HTML_FAILED, response.request().urlString());
             return null;
         }
+    }
+
+    /**
+     * Compares the two {@link Chapter Chapters} by their {@link Chapter#number number} fields using {@link
+     * Integer#compare(int, int)}.
+     * @param c1 One Chapter object.
+     * @param c2 Another Chapter object.
+     * @return Integer which indicates order of c1 and c2.
+     */
+    public static int sort(Chapter c1, Chapter c2) {
+        return Integer.compare(c1.number, c2.number);
     }
 }
