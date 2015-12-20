@@ -19,7 +19,7 @@ public class Gui extends Application {
     // Preferences object for persisting things across runs.
     Preferences prefs;
     // GUI Controller.
-    GuiController controller;
+    Controller controller;
     // Current task.
     FictionDL.FictionDLTask fictionDLTask = null;
 
@@ -32,7 +32,6 @@ public class Gui extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FictionDLGui.fxml"));
         Parent root = loader.load();
         controller = loader.getController();
-
         // Tell the controller we own it.
         controller.setGui(this);
 
@@ -42,9 +41,9 @@ public class Gui extends Application {
         primaryStage.setMinWidth(525.0);
         primaryStage.setMinHeight(300.0);
         primaryStage.setOnHiding(handler -> {
-            controller.saveFields();
-            if (fictionDLTask != null) fictionDLTask.cancel(); // Make sure we actually stop the JVM when GUI closes.
-        }); // Save text fields' contents when closing stage.
+            controller.saveFields(); // Save text fields' contents when closing stage.
+            cancelFdlTask(); // Make sure we actually stop the JVM when GUI closes.
+        });
 
         // Show the stage.
         primaryStage.show();
@@ -60,7 +59,7 @@ public class Gui extends Application {
         fictionDLTask.setOnScheduled(handler -> {
             controller.pbProgress.setProgress(0d);
             controller.pbProgress.progressProperty().bind(fictionDLTask.progressProperty());
-            GuiController.flowLog.getChildren().clear();
+            Controller.flowLog.getChildren().clear();
             controller.setControlsEnabled(false);
         });
 
@@ -86,6 +85,13 @@ public class Gui extends Application {
         Thread fictionDLThread = new Thread(fictionDLTask);
         fictionDLThread.setDaemon(true);
         fictionDLThread.start();
+    }
+
+    /**
+     * Cancel the {@link bkromhout.fdl.FictionDL.FictionDLTask} currently running.
+     */
+    protected void cancelFdlTask() {
+        if (fictionDLTask != null) fictionDLTask.cancel();
     }
 
     /**

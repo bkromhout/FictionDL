@@ -18,7 +18,7 @@ import java.util.HashMap;
 /**
  * Controller class for the GUI.
  */
-public class GuiController {
+public class Controller {
     /* Preference key strings. */
     private static final String PREF_CFG_FILE_PATH = "key_cfg_file_path";
     private static final String PREF_OUT_DIR_PATH = "key_out_dir_path";
@@ -28,7 +28,9 @@ public class GuiController {
     private static final String D_CHOOSE_TITLE = "Choose Directory:";
     private static final String F_CHOOSE_TITLE = "Choose File:";
 
-    /* Gui which owns this controller. */
+    /**
+     * {@link Gui} which owns this controller.
+     */
     private Gui gui;
 
     /* Containers. */
@@ -52,8 +54,8 @@ public class GuiController {
     public TextField tfCfgFile;
     public Button btnChooseCfgFile;
 
-    /* Start button and progress bar. */
-    public Button btnStart;
+    /* Start/Stop button and progress bar. */
+    public Button btnStartStop;
     public ProgressBar pbProgress;
 
     /* Log. */
@@ -120,17 +122,29 @@ public class GuiController {
             if (selectedFile != null) tfCfgFile.setText(selectedFile.getAbsolutePath());
         });
 
-        // Set start button action.
-        btnStart.setOnAction(event -> {
-            // Store the text field values in the prefs file.
-            saveFields();
-            // Reset progress bar, then make arguments map and run FictionDL.
-            pbProgress.setProgress(0d);
-            HashMap<String, String> ficDlArgs = new HashMap<>();
-            ficDlArgs.put(C.ARG_IN_PATH, tfInFile.getText());
-            ficDlArgs.put(C.ARG_OUT_PATH, tfOutDir.getText());
-            ficDlArgs.put(C.ARG_CFG_PATH, tfCfgFile.getText());
-            gui.runFictionDl(ficDlArgs);
+        // Set start/stop button action.
+        btnStartStop.setOnAction(event -> {
+            // Do something different depending on if the button currently says "Start" or "Stop".
+            if (btnStartStop.getText().equals("Start")) {
+                btnStartStop.setDisable(true);
+                // Store the text field values in the prefs file.
+                saveFields();
+                // Reset progress bar, then make arguments map and run FictionDL.
+                pbProgress.setProgress(0d);
+                HashMap<String, String> ficDlArgs = new HashMap<>();
+                ficDlArgs.put(C.ARG_IN_PATH, tfInFile.getText());
+                ficDlArgs.put(C.ARG_OUT_PATH, tfOutDir.getText());
+                ficDlArgs.put(C.ARG_CFG_PATH, tfCfgFile.getText());
+                gui.runFictionDl(ficDlArgs);
+                // Set button text to "Stop" then enable the button again.
+                btnStartStop.setText("Stop");
+                btnStartStop.setDisable(false);
+            } else {
+                btnStartStop.setDisable(true);
+                gui.cancelFdlTask();
+                btnStartStop.setText("Start");
+                btnStartStop.setDisable(false);
+            }
         });
     }
 
@@ -150,7 +164,7 @@ public class GuiController {
         // Retrieve the last input and output paths that were used.
         restoreFields();
         // Set the Start button as focused, that way the user can just hit enter.
-        btnStart.setDefaultButton(true);
+        btnStartStop.setDefaultButton(true);
     }
 
     /**
@@ -191,6 +205,5 @@ public class GuiController {
         btnChooseOutDir.setDisable(!areEnabled);
         btnDefaultOutDir.setDisable(!areEnabled);
         btnChooseCfgFile.setDisable(!areEnabled);
-        btnStart.setDisable(!areEnabled);
     }
 }

@@ -1,7 +1,7 @@
 package bkromhout.fdl.util;
 
 import bkromhout.fdl.Main;
-import bkromhout.fdl.ui.GuiController;
+import bkromhout.fdl.ui.Controller;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import javafx.scene.paint.Color;
@@ -283,7 +283,7 @@ public abstract class Util {
 
         // Strip log tags, then send to the TextFlow.
         text.setText(stripLogStyleTags(s));
-        GuiController.appendLogText(text);
+        Controller.appendLogText(text);
     }
 
     /**
