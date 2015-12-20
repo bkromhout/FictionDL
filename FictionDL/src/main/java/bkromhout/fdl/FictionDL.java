@@ -7,44 +7,24 @@ import bkromhout.fdl.parsers.LinkFileParser;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
 import bkromhout.fdl.util.Util;
-import com.google.common.eventbus.AsyncEventBus;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.logging.HttpLoggingInterceptor;
+import com.squareup.okhttp.ConnectionPool;
 import javafx.concurrent.Task;
 
 import java.io.File;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This class is responsible for orchestrating the whole fiction download process. It is given everything it needs to do
  * its job when it is created, and then {@link FictionDL#run()} is called.
  */
-public final class FictionDL {
+public class FictionDL {
     /**
      * If running from the {@link bkromhout.fdl.ui.Gui Gui}, a reference to the {@link FictionDLTask} hosting us. Null
      * if running from the CLI.
      */
     private FictionDLTask task;
-    /**
-     * Executor for the async event bus. Have to have a reference to it in order to shut it down when we're done.
-     */
-    private static final ExecutorService eventBusExecutor = Executors.newSingleThreadExecutor();
-    /**
-     * Global EventBus.
-     */
-    private static final AsyncEventBus eventBus = new AsyncEventBus("fdl-event-bus", eventBusExecutor);
-    /**
-     * Global OkHttpClient, will be used for all networking.
-     */
-    private static OkHttpClient httpClient;
     /**
      * Represents the input (link) file which has a list of story urls
      */
@@ -98,7 +78,7 @@ public final class FictionDL {
      */
     private void init(HashMap<String, String> args) {
         // If we're running from a GUI, register the task with the EventBus so it will receive progress update events.
-        if (task != null) eventBus.register(task);
+        if (task != null) C.getEventBus().register(task);
 
         // Make sure we have an input path and that it is valid.
         if (args.get(C.ARG_IN_PATH) == null) throw new IllegalArgumentException(C.NO_INPUT_PATH);
@@ -111,26 +91,6 @@ public final class FictionDL {
 
         // Get the config file path, if present.
         if (args.get(C.ARG_CFG_PATH) != null) configFile = Util.tryGetFile(args.get(C.ARG_CFG_PATH));
-
-        // Set up the OkHttpClient.
-        httpClient = new OkHttpClient();
-        httpClient.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-        httpClient.getDispatcher().setMaxRequestsPerHost(10); // Bump this up from 5.
-        httpClient.setReadTimeout(0, TimeUnit.MILLISECONDS);
-        addOkHttpLogging();
-    }
-
-    /**
-     * Adds a logger to the OkHttpClient.
-     * <p>
-     * All log messages will be logged using {@link Util#loud(String)}, so none of them will be printed if verbose mode
-     * isn't enabled. Also, they will be purple :)
-     */
-    private void addOkHttpLogging() {
-        // Pass the Util.loud() function to the logger so that it uses our logging methods.
-        HttpLoggingInterceptor logger = new HttpLoggingInterceptor(str -> Util.loud(str + C.LOG_PURPLE));
-        logger.setLevel(HttpLoggingInterceptor.Level.BASIC);
-        httpClient.interceptors().add(logger);
     }
 
     /**
@@ -151,15 +111,19 @@ public final class FictionDL {
     private void postRun() {
         Util.log(C.ALL_FINISHED);
         Util.loudf(C.RUN_RESULTS, progressHelper.getTotalWork());
-        shutdownExecutors();
+        freeResources();
     }
 
     /**
-     * Explicitly shut down executors so that they don't keep the JVM alive.
+     * Explicitly free resources which could keep the JVM from shutting down.
      */
-    private void shutdownExecutors() {
-        httpClient.getDispatcher().getExecutorService().shutdownNow();
-        eventBusExecutor.shutdownNow();
+    private void freeResources() {
+        //Main.httpClient.getDispatcher().getExecutorService().shutdownNow(); // Shut down OkHttp dispatcher's
+        // ExecutorService.
+        //Schedulers.shutdown(); // Shut down all RxJava schedulers.
+        //ConnectionPool.getDefault().evictAll(); // Evict OkHttp's connection pool.
+        //C.getHttpClient().getConnectionPool().evictAll();
+        //Main.eventBusExecutor.shutdownNow(); // Shut down event bus executor.
     }
 
     /**
@@ -205,14 +169,6 @@ public final class FictionDL {
     }
 
     /**
-     * Provide access to the event bus.
-     * @return Event bus.
-     */
-    public static EventBus getEventBus() {
-        return eventBus;
-    }
-
-    /**
      * Get the Path that represents the location where everything should be saved.
      * @return Out path.
      */
@@ -226,14 +182,6 @@ public final class FictionDL {
      */
     public static LinkFileParser getLinkFileParser() {
         return linkFileParser;
-    }
-
-    /**
-     * Get the OkHttpClient in use for this run.
-     * @return OkHttpClient.
-     */
-    public static OkHttpClient getHttpClient() {
-        return httpClient;
     }
 
     /**
@@ -255,7 +203,6 @@ public final class FictionDL {
          */
         public FictionDLTask(HashMap<String, String> args) {
             this.args = args;
-
         }
 
         @Override
@@ -268,7 +215,7 @@ public final class FictionDL {
 
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
-            fictionDL.shutdownExecutors();
+            fictionDL.freeResources();
             fictionDL = null;
             return super.cancel(mayInterruptIfRunning);
         }

@@ -1,6 +1,5 @@
 package bkromhout.fdl.util;
 
-import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.events.IncWorkDoneEvent;
 import bkromhout.fdl.events.RecalcUnitWorthEvent;
 import bkromhout.fdl.events.UpdateTaskProgressEvent;
@@ -43,7 +42,7 @@ public class ProgressHelper {
      */
     public ProgressHelper(long totalStories) {
         // Register with the event bus.
-        FictionDL.getEventBus().register(this);
+        C.getEventBus().register(this);
         // Set work done to 0.
         this.workDone = 0.0;
         // Set total work to the number of stories.
@@ -61,7 +60,7 @@ public class ProgressHelper {
      * #totalWork}.
      */
     private void updateTaskProgress() {
-        FictionDL.getEventBus().post(new UpdateTaskProgressEvent(workDone, totalWork));
+        C.getEventBus().post(new UpdateTaskProgressEvent(workDone, totalWork));
     }
 
     /**
@@ -118,7 +117,7 @@ public class ProgressHelper {
      *                   ProgressHelper#oneStoryWorth}.
      */
     public static void recalcUnitWorth(long divisorVal) {
-        FictionDL.getEventBus().post(new RecalcUnitWorthEvent(divisorVal));
+        C.getEventBus().post(new RecalcUnitWorthEvent(divisorVal));
     }
 
     /**
@@ -129,7 +128,7 @@ public class ProgressHelper {
      * @param workUnitsLeft Number of work units that are still left at this point.
      */
     public static void storyFailed(long workUnitsLeft) {
-        FictionDL.getEventBus().post(new IncWorkDoneEvent(workUnitsLeft, true));
+        C.getEventBus().post(new IncWorkDoneEvent(workUnitsLeft, true));
     }
 
     /**
@@ -139,7 +138,7 @@ public class ProgressHelper {
      * #recalcUnitWorth(long)} so that the progress bar stays accurate.
      */
     public static void finishedWorkUnit() {
-        FictionDL.getEventBus().post(new IncWorkDoneEvent(1L));
+        C.getEventBus().post(new IncWorkDoneEvent(1L));
         Util.loud("Finished Work Unit");
     }
 }

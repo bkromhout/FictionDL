@@ -1,6 +1,7 @@
 package bkromhout.fdl.util;
 
-import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.Main;
+import com.google.common.eventbus.EventBus;
 import com.squareup.okhttp.OkHttpClient;
 
 /**
@@ -19,11 +20,19 @@ public abstract class C {
     public static final String VER_STRING = "FictionDL, Version 3.0.0";
 
     /**
-     * This is here for code-style convenience. Typing C.getHttpClient() is much shorter than FictionDl.httpClient ;)
-     * @return The OkHttpClient from {@link FictionDL}.
+     * Provide access to the OkHttpClient.
+     * @return The OkHttpClient from {@link Main}.
      */
     public static OkHttpClient getHttpClient() {
-        return FictionDL.getHttpClient();
+        return Main.httpClient;
+    }
+
+    /**
+     * Provide access to the event bus.
+     * @return Event bus from {@link Main}.
+     */
+    public static EventBus getEventBus() {
+        return Main.eventBus;
     }
 
     /*

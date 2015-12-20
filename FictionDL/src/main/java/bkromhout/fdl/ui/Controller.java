@@ -130,6 +130,7 @@ public class Controller {
                 // Store the text field values in the prefs file.
                 saveFields();
                 // Reset progress bar, then make arguments map and run FictionDL.
+                pbProgress.progressProperty().unbind();
                 pbProgress.setProgress(0d);
                 HashMap<String, String> ficDlArgs = new HashMap<>();
                 ficDlArgs.put(C.ARG_IN_PATH, tfInFile.getText());
@@ -141,7 +142,7 @@ public class Controller {
                 btnStartStop.setDisable(false);
             } else {
                 btnStartStop.setDisable(true);
-                gui.cancelFdlTask();
+                gui.cancelFictionDLTask();
                 btnStartStop.setText("Start");
                 btnStartStop.setDisable(false);
             }

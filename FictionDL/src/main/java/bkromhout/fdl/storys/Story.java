@@ -311,7 +311,7 @@ public abstract class Story {
      * @return Integer which indicates order of c1 and c2.
      * @see Chapter
      */
-    public int fastChapSort(Chapter c1, Chapter c2) {
+    public static int fastChapSort(Chapter c1, Chapter c2) {
         return Integer.compare(c1.number, c2.number);
     }
 

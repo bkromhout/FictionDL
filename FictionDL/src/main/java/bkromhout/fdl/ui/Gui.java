@@ -1,7 +1,7 @@
 package bkromhout.fdl.ui;
 
-import bkromhout.fdl.util.C;
 import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -42,7 +42,8 @@ public class Gui extends Application {
         primaryStage.setMinHeight(300.0);
         primaryStage.setOnHiding(handler -> {
             controller.saveFields(); // Save text fields' contents when closing stage.
-            cancelFdlTask(); // Make sure we actually stop the JVM when GUI closes.
+            cancelFictionDLTask(); // Cancel the task.
+            C.getHttpClient().getDispatcher().getExecutorService().shutdownNow(); // Shut down OkHttp's dispatcher.
         });
 
         // Show the stage.
@@ -66,6 +67,7 @@ public class Gui extends Application {
         fictionDLTask.setOnSucceeded(handler -> {
             controller.pbProgress.progressProperty().unbind();
             controller.setControlsEnabled(true);
+            controller.btnStartStop.setText("Start");
             fictionDLTask = null;
         });
 
@@ -90,7 +92,7 @@ public class Gui extends Application {
     /**
      * Cancel the {@link bkromhout.fdl.FictionDL.FictionDLTask} currently running.
      */
-    protected void cancelFdlTask() {
+    protected void cancelFictionDLTask() {
         if (fictionDLTask != null) fictionDLTask.cancel();
     }
 
