@@ -20,9 +20,9 @@ public class ProgressHelper {
      */
     private final double totalWork;
     /**
-     * How much of the overall progress percentage is one story worth? Will always be equal to 1/{@link #totalWork}.
+     * How much of the overall progress percentage is one story worth? Will always be equal to 1.0.
      */
-    private final double oneStoryWorth;
+    private final double oneStoryWorth = 1.0;
     /**
      * How much of the overall progress percentage is one work unit currently worth? This can change over the time, but
      * it will always be <= the value of {@link #oneStoryWorth}.
@@ -48,8 +48,6 @@ public class ProgressHelper {
         this.workDone = 0.0;
         // Set total work to the number of stories.
         this.totalWork = totalStories;
-        // Calculate how much of the total work one story's worth of work is.
-        this.oneStoryWorth = 1.0 / totalWork;
         // Set the current work unit worth to be equal to one story's worth of work. For now.
         this.currUnitWorth = oneStoryWorth;
         // Update GUI progress bar.

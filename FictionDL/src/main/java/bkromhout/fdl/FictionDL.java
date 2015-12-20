@@ -40,7 +40,7 @@ public final class FictionDL {
     /**
      * Global EventBus.
      */
-    private static final AsyncEventBus eventBus = new AsyncEventBus(eventBusExecutor);
+    private static final AsyncEventBus eventBus = new AsyncEventBus("fdl-event-bus", eventBusExecutor);
     /**
      * Global OkHttpClient, will be used for all networking.
      */
@@ -269,6 +269,7 @@ public final class FictionDL {
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
             fictionDL.shutdownExecutors();
+            fictionDL = null;
             return super.cancel(mayInterruptIfRunning);
         }
 
