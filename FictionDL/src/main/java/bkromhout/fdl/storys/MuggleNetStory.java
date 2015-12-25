@@ -36,7 +36,7 @@ public class MuggleNetStory extends Story {
     /**
      * Error message displayed by MuggleNet when attempting to access a "Professors" rated story while not logged in.
      */
-    public static final String MN_REG_USERS_ONLY = "Registered Users Only";
+    static final String MN_REG_USERS_ONLY = "Registered Users Only";
     /**
      * Message displayed in place of a "6th-7th Years"-rated story/chapter if the warning integer isn't 3.
      */

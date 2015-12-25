@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  */
 public class MuggleNetDL extends ParsingDL {
     /**
-     * MuggleNet login page link.
+     * MuggleNet login page url.
      */
     private static final String MN_L_URL = "http://fanfiction.mugglenet.com/user.php?action=login";
 

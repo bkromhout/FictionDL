@@ -4,15 +4,13 @@ package bkromhout.fdl;
  * Represents a supported site.
  */
 public enum Site {
-    /*
-    Sites
-     */
+    /* Sites */
     FFN("FanFiction.net", "fanfiction.net"),
     FH("FictionHunt", "fictionhunt.com"),
     SIYE("SIYE", "siye.co.uk"),
     MN("MuggleNet", "fanfiction.mugglenet.com"),
-    AO3("Ao3", "archiveofourown.org");
-
+    AO3("Ao3", "archiveofourown.org"),
+    TBC("The Broom Cupboard", "thebroomcupboard.net");
 
     private final String name;
     private final String host;
