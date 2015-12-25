@@ -1,9 +1,9 @@
 package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.Chapter;
+import bkromhout.fdl.ESite;
 import bkromhout.fdl.EpubCreator;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Site;
 import bkromhout.fdl.rx.RxChapAction;
 import bkromhout.fdl.rx.RxMakeChapters;
 import bkromhout.fdl.rx.RxOkHttpCall;
@@ -38,7 +38,7 @@ public abstract class ParsingDL extends Downloader {
      *                         chapter's text cannot be extracted with one CSS selector, the subclass should pass null
      *                         for this and override {@link #extractChapText(Chapter)}.)
      */
-    protected ParsingDL(FictionDL fictionDL, Class<? extends Story> storyClass, Site site, HashSet<String> storyUrls,
+    protected ParsingDL(FictionDL fictionDL, Class<? extends Story> storyClass, ESite site, HashSet<String> storyUrls,
                         String chapTextSelector) {
         super(fictionDL, storyClass, site, storyUrls);
         this.chapTextSelector = chapTextSelector;

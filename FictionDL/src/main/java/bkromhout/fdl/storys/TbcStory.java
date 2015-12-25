@@ -1,6 +1,6 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.Site;
+import bkromhout.fdl.ESite;
 import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
 
@@ -16,7 +16,7 @@ public class TbcStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public TbcStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Site.TBC);
+        super(ownerDl, url, ESite.TBC);
     }
 
     @Override

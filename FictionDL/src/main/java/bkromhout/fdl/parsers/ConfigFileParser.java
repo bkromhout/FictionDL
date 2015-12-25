@@ -1,6 +1,6 @@
 package bkromhout.fdl.parsers;
 
-import bkromhout.fdl.Site;
+import bkromhout.fdl.ESite;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
 import rx.Observable;
@@ -39,7 +39,7 @@ public class ConfigFileParser extends FileParser {
     @Override
     protected void init() {
         config = new Config();
-        siteNameRegex = buildSitesOrRegex(Site.values());
+        siteNameRegex = buildSitesOrRegex(ESite.values());
     }
 
     /**
@@ -77,14 +77,14 @@ public class ConfigFileParser extends FileParser {
     }
 
     /**
-     * Translates an array of {@link Site Sites} to an OR Regex which uses the sites' names.
+     * Translates an array of {@link ESite Sites} to an OR Regex which uses the sites' names.
      * @param sites Array of Sites.
      * @return OR Regex using sites' names.
      */
-    private String buildSitesOrRegex(Site[] sites) {
+    private String buildSitesOrRegex(ESite[] sites) {
         // Map Sites to site names.
         ArrayList<String> siteNames = (ArrayList<String>) Observable.from(sites)
-                                                                    .map(Site::getName)
+                                                                    .map(ESite::getName)
                                                                     .toList()
                                                                     .toBlocking()
                                                                     .single();
@@ -110,11 +110,11 @@ public class ConfigFileParser extends FileParser {
 
         /**
          * Gets a String array like ["Username", "Password"], so long as both exist and are non-empty for the given
-         * {@link Site}.
+         * {@link ESite}.
          * @param site Site to get credentials for.
          * @return Credentials String array, or null.
          */
-        public String[] getCreds(Site site) {
+        public String[] getCreds(ESite site) {
             String u = options.get(site.getName() + CFG_LS_U);
             String p = options.get(site.getName() + CFG_LS_P);
             if (u == null || u.isEmpty() || p == null || p.isEmpty()) return null;
@@ -122,11 +122,11 @@ public class ConfigFileParser extends FileParser {
         }
 
         /**
-         * Check if there are credentials for the given {@link Site}.
+         * Check if there are credentials for the given {@link ESite}.
          * @param site Site to check credentials for.
          * @return True if the user supplied us with a non-empty username and password, otherwise false.
          */
-        public boolean hasCreds(Site site) {
+        public boolean hasCreds(ESite site) {
             return getCreds(site) != null;
         }
     }

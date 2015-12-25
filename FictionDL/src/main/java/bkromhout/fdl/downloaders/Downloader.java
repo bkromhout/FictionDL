@@ -1,7 +1,7 @@
 package bkromhout.fdl.downloaders;
 
+import bkromhout.fdl.ESite;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Site;
 import bkromhout.fdl.rx.RxMakeStories;
 import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.C;
@@ -34,9 +34,9 @@ public abstract class Downloader {
      */
     protected Class<? extends Story> storyClass;
     /**
-     * {@link bkromhout.fdl.Site} that this downloader services.
+     * {@link ESite} that this downloader services.
      */
-    protected Site site;
+    protected ESite site;
     /**
      * Story urls.
      */
@@ -54,7 +54,7 @@ public abstract class Downloader {
      * @param site       Site that this downloader services.
      * @param storyUrls  Set of story urls to be downloaded.
      */
-    protected Downloader(FictionDL fictionDL, Class<? extends Story> storyClass, Site site, HashSet<String> storyUrls) {
+    protected Downloader(FictionDL fictionDL, Class<? extends Story> storyClass, ESite site, HashSet<String> storyUrls) {
         this.fictionDL = fictionDL;
         this.storyClass = storyClass;
         this.site = site;

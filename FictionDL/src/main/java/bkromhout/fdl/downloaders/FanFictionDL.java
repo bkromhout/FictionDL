@@ -1,8 +1,8 @@
 package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.Chapter;
+import bkromhout.fdl.ESite;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Site;
 import bkromhout.fdl.storys.FanFictionStory;
 import org.jsoup.nodes.Element;
 
@@ -21,7 +21,7 @@ public class FanFictionDL extends ParsingDL {
      * @param urls      List of FanFiction.net urls.
      */
     public FanFictionDL(FictionDL fictionDL, HashSet<String> urls) {
-        super(fictionDL, FanFictionStory.class, Site.FFN, urls, "div#storytext");
+        super(fictionDL, FanFictionStory.class, ESite.FFN, urls, "div#storytext");
     }
 
     /**

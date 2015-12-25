@@ -1,7 +1,7 @@
 package bkromhout.fdl.storys;
 
 import bkromhout.fdl.Chapter;
-import bkromhout.fdl.Site;
+import bkromhout.fdl.ESite;
 import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.util.C;
@@ -28,7 +28,7 @@ public abstract class Story {
     // Story url.
     protected String url;
     // Site story is from (will be used as "Publisher" metadata).
-    protected Site site;
+    protected ESite site;
     // Story ID.
     protected String storyId;
     // Story title.
@@ -69,7 +69,7 @@ public abstract class Story {
      * @param site    Site that story is from.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    protected Story(Downloader ownerDl, String url, Site site) throws InitStoryException {
+    protected Story(Downloader ownerDl, String url, ESite site) throws InitStoryException {
         this.ownerDl = ownerDl;
         this.url = url;
         this.site = site;

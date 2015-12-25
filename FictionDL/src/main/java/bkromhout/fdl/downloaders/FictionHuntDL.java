@@ -20,7 +20,7 @@ public class FictionHuntDL extends ParsingDL {
      * @param urls      List of FictionHunt urls.
      */
     public FictionHuntDL(FictionDL fictionDL, HashSet<String> urls) {
-        super(fictionDL, FictionHuntStory.class, Site.FH, urls, "div.text");
+        super(fictionDL, FictionHuntStory.class, ESite.FH, urls, "div.text");
     }
 
     /**

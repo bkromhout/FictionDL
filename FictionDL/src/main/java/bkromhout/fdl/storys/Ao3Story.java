@@ -1,6 +1,6 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.Site;
+import bkromhout.fdl.ESite;
 import bkromhout.fdl.util.Util;
 import bkromhout.fdl.downloaders.EpubDL;
 import bkromhout.fdl.ex.InitStoryException;
@@ -22,7 +22,7 @@ public class Ao3Story extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public Ao3Story(EpubDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Site.AO3);
+        super(ownerDl, url, ESite.AO3);
     }
 
     @Override

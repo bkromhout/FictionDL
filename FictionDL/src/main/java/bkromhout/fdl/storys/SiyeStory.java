@@ -1,7 +1,7 @@
 package bkromhout.fdl.storys;
 
 import bkromhout.fdl.util.C;
-import bkromhout.fdl.Site;
+import bkromhout.fdl.ESite;
 import bkromhout.fdl.util.Util;
 import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
@@ -33,7 +33,7 @@ public class SiyeStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public SiyeStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Site.SIYE);
+        super(ownerDl, url, ESite.SIYE);
     }
 
     @Override

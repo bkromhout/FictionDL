@@ -1,8 +1,8 @@
 package bkromhout.fdl.downloaders;
 
+import bkromhout.fdl.ESite;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Site;
 import bkromhout.fdl.util.ProgressHelper;
 import bkromhout.fdl.util.Util;
 import bkromhout.fdl.storys.Story;
@@ -27,7 +27,7 @@ public abstract class EpubDL extends Downloader {
      * @param site       Site that this downloader services.
      * @param storyUrls  List of story urls to be downloaded.
      */
-    public EpubDL(FictionDL fictionDL, Class<? extends Story> storyClass, Site site, HashSet<String> storyUrls) {
+    public EpubDL(FictionDL fictionDL, Class<? extends Story> storyClass, ESite site, HashSet<String> storyUrls) {
         super(fictionDL, storyClass, site, storyUrls);
     }
 

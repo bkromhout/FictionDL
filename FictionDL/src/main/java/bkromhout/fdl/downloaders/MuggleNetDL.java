@@ -3,7 +3,7 @@ package bkromhout.fdl.downloaders;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Site;
+import bkromhout.fdl.ESite;
 import bkromhout.fdl.storys.MuggleNetStory;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
@@ -28,7 +28,7 @@ public class MuggleNetDL extends ParsingDL {
      * @param urls      List of MuggleNet urls.
      */
     public MuggleNetDL(FictionDL fictionDL, HashSet<String> urls) {
-        super(fictionDL, MuggleNetStory.class, Site.MN, urls, "div.contentLeft");
+        super(fictionDL, MuggleNetStory.class, ESite.MN, urls, "div.contentLeft");
     }
 
     @Override

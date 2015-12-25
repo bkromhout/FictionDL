@@ -8,7 +8,6 @@ import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
 import bkromhout.fdl.util.Util;
 import com.google.common.eventbus.Subscribe;
-import com.squareup.okhttp.ConnectionPool;
 import javafx.concurrent.Task;
 
 import java.io.File;
@@ -154,7 +153,7 @@ public class FictionDL {
         // Download MuggleNet stories.
         if (!linkFileParser.getMnUrls().isEmpty()) {
             MuggleNetDL muggleNetDL = new MuggleNetDL(this, linkFileParser.getMnUrls());
-            if (cfg.hasCreds(Site.MN)) muggleNetDL.doFormAuth(cfg.getCreds(Site.MN));
+            if (cfg.hasCreds(ESite.MN)) muggleNetDL.doFormAuth(cfg.getCreds(ESite.MN));
             muggleNetDL.download();
         }
 

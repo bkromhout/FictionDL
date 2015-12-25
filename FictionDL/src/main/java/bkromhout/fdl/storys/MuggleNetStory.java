@@ -1,7 +1,7 @@
 package bkromhout.fdl.storys;
 
+import bkromhout.fdl.ESite;
 import bkromhout.fdl.util.C;
-import bkromhout.fdl.Site;
 import bkromhout.fdl.util.Util;
 import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
@@ -55,7 +55,7 @@ public class MuggleNetStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public MuggleNetStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Site.MN);
+        super(ownerDl, url, ESite.MN);
     }
 
     @Override
