@@ -1,13 +1,13 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.*;
+import bkromhout.fdl.Chapter;
+import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.storys.FanFictionStory;
 import bkromhout.fdl.storys.FictionHuntStory;
 import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
-
-import java.util.HashSet;
 
 /**
  * Downloader for <a href="http://www.fictionhunt.com">FictionHunt</a> stories.
@@ -17,10 +17,9 @@ public class FictionHuntDL extends ParsingDL {
     /**
      * Create a new {@link FictionHuntDL}.
      * @param fictionDL FictionDL object which owns this downloader.
-     * @param urls      List of FictionHunt urls.
      */
-    public FictionHuntDL(FictionDL fictionDL, HashSet<String> urls) {
-        super(fictionDL, FictionHuntStory.class, ESite.FH, urls, "div.text");
+    public FictionHuntDL(FictionDL fictionDL) {
+        super(fictionDL, Sites.FH(), "div.text");
     }
 
     /**
@@ -37,7 +36,7 @@ public class FictionHuntDL extends ParsingDL {
         if (((FictionHuntStory) story).isOnFfn()) {
             // Story still on FanFiction.net, which is preferable, so we'll add a FFN url so it gets downloaded later.
             Util.logf(C.FH_ON_FFN, story.getTitle());
-            FictionDL.getLinkFileParser().addFfnUrl(String.format(FanFictionStory.FFN_S_URL, story.getStoryId()));
+            Sites.FFN().getUrls().add(String.format(FanFictionStory.FFN_S_URL, story.getStoryId()));
         } else {
             // Just do the normal thing.
             super.downloadStory(story);

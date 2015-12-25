@@ -1,7 +1,7 @@
 package bkromhout.fdl.storys;
 
 import bkromhout.fdl.Chapter;
-import bkromhout.fdl.ESite;
+import bkromhout.fdl.Site;
 import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.util.C;
@@ -22,13 +22,17 @@ public abstract class Story {
      * Indicates we couldn't find an ePUB file to download for a story.
      */
     static final String NO_EPUB = "NO_EPUB";
+    /**
+     * Indicated we failed to download a story from a site which doesn't use story IDs.
+     */
+    static final String NO_ID_DL_FAIL = "NO_ID_DL_FAIL";
 
     // The downloader which owns this story.
     protected Downloader ownerDl;
     // Story url.
     protected String url;
     // Site story is from (will be used as "Publisher" metadata).
-    protected ESite site;
+    protected Site site;
     // Story ID.
     protected String storyId;
     // Story title.
@@ -69,7 +73,7 @@ public abstract class Story {
      * @param site    Site that story is from.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    protected Story(Downloader ownerDl, String url, ESite site) throws InitStoryException {
+    protected Story(Downloader ownerDl, String url, Site site) throws InitStoryException {
         this.ownerDl = ownerDl;
         this.url = url;
         this.site = site;
@@ -131,6 +135,9 @@ public abstract class Story {
             case NO_EPUB:
                 // Couldn't find an ePUB file to download. str1 is the story title.
                 return new InitStoryException(String.format(C.NO_EPUB_ON_SITE, site.getName(), str1));
+            case NO_ID_DL_FAIL:
+                // Couldn't download a story from a site which doesn't use story IDs. str1 is the url.
+                return new InitStoryException(String.format(C.NO_ID_STORY_DL_FAILED, site.getName(), str1));
             case MuggleNetStory.MN_REG_USERS_ONLY:
                 // Need to login to MuggleNet.
                 return new InitStoryException(String.format(C.MUST_LOGIN, site.getName(), storyId));

@@ -1,13 +1,11 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.ESite;
-import bkromhout.fdl.util.C;
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.storys.SiyeStory;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Sites;
 import org.jsoup.nodes.Element;
 
-import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,10 +17,9 @@ public class SiyeDL extends ParsingDL {
     /**
      * Create a new {@link SiyeDL}.
      * @param fictionDL FictionDL object which owns this downloader.
-     * @param urls      List of SIYE urls.
      */
-    public SiyeDL(FictionDL fictionDL, HashSet<String> urls) {
-        super(fictionDL, SiyeStory.class, ESite.SIYE, urls, null);
+    public SiyeDL(FictionDL fictionDL) {
+        super(fictionDL, Sites.SIYE(), null);
         extraPreDlMsgs = C.SIYE_PRE_DL;
     }
 

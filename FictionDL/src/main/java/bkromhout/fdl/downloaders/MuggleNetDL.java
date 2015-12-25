@@ -1,15 +1,13 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.util.C;
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.ESite;
-import bkromhout.fdl.storys.MuggleNetStory;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Sites;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
 import org.jsoup.nodes.Element;
 
-import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,10 +23,9 @@ public class MuggleNetDL extends ParsingDL {
     /**
      * Create a new {@link MuggleNetDL}.
      * @param fictionDL FictionDL object which owns this downloader.
-     * @param urls      List of MuggleNet urls.
      */
-    public MuggleNetDL(FictionDL fictionDL, HashSet<String> urls) {
-        super(fictionDL, MuggleNetStory.class, ESite.MN, urls, "div.contentLeft");
+    public MuggleNetDL(FictionDL fictionDL) {
+        super(fictionDL, Sites.MN(), "div.contentLeft");
     }
 
     @Override

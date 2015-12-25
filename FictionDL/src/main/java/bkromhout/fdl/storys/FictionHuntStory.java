@@ -1,10 +1,10 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.util.C;
-import bkromhout.fdl.ESite;
-import bkromhout.fdl.util.Util;
 import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Sites;
+import bkromhout.fdl.util.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
@@ -28,7 +28,7 @@ public class FictionHuntStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public FictionHuntStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, ESite.FH);
+        super(ownerDl, url, Sites.FH());
     }
 
     @Override

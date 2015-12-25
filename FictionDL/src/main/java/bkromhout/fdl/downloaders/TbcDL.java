@@ -2,12 +2,9 @@ package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.ESite;
-import bkromhout.fdl.storys.TbcStory;
+import bkromhout.fdl.util.Sites;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
-
-import java.util.HashSet;
 
 /**
  * Downloader for <a href="http://thebroomcupboard.net">The Broom Cupboard</a> stories.
@@ -21,10 +18,9 @@ public class TbcDL extends ParsingDL {
     /**
      * Create a new {@link TbcDL}.
      * @param fictionDL FictionDL object which owns this downloader.
-     * @param urls      List of Broom Cupboard urls.
      */
-    public TbcDL(FictionDL fictionDL, HashSet<String> urls) {
-        super(fictionDL, TbcStory.class, ESite.TBC, urls, null);
+    public TbcDL(FictionDL fictionDL) {
+        super(fictionDL, Sites.TBC(), null);
     }
 
     @Override
@@ -49,15 +45,16 @@ public class TbcDL extends ParsingDL {
      */
     @Override
     protected void generateChapTitle(Chapter chapter) {
-        super.generateChapTitle(chapter);
+        // TODO
     }
 
     /**
-     * The Broom Cupboard's raw HTML is
+     * The Broom Cupboard's raw HTML doesn't have a single CSS selector string which can select only the story content
+     * from it. The closest thing to it still contains many detail elements which we will want to strip.
      * @param chapter Chapter object.
      */
     @Override
     protected void extractChapText(Chapter chapter) {
-        super.extractChapText(chapter);
+        // TODO
     }
 }

@@ -1,10 +1,10 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.ESite;
-import bkromhout.fdl.util.C;
-import bkromhout.fdl.util.Util;
 import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Sites;
+import bkromhout.fdl.util.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
@@ -55,7 +55,7 @@ public class MuggleNetStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public MuggleNetStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, ESite.MN);
+        super(ownerDl, url, Sites.MN());
     }
 
     @Override
@@ -77,12 +77,14 @@ public class MuggleNetStory extends Story {
             // Now get the story page again.
             url = String.format(MN_S_URL, storyId, warnBypass);
             infoDoc = Util.downloadHtml(url);
+            if (infoDoc == null) throw initEx();
         } else if (errorText != null && errorText.ownText().trim().equals(MN_NEEDS_WARN_5)) {
             // We're logged in, but need to change our warning bypass to 5 for this story.
             warnBypass = MN_PART_WARN_5;
             // Now get the story page again.
             url = String.format(MN_S_URL, storyId, warnBypass);
             infoDoc = Util.downloadHtml(url);
+            if (infoDoc == null) throw initEx();
         } else if (errorText != null) throw initEx(errorText.ownText().trim()); // Just throw some exception
         // Get the element that has the title and author of the story in it.
         Elements taElem = infoDoc.select("div#pagetitle a");

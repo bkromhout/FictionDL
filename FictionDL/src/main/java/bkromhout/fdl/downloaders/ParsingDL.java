@@ -1,9 +1,9 @@
 package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.Chapter;
-import bkromhout.fdl.ESite;
 import bkromhout.fdl.EpubCreator;
 import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.Site;
 import bkromhout.fdl.rx.RxChapAction;
 import bkromhout.fdl.rx.RxMakeChapters;
 import bkromhout.fdl.rx.RxOkHttpCall;
@@ -16,7 +16,6 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * Base class for downloaders which get stories by scraping their site HTML, and then generating story ePUB files by
@@ -26,21 +25,18 @@ public abstract class ParsingDL extends Downloader {
     /**
      * CSS selector string to extract chapter content from {@link Chapter#rawHtml}.
      */
-    protected String chapTextSelector;
+    String chapTextSelector;
 
     /**
      * Create a new {@link ParsingDL}.
      * @param fictionDL        FictionDL object which owns this downloader.
-     * @param storyClass       The concrete subclass of Story which this downloader uses.
      * @param site             Site that this downloader services.
-     * @param storyUrls        List of story urls to be downloaded.
      * @param chapTextSelector CSS selector used to extract chapter content from {@link Chapter#rawHtml}. (If all of the
      *                         chapter's text cannot be extracted with one CSS selector, the subclass should pass null
      *                         for this and override {@link #extractChapText(Chapter)}.)
      */
-    protected ParsingDL(FictionDL fictionDL, Class<? extends Story> storyClass, ESite site, HashSet<String> storyUrls,
-                        String chapTextSelector) {
-        super(fictionDL, storyClass, site, storyUrls);
+    protected ParsingDL(FictionDL fictionDL, Site site, String chapTextSelector) {
+        super(fictionDL, site);
         this.chapTextSelector = chapTextSelector;
     }
 

@@ -1,7 +1,7 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.ESite;
 import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.Site;
 import bkromhout.fdl.rx.RxMakeStories;
 import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.C;
@@ -32,33 +32,31 @@ public abstract class Downloader {
     /**
      * This is the specific {@link Story} subclass whose constructor will be called which creating stories.
      */
-    protected Class<? extends Story> storyClass;
+    private Class<? extends Story> storyClass;
     /**
-     * {@link ESite} that this downloader services.
+     * {@link Site} that this downloader services.
      */
-    protected ESite site;
+    protected Site site;
     /**
      * Story urls.
      */
-    protected HashSet<String> storyUrls;
+    private HashSet<String> storyUrls;
     /**
      * Any extra messages to print prior to starting the download process. Can be set by a subclass at some point after
      * initialization.
      */
-    protected String extraPreDlMsgs;
+    String extraPreDlMsgs;
 
     /**
      * Create a new {@link Downloader}.
-     * @param fictionDL  FictionDL object which owns this downloader.
-     * @param storyClass The class of Story which this downloader uses.
-     * @param site       Site that this downloader services.
-     * @param storyUrls  Set of story urls to be downloaded.
+     * @param fictionDL FictionDL object which owns this downloader.
+     * @param site      Site that this downloader services.
      */
-    protected Downloader(FictionDL fictionDL, Class<? extends Story> storyClass, ESite site, HashSet<String> storyUrls) {
+    protected Downloader(FictionDL fictionDL, Site site) {
         this.fictionDL = fictionDL;
-        this.storyClass = storyClass;
         this.site = site;
-        this.storyUrls = storyUrls;
+        this.storyClass = site.getStoryClass();
+        this.storyUrls = site.getUrls();
     }
 
     /**
