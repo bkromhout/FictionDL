@@ -121,7 +121,10 @@ public abstract class Downloader {
             // Make sure we close the response body so that it doesn't leak.
             resp.body().close();
             // Make sure that login cookies were sent back.
-            if (resp.headers().values("Set-Cookie").isEmpty()) throw new IOException();
+            if (resp.headers().values("Set-Cookie").isEmpty())
+                // (Also check prior response headers, for sites which redirect after auth completes.)
+                if (resp.priorResponse() == null || resp.priorResponse().headers().values("Set-Cookie").isEmpty())
+                    throw new IOException();
             Util.log(C.DONE);
         } catch (IOException e) {
             Util.logf(C.LOGIN_FAILED, site.getName());
