@@ -48,6 +48,7 @@ public abstract class ParsingDL extends Downloader {
      */
     @Override
     protected void downloadStory(Story story) {
+        ProgressHelper.recalcUnitWorth(story.getChapterCount());
         // Create Chapter objects.
         ArrayList<Chapter> chapters = (ArrayList<Chapter>) downloadStoryChaps(story)
                 .compose(new RxChapAction(this::generateChapTitle))
