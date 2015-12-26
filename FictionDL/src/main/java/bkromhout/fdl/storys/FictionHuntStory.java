@@ -17,8 +17,9 @@ public class FictionHuntStory extends Story {
      * results (which is what we do to try and get summaries from FictionHunt).
      */
     private static final String FH_NO_SUMMARY = "(Couldn't get summary from FictionHunt, sorry!)";
-
-    // If the story is still available on FanFiction.net, get its story ID and use p0ody-files to download it.
+    /**
+     * Whether or not the story is still available on FanFiction.net.
+     */
     private boolean isOnFfn;
 
     /**
@@ -33,44 +34,35 @@ public class FictionHuntStory extends Story {
 
     @Override
     protected void populateInfo() throws InitStoryException {
-        // Get FictionHunt story ID.
+        // Get story ID, then download the url so that we can parse story info.
         storyId = parseStoryId(url, "/read/(\\d*)", 1);
-        // Get the HTML at the url we've specified to use as the entry point.
         Document infoDoc = Util.downloadHtml(url);
         if (infoDoc == null) throw initEx();
-        // Get title string. Even if the story is on FFN, we want to have this for logging purposes.
+
         title = infoDoc.select("div.title").first().text();
-        // Check if story is on FanFiction.net. If so, just get its FFN story ID.
-        isOnFfn = checkIfOnFfn();
-        if (isOnFfn) return; // If the story is on FFN, don't bother with the rest!
-        // Get author string.
+
+        // Check if story is on FanFiction.net. If so, we'll download it from there, so we're done here.
+        if (isOnFfn = checkIfOnFfn()) return;
+
         author = infoDoc.select("div.details > a").first().text();
-        // Get the summary. Note that we do this by trying to search FictionHunt for the story title, then parsing
-        // the search results. We sort by relevancy, but if the story still doesn't show up on the first page then we
-        // just give up and use an apology message as the summary :)
         summary = findSummary();
+
         // Get details string to extract other bits of information from that.
         String[] details = infoDoc.select("div.details").first().ownText().split(" - ");
-        // Get characters.
+
         characters = details[0].trim();
-        // Get word count.
-        wordCount = Integer.parseInt(details[1].trim().replace("Words: ", "").replaceAll(",", ""));
-        // Get rating.
+        wordCount = Integer.parseInt(details[1].trim().replace("Words: ", "").replace(",", ""));
         rating = details[2].replace("Rated: ", "").trim();
-        // Get genres.
         genres = details[4].trim();
-        // Get number of chapters.
         int chapCount = Integer.parseInt(details[5].trim().replace("Chapters: ", ""));
-        // Get last updated date.
         dateUpdated = details[7].trim().replace("Updated: ", "");
-        // Get published date.
         datePublished = details[8].trim().replace("Published: ", "");
         // Get status (it isn't listed if it's incomplete, so just check the length of the details array).
         status = details.length > 9 ? C.STAT_C : C.STAT_I;
+
         // Generate chapter urls.
         for (int i = 0; i < chapCount; i++)
-            chapterUrls.add(
-                    String.format("http://fictionhunt.com/read/%s/%d", storyId, i + 1));
+            chapterUrls.add(String.format("http://fictionhunt.com/read/%s/%d", storyId, i + 1));
     }
 
     /**
@@ -96,7 +88,10 @@ public class FictionHuntStory extends Story {
 
     /**
      * Uses the FictionHunt search to attempt to find the story summary.
-     * @return Story summary.
+     * <p>
+     * We sort the search results by relevancy, but if the story still doesn't show up on the first page then we just
+     * give up and use an apology message as the summary.
+     * @return Story summary, or apology message.
      */
     private String findSummary() {
         // Generate a FictionHunt search url using the title.

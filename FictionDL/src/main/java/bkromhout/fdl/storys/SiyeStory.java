@@ -38,12 +38,15 @@ public class SiyeStory extends Story {
 
     @Override
     protected void populateInfo() throws InitStoryException {
-        // Get SIYE story ID.
+        // Get story ID and use it to normalize the url, then download the url so that we can parse story info.
         storyId = parseStoryId(url, "sid=(\\d*)", 1);
-        // Get chapter 1 HTML first.
-        Document infoDoc = getInfoPage();
+        Document infoDoc = Util.downloadHtml(String.format(SIYE_C_URL, storyId, 1));
+        if (infoDoc == null) throw initEx();
+
+        // Get story info element from story page to get some of the details.
         Element storyInfoElem = infoDoc.select("td[align=\"left\"][valign=\"top\"]").last();
         if (storyInfoElem == null) throw initEx();
+
         // Get summary.
         int summaryStartIdx = storyInfoElem.select("b:contains(Summary:)").first().siblingIndex() + 1;
         int summaryEndIdx = storyInfoElem.select("b:contains(Hitcount:)").first().siblingIndex();
@@ -51,61 +54,45 @@ public class SiyeStory extends Story {
         // Get characters.
         Element charsLabel = storyInfoElem.select("b:contains(Characters:)").first();
         characters = ((TextNode) storyInfoElem.childNodes().get(charsLabel.siblingIndex() + 1)).text().trim();
+
         // Figure out the SIYE story ID and author ID link, because we'll get the rest of the general details from
-        // there.
+        // the story entry on the author's page after downloading it.
         String authorIdLink = findAuthorIdLink(infoDoc);
-        // Get the HTML at the author url.
         Document doc = Util.downloadHtml(String.format(SIYE_A_URL, authorIdLink));
         if (doc == null) throw initEx();
-        // Get the story row from on the author's page.
+        // Get the story entry on the author's page.
         Element storyRow = doc.select(String.format("td tr td:has(a[href=\"viewstory.php?sid=%s\"])", storyId)).last();
-        // Get title.
+
         title = storyRow.select(String.format("a[href=\"viewstory.php?sid=%s\"]", storyId)).first().html();
-        // Get author.
         author = storyRow.select(String.format("a[href=\"%s\"]", authorIdLink)).first().text();
-        // Due to SIYE's *incredibly* crappy HTML, we need to check to see if the story Element we currently have
-        // actually has the rest of the parts we need or not. If the story is part of a series, the "row" on SIYE's
-        // site is actually split across *two* <tr>s rather than being contained within one.
+
+        /* Due to SIYE's *incredibly* crappy HTML, we need to check to see if the story Element we currently have
+        actually has the rest of the parts we need or not. If the story is part of a series, the "row" on SIYE's
+        site is actually split across *two* <tr>s rather than being contained within one. */
         if (storyRow.select("div").first() == null) {
-            // This story must be part of a series, which means that that the <td> we have doesn't have the rest of
-            // the info we need. Starting from the <td> we currently have, we need to go up to the parent <tr>, then
-            // over to the next immediate sibling <tr> from the parent <tr>, and then into that sibling <tr>'s last
-            // <td> child...yes, this *is* complicated sounding and SIYE *should* have properly structured HTML. Ugh.
+            /* This story must be part of a series, which means that that the <td> we have doesn't have the rest of
+            the info we need. Starting from the <td> we currently have, we need to go up to the parent <tr>, then
+            over to the next immediate sibling <tr> from the parent <tr>, and then into that sibling <tr>'s last
+            <td> child...yes, this *is* complicated sounding and SIYE *should* have properly structured HTML. Ugh. */
+            // Reassign storyRow so that we can keep getting the story details.
             storyRow = storyRow.parent().nextElementSibling().children().last();
         }
-        // Get details strings to get other stuff.
+
+        // Get details strings to parse the other details from.
         String[] details = storyRow.select("div").first().text().replace("Completed:", "- Completed:").split(" - ");
-        // Get rating.
+
         rating = details[0].trim();
-        // Get fic type (category).
-        ficType = details[1].trim();
-        // Get genres.
+        ficType = details[1].trim(); // SIYE category.
         genres = details[2].trim();
-        // Get warnings.
         warnings = details[3].replace("Warnings: ", "").trim();
-        // Get word count.
         wordCount = Integer.parseInt(details[4].replace("Words: ", "").trim());
-        // Get status.
         status = details[5].replace("Completed: ", "").trim().equals("Yes") ? C.STAT_C : C.STAT_I;
-        // Get chapter count to generate chapter urls.
         int chapCount = Integer.parseInt(details[6].replace("Chapters: ", "").trim());
-        // Get date published.
         datePublished = details[7].replace("Published: ", "").trim();
-        // Get date last updated.
         dateUpdated = details[8].replace("Updated: ", "").trim();
+
         // Generate chapter urls.
         for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(SIYE_C_URL, storyId, i + 1));
-    }
-
-    /**
-     * Get the info page for this story, which in SIYE's case is Chapter 1.
-     * @return Chapter 1 HTML Document.
-     */
-    private Document getInfoPage() throws InitStoryException {
-        // Download the first chapter's HTML.
-        Document chDoc = Util.downloadHtml(String.format(SIYE_C_URL, storyId, 1));
-        if (chDoc == null) throw initEx();
-        return chDoc;
     }
 
     /**
