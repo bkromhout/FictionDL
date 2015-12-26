@@ -1,14 +1,13 @@
 package bkromhout.fdl;
 
-import bkromhout.fdl.downloaders.*;
 import bkromhout.fdl.events.UpdateTaskProgressEvent;
 import bkromhout.fdl.parsers.ConfigFileParser;
 import bkromhout.fdl.parsers.LinkFileParser;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
+import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 import com.google.common.eventbus.Subscribe;
-import com.squareup.okhttp.ConnectionPool;
 import javafx.concurrent.Task;
 
 import java.io.File;
@@ -45,10 +44,11 @@ public class FictionDL {
      * Link file parser.
      */
     private static LinkFileParser linkFileParser;
+
     /**
      * {@link ProgressHelper} for keeping track of our overall progress.
      */
-    private static ProgressHelper progressHelper;
+    //private static ProgressHelper progressHelper; //TODO remove this maybe?
 
     /**
      * Create a new {@link FictionDL} to execute the program logic.
@@ -94,21 +94,28 @@ public class FictionDL {
     }
 
     /**
-     * Tasks to do before running.
+     * Do the fun stuff.
      */
-    private void preRun() {
+    void run() {
+        /* Do pre-run tasks. */
+        // Create Site classes.
+        Sites.init();
+
         // Create a LinkFileParser to get the story urls from the input file.
         linkFileParser = new LinkFileParser(inputFile);
+
         // If we have a config file, create a ConfigFileParser to get options.
         if (configFile != null) cfg = new ConfigFileParser(configFile).getConfig();
-        // Create a ProgressHelper, passing in the total number of stories to process.
-        progressHelper = new ProgressHelper(linkFileParser.getTotalNumStories());
-    }
 
-    /**
-     * Tasks to do after running.
-     */
-    private void postRun() {
+        // Figure out how many stories we will be downloading, then create a ProgressHelper and pass it in.
+        int totalStories = 0;
+        for (Site site : Sites.all()) totalStories += site.getUrls().size();
+        ProgressHelper progressHelper = new ProgressHelper(totalStories);
+
+        /* Download stories from all sites. */
+        for (Site site : Sites.all()) site.download(this, cfg);
+
+        /* Do post-run tasks. */
         Util.log(C.ALL_FINISHED);
         Util.loudf(C.RUN_RESULTS, progressHelper.getTotalWork());
         freeResources();
@@ -124,48 +131,6 @@ public class FictionDL {
         //ConnectionPool.getDefault().evictAll(); // Evict OkHttp's connection pool.
         //C.getHttpClient().getConnectionPool().evictAll();
         //Main.eventBusExecutor.shutdownNow(); // Shut down event bus executor.
-    }
-
-    /**
-     * Do the fun stuff.
-     */
-    public void run() {
-        // Do pre-run tasks.
-        preRun();
-        // TODO Wouldn't it be cool if we could just iterate instead of calling each one? Yeah...
-        // Download FictionHunt stories.
-        if (!linkFileParser.getFictionHuntUrls().isEmpty()) {
-            FictionHuntDL fictionHuntDL = new FictionHuntDL(this, linkFileParser.getFictionHuntUrls());
-            fictionHuntDL.download();
-        }
-
-        // Download FanFiction.net stories.
-        if (!linkFileParser.getFfnUrls().isEmpty()) {
-            FanFictionDL fanFictionDL = new FanFictionDL(this, linkFileParser.getFfnUrls());
-            fanFictionDL.download();
-        }
-
-        // Download SIYE stories.
-        if (!linkFileParser.getSiyeUrls().isEmpty()) {
-            SiyeDL siyeDL = new SiyeDL(this, linkFileParser.getSiyeUrls());
-            siyeDL.download();
-        }
-
-        // Download MuggleNet stories.
-        if (!linkFileParser.getMnUrls().isEmpty()) {
-            MuggleNetDL muggleNetDL = new MuggleNetDL(this, linkFileParser.getMnUrls());
-            if (cfg.hasCreds(Site.MN)) muggleNetDL.doFormAuth(cfg.getCreds(Site.MN));
-            muggleNetDL.download();
-        }
-
-        // Download Ao3 stories.
-        if (!linkFileParser.getAo3Urls().isEmpty()) {
-            Ao3DL ao3DL = new Ao3DL(this, linkFileParser.getAo3Urls());
-            ao3DL.download();
-        }
-
-        // Do post-run tasks.
-        postRun();
     }
 
     /**

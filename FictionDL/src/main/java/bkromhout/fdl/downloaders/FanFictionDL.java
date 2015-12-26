@@ -2,11 +2,9 @@ package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Site;
-import bkromhout.fdl.storys.FanFictionStory;
+import bkromhout.fdl.util.Sites;
 import org.jsoup.nodes.Element;
 
-import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,10 +16,9 @@ public class FanFictionDL extends ParsingDL {
     /**
      * Create a new {@link FanFictionDL}.
      * @param fictionDL FictionDL object which owns this downloader.
-     * @param urls      List of FanFiction.net urls.
      */
-    public FanFictionDL(FictionDL fictionDL, HashSet<String> urls) {
-        super(fictionDL, FanFictionStory.class, Site.FFN, urls, "div#storytext");
+    public FanFictionDL(FictionDL fictionDL) {
+        super(fictionDL, Sites.FFN(), "div#storytext");
     }
 
     /**

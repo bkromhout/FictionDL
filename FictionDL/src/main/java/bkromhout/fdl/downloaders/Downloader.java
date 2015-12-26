@@ -32,33 +32,31 @@ public abstract class Downloader {
     /**
      * This is the specific {@link Story} subclass whose constructor will be called which creating stories.
      */
-    protected Class<? extends Story> storyClass;
+    private Class<? extends Story> storyClass;
     /**
-     * {@link bkromhout.fdl.Site} that this downloader services.
+     * {@link Site} that this downloader services.
      */
     protected Site site;
     /**
      * Story urls.
      */
-    protected HashSet<String> storyUrls;
+    private HashSet<String> storyUrls;
     /**
      * Any extra messages to print prior to starting the download process. Can be set by a subclass at some point after
      * initialization.
      */
-    protected String extraPreDlMsgs;
+    String extraPreDlMsgs;
 
     /**
      * Create a new {@link Downloader}.
-     * @param fictionDL  FictionDL object which owns this downloader.
-     * @param storyClass The class of Story which this downloader uses.
-     * @param site       Site that this downloader services.
-     * @param storyUrls  Set of story urls to be downloaded.
+     * @param fictionDL FictionDL object which owns this downloader.
+     * @param site      Site that this downloader services.
      */
-    protected Downloader(FictionDL fictionDL, Class<? extends Story> storyClass, Site site, HashSet<String> storyUrls) {
+    protected Downloader(FictionDL fictionDL, Site site) {
         this.fictionDL = fictionDL;
-        this.storyClass = storyClass;
         this.site = site;
-        this.storyUrls = storyUrls;
+        this.storyClass = site.getStoryClass();
+        this.storyUrls = site.getUrls();
     }
 
     /**
@@ -123,7 +121,10 @@ public abstract class Downloader {
             // Make sure we close the response body so that it doesn't leak.
             resp.body().close();
             // Make sure that login cookies were sent back.
-            if (resp.headers().values("Set-Cookie").isEmpty()) throw new IOException();
+            if (resp.headers().values("Set-Cookie").isEmpty())
+                // (Also check prior response headers, for sites which redirect after auth completes.)
+                if (resp.priorResponse() == null || resp.priorResponse().headers().values("Set-Cookie").isEmpty())
+                    throw new IOException();
             Util.log(C.DONE);
         } catch (IOException e) {
             Util.logf(C.LOGIN_FAILED, site.getName());

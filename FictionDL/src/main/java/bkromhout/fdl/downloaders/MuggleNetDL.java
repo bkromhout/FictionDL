@@ -1,15 +1,13 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.util.C;
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Site;
-import bkromhout.fdl.storys.MuggleNetStory;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Sites;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
 import org.jsoup.nodes.Element;
 
-import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,17 +16,16 @@ import java.util.regex.Pattern;
  */
 public class MuggleNetDL extends ParsingDL {
     /**
-     * MuggleNet login page link.
+     * MuggleNet login page url.
      */
     private static final String MN_L_URL = "http://fanfiction.mugglenet.com/user.php?action=login";
 
     /**
      * Create a new {@link MuggleNetDL}.
      * @param fictionDL FictionDL object which owns this downloader.
-     * @param urls      List of MuggleNet urls.
      */
-    public MuggleNetDL(FictionDL fictionDL, HashSet<String> urls) {
-        super(fictionDL, MuggleNetStory.class, Site.MN, urls, "div.contentLeft");
+    public MuggleNetDL(FictionDL fictionDL) {
+        super(fictionDL, Sites.MN(), "div.contentLeft");
     }
 
     @Override
@@ -99,6 +96,6 @@ public class MuggleNetDL extends ParsingDL {
 
         // Now we can finally output the html.
         chapterText.append(content.html());
-        chapter.content = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText.toString());
+        chapter.contentFromString(chapterText.toString());
     }
 }

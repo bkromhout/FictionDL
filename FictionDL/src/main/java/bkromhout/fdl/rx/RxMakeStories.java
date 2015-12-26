@@ -42,7 +42,7 @@ public class RxMakeStories implements Observable.Transformer<String, Story> {
          * Create a new {@link Story} from the given story url.
          * @param url Story url.
          */
-        public CreateStory(String url) {
+        private CreateStory(String url) {
             this.url = url;
         }
 

@@ -1,10 +1,10 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.util.C;
-import bkromhout.fdl.Site;
-import bkromhout.fdl.util.Util;
 import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Sites;
+import bkromhout.fdl.util.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -39,40 +39,39 @@ public class FanFictionStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public FanFictionStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Site.FFN);
+        super(ownerDl, url, Sites.FFN());
     }
 
     @Override
     protected void populateInfo() throws InitStoryException {
-        // Get story ID first.
+        // Get story ID and use it to normalize the url, then download the url so that we can parse story info.
         storyId = parseStoryId(url, "/s/(\\d*)", 1);
-        // Normalize the url, since there are many valid FFN url formats.
         url = String.format(FFN_S_URL, storyId);
-        // Get the first chapter in order to parse the story info.
         Document infoDoc = Util.downloadHtml(url);
         // Make sure that we got a Document and that this is a valid story.
         if (infoDoc == null || infoDoc.select("span.gui_warning").first() != null) throw initEx();
-        // Get the title.
+
         title = infoDoc.select("div#profile_top b").first().html().trim();
-        // Get the author.
         author = infoDoc.select("div#profile_top a[href~=" + "/u/.*" + "]").first().html().trim();
-        // Get the summary.
         summary = infoDoc.select("div#profile_top > div").first().html().trim();
-        // Get the fic type.
-        ficType = parseFicType(infoDoc);
+        ficType = parseFicType(infoDoc); // FFN fandom/crossover fandom
+
         // Get the details string and split it up to help get the other details.
         Element detailElem = infoDoc.select("div#profile_top > span").last();
         String[] details = detailElem.text().split(" - ");
-        // Get the rating.
+
         rating = details[0].replace("Rated: ", "").trim();
+
         // Get the chapter count, remember its index for later.
         int chapCntIdx = findDetailsStringIdx(details, "Chapters: ");
-        int chapCount = chapCntIdx == -1 ? 1 : Integer.parseInt(details[chapCntIdx].replace("Chapters: ", "")
-                                                                                   .replace(",", "").trim());
-        // Get the word count.
+        int chapCount = chapCntIdx == -1 ? 1 :
+                Integer.parseInt(details[chapCntIdx].replace("Chapters: ", "").replace(",", "").trim());
+
+        // Get the word count, remember its index for later too.
         int wordCntIdx = findDetailsStringIdx(details, "Words: ");
         wordCount = Integer.parseInt(details[wordCntIdx].replace("Words: ", "").replace(",", "").trim());
-        // Figure genres and characters, either or both of which may be missing.
+
+        // Figure out genres and characters, either or both of which may be missing.
         if (chapCntIdx == 2 || wordCntIdx == 2) {
             // We don't have genres or characters, set them accordingly.
             genres = C.NO_GENRE;
@@ -95,14 +94,14 @@ public class FanFictionStory extends Story {
             genres = details[2].trim();
             characters = details[3].trim();
         }
+
         // Get the dates.
         Elements dates = detailElem.select("span > span");
-        // Get the date published.
         datePublished = Util.dateFromFfnTime(dates.last().attr("data-xutime"));
-        // Get the date last updated. If there isn't one, use the date published.
         dateUpdated = dates.size() > 1 ? Util.dateFromFfnTime(dates.first().attr("data-xutime")) : datePublished;
-        // Get the status.
+
         status = findDetailsStringIdx(details, "Status: Complete") != -1 ? C.STAT_C : C.STAT_I;
+
         // Generate chapter urls.
         for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(FFN_C_URL, storyId, i + 1));
     }

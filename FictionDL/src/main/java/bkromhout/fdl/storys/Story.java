@@ -21,7 +21,11 @@ public abstract class Story {
     /**
      * Indicates we couldn't find an ePUB file to download for a story.
      */
-    public static final String NO_EPUB = "NO_EPUB";
+    static final String NO_EPUB = "NO_EPUB";
+    /**
+     * Indicated we failed to download a story from a site which doesn't use story IDs.
+     */
+    static final String NO_ID_DL_FAIL = "NO_ID_DL_FAIL";
 
     // The downloader which owns this story.
     protected Downloader ownerDl;
@@ -90,7 +94,7 @@ public abstract class Story {
      * @return Story ID, or null.
      * @throws InitStoryException if we can't parse the story ID from the url.
      */
-    protected String parseStoryId(String url, String regex, int group) throws InitStoryException {
+    String parseStoryId(String url, String regex, int group) throws InitStoryException {
         Matcher matcher = Pattern.compile(regex).matcher(url);
         if (!matcher.find()) throw initEx(BAD_URL, url);
         return matcher.group(group);
@@ -100,7 +104,7 @@ public abstract class Story {
      * Throw an {@link InitStoryException} with some message about why we couldn't create this {@link Story}.
      * @return {@link InitStoryException} with the message we figure out.
      */
-    protected InitStoryException initEx() {
+    InitStoryException initEx() {
         return initEx(null, null);
     }
 
@@ -110,7 +114,7 @@ public abstract class Story {
      *               exception.
      * @return {@link InitStoryException} with the message we figure out.
      */
-    protected InitStoryException initEx(String assist) {
+    InitStoryException initEx(String assist) {
         return initEx(assist, null);
     }
 
@@ -121,7 +125,7 @@ public abstract class Story {
      * @param str1   The first string to substitute into some message.
      * @return {@link InitStoryException} with the message we figure out.
      */
-    protected InitStoryException initEx(String assist, String str1) {
+    InitStoryException initEx(String assist, String str1) {
         if (assist == null)
             return new InitStoryException(String.format(C.STORY_DL_FAILED, site.getName(), storyId));
         switch (assist) {
@@ -131,6 +135,9 @@ public abstract class Story {
             case NO_EPUB:
                 // Couldn't find an ePUB file to download. str1 is the story title.
                 return new InitStoryException(String.format(C.NO_EPUB_ON_SITE, site.getName(), str1));
+            case NO_ID_DL_FAIL:
+                // Couldn't download a story from a site which doesn't use story IDs. str1 is the url.
+                return new InitStoryException(String.format(C.NO_ID_STORY_DL_FAILED, site.getName(), str1));
             case MuggleNetStory.MN_REG_USERS_ONLY:
                 // Need to login to MuggleNet.
                 return new InitStoryException(String.format(C.MUST_LOGIN, site.getName(), storyId));

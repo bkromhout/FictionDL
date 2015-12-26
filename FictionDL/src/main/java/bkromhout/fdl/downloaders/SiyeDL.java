@@ -1,13 +1,11 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.util.C;
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Site;
-import bkromhout.fdl.storys.SiyeStory;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Sites;
 import org.jsoup.nodes.Element;
 
-import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,10 +17,9 @@ public class SiyeDL extends ParsingDL {
     /**
      * Create a new {@link SiyeDL}.
      * @param fictionDL FictionDL object which owns this downloader.
-     * @param urls      List of SIYE urls.
      */
-    public SiyeDL(FictionDL fictionDL, HashSet<String> urls) {
-        super(fictionDL, SiyeStory.class, Site.SIYE, urls, null);
+    public SiyeDL(FictionDL fictionDL) {
+        super(fictionDL, Sites.SIYE(), null);
         extraPreDlMsgs = C.SIYE_PRE_DL;
     }
 
@@ -67,6 +64,6 @@ public class SiyeDL extends ParsingDL {
 
         // Then, we have to get the actual chapter text itself.
         chapterText.append(chapter.rawHtml.select("td[colspan=\"2\"] span").first().html());
-        chapter.content = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText.toString());
+        chapter.contentFromString(chapterText.toString());
     }
 }

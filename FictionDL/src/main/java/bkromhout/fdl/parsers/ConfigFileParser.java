@@ -2,12 +2,14 @@ package bkromhout.fdl.parsers;
 
 import bkromhout.fdl.Site;
 import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 import rx.Observable;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,7 +41,7 @@ public class ConfigFileParser extends FileParser {
     @Override
     protected void init() {
         config = new Config();
-        siteNameRegex = buildSitesOrRegex(Site.values());
+        siteNameRegex = buildSitesOrRegex(Sites.all());
     }
 
     /**
@@ -78,10 +80,10 @@ public class ConfigFileParser extends FileParser {
 
     /**
      * Translates an array of {@link Site Sites} to an OR Regex which uses the sites' names.
-     * @param sites Array of Sites.
+     * @param sites List of Sites.
      * @return OR Regex using sites' names.
      */
-    private String buildSitesOrRegex(Site[] sites) {
+    private String buildSitesOrRegex(List<Site> sites) {
         // Map Sites to site names.
         ArrayList<String> siteNames = (ArrayList<String>) Observable.from(sites)
                                                                     .map(Site::getName)
@@ -106,7 +108,7 @@ public class ConfigFileParser extends FileParser {
         /**
          * Config options storage. Keys for options are of the format "[Human-readable Site Name][Option prefix]".
          */
-        protected HashMap<String, String> options = new HashMap<>();
+        private HashMap<String, String> options = new HashMap<>();
 
         /**
          * Gets a String array like ["Username", "Password"], so long as both exist and are non-empty for the given
