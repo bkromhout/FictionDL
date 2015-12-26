@@ -1,11 +1,24 @@
 package bkromhout.fdl;
 
 import bkromhout.fdl.ui.Gui;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Util;
+import com.google.common.eventbus.AsyncEventBus;
+import com.google.common.eventbus.EventBus;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.squareup.okhttp.ConnectionPool;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 import javafx.application.Application;
 import javafx.application.Platform;
 import org.apache.commons.cli.*;
 
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Just a simple entry point class for the command line app.
@@ -19,8 +32,23 @@ public class Main {
      * Verbose log output?
      */
     public static boolean isVerbose = false;
+    /**
+     * Executor for the async event bus. Have to have a reference to it in order to shut it down when we're done.
+     */
+    public static ExecutorService eventBusExecutor;
+    /**
+     * Global EventBus.
+     */
+    public static EventBus eventBus;
+    /**
+     * Global OkHttpClient, will be used for all networking.
+     */
+    public static OkHttpClient httpClient;
+
 
     public static void main(String[] args) {
+        // Init program.
+        init();
         // Make sure we start the GUI if the jar was run with no arguments at all (AKA, it was double-clicked).
         if (args.length == 0) {
             isGui = true;
@@ -65,10 +93,44 @@ public class Main {
                 Util.log(e.getMessage());
             }
         }
+        Main.exit(0); // Because the CLI version is naughty otherwise and keeps the JVM running.
     }
 
     /**
-     * Exit the program, using System.exit() if running in CLI mode, but adding Platform.exit() if running in GUI mode.
+     * Do program init.
+     */
+    private static void init() {
+        // Create event bus executor and event bus.
+        eventBusExecutor = Executors.newSingleThreadExecutor(
+                new ThreadFactoryBuilder().setNameFormat("fdl-event-bus-%d").setDaemon(true).build());
+        eventBus = new AsyncEventBus("fdl-event-bus", eventBusExecutor);
+        //eventBus = new EventBus("fdl-event-bus");
+
+        // Set up the OkHttpClient.
+        httpClient = new OkHttpClient();
+        httpClient.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+        httpClient.setConnectionPool(ConnectionPool.getDefault());
+        httpClient.getDispatcher().setMaxRequestsPerHost(10); // Bump this up from 5.
+        httpClient.setReadTimeout(0, TimeUnit.MILLISECONDS);
+        addOkHttpLogging();
+    }
+
+    /**
+     * Adds a logger to the OkHttpClient.
+     * <p>
+     * All log messages will be logged using {@link Util#loud(String)}, so none of them will be printed if verbose mode
+     * isn't enabled. Also, they will be purple :)
+     */
+    private static void addOkHttpLogging() {
+        // Pass the Util.loud() function to the logger so that it uses our logging methods.
+        HttpLoggingInterceptor logger = new HttpLoggingInterceptor(str -> Util.loud(str + C.LOG_PURPLE));
+        logger.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        Main.httpClient.interceptors().add(logger);
+    }
+
+    /**
+     * Exits the program after cleaning up. Can be called safely whether running the CLI or the GUI version of the
+     * program.
      * @param returnCode The return code to use.
      */
     public static void exit(int returnCode) {

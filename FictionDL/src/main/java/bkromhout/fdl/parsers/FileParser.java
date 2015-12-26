@@ -1,7 +1,7 @@
 package bkromhout.fdl.parsers;
 
-import bkromhout.fdl.C;
-import bkromhout.fdl.Util;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,16 +13,34 @@ import java.io.IOException;
  */
 public abstract class FileParser {
     /**
-     * What type of files this parser handles.
+     * Valid file types for parsing.
      */
-    protected String type;
+    public enum FileType {
+        URLS("URLs"), CONFIG("config");
+
+        private final String ufName;
+
+        FileType(String ufName) {
+            this.ufName = ufName;
+        }
+
+        @Override
+        public String toString() {
+            return this.ufName;
+        }
+    }
 
     /**
-     * Create a new file parser.
+     * What type of files this parser handles.
+     */
+    protected FileType type;
+
+    /**
+     * Create a new {@link FileParser}.
      * @param type Type of files this parser will handle.
      * @param file File to parse.
      */
-    protected FileParser(String type, File file) {
+    protected FileParser(FileType type, File file) {
         this.type = type;
         init();
         parse(file);

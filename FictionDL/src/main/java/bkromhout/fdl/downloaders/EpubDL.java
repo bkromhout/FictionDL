@@ -1,9 +1,11 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.C;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Util;
+import bkromhout.fdl.Site;
 import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.ProgressHelper;
+import bkromhout.fdl.util.Util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +13,6 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.HashSet;
 
 /**
  * Base class for downloaders which get stories by downloading ePUBs for them.
@@ -19,15 +20,12 @@ import java.util.HashSet;
 public abstract class EpubDL extends Downloader {
 
     /**
-     * Create a new EpubDL.
-     * @param fictionDL  FictionDL object which owns this downloader.
-     * @param storyClass The class of Story which this downloader uses.
-     * @param siteName   Human-readable site name for this downloader.
-     * @param storyUrls  List of story URLs to be downloaded.
+     * Create a new {@link EpubDL}.
+     * @param fictionDL FictionDL object which owns this downloader.
+     * @param site      Site that this downloader services.
      */
-    public EpubDL(FictionDL fictionDL, Class<? extends Story> storyClass, String siteName,
-                  HashSet<String> storyUrls) {
-        super(fictionDL, storyClass, siteName, storyUrls);
+    EpubDL(FictionDL fictionDL, Site site) {
+        super(fictionDL, site);
     }
 
     /**
@@ -37,10 +35,11 @@ public abstract class EpubDL extends Downloader {
     @Override
     protected void downloadStory(Story story) {
         Util.logf(C.DL_EPUB_FOR, Util.unEscapeAmps(story.getTitle()));
-        // Obviously, this is a rather simple task, which is why this class and its subclasses are so tiny as compared
-        // to ParsingDL and its subclasses.
-        Path file = FictionDL.outPath.resolve(Util.makeEpubFname(story.getTitle(), story.getAuthor()));
+        ProgressHelper.recalcUnitWorth(0L); // Set unit worth to one story's worth.
+        // Figure out save file path and download URI.
+        Path file = FictionDL.getOutPath().resolve(Util.makeEpubFname(story.getTitle(), story.getAuthor()));
         URI dlUrl = URI.create(story.getUrl());
+
         try (final InputStream in = dlUrl.toURL().openStream()) {
             // Download the ePUB file.
             Files.copy(in, file, StandardCopyOption.REPLACE_EXISTING);
@@ -48,6 +47,7 @@ public abstract class EpubDL extends Downloader {
         } catch (IOException e) {
             Util.logf(C.SAVE_FILE_FAILED, file.toAbsolutePath().toString());
         }
-        storyProcessed(); // Update progress.
+        // We update the progress bar whether we succeed or not.
+        ProgressHelper.finishedWorkUnit();
     }
 }

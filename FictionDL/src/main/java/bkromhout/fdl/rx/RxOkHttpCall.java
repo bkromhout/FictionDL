@@ -1,6 +1,6 @@
 package bkromhout.fdl.rx;
 
-import bkromhout.fdl.C;
+import bkromhout.fdl.util.C;
 import bkromhout.fdl.ex.RequestException;
 import bkromhout.fdl.ex.ResponseException;
 import com.squareup.okhttp.Call;
@@ -32,7 +32,7 @@ public class RxOkHttpCall implements Observable.Transformer<Request, Response> {
         private final Executor cancellationExecutor;
 
         /**
-         * Create a new ExecuteRequest which uses the Executor from the OkHttpClient dispatcher.
+         * Create a new {@link ExecuteRequest} which uses the Executor from the OkHttpClient dispatcher.
          * @param request Request to enqueue.
          */
         public ExecuteRequest(Request request) {
@@ -40,7 +40,7 @@ public class RxOkHttpCall implements Observable.Transformer<Request, Response> {
         }
 
         /**
-         * Create a new ExecuteRequest with a specific Executor.
+         * Create a new {@link ExecuteRequest} with a specific Executor.
          * @param request              Request to enqueue.
          * @param cancellationExecutor Executor of the OkHttpClient.
          */
@@ -55,6 +55,7 @@ public class RxOkHttpCall implements Observable.Transformer<Request, Response> {
             final Call call = C.getHttpClient().newCall(request);
             // Make sure that the request is cancelled when unsubscribing.
             sub.add(Subscriptions.create(() -> cancellationExecutor.execute(call::cancel)));
+
             // Enqueue the call.
             call.enqueue(new Callback() {
                 @Override

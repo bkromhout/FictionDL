@@ -1,6 +1,8 @@
 package bkromhout.fdl;
 
 import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Util;
 import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubWriter;
 
@@ -20,7 +22,7 @@ public final class EpubCreator {
     private Story story;
 
     /**
-     * Create an ePUB generator for the given story.
+     * Create an ePUB generator for the given {@link Story}.
      * @param story Story.
      */
     public EpubCreator(Story story) {
@@ -55,18 +57,18 @@ public final class EpubCreator {
     }
 
     /**
-     * Using the Story object we have, create a Book object which can be saved as an ePUB file.
+     * Using the {@link Story} object we have, create a Book object which can be saved as an ePUB file.
      * @return Book object made from Story object.
      */
     private Book generateEpub() {
         // Create Book.
         Book book = new Book();
-        // Set title, author, description (summary), identifier (story URL), and publisher (story site).
+        // Set title, author, description (summary), identifier (story url), and publisher (story site).
         book.getMetadata().addTitle(Util.unEscapeAmps(story.getTitle()));
         book.getMetadata().addAuthor(new Author(story.getAuthor()));
         book.getMetadata().addDescription(Util.removeControlChars(Util.convertWin1252Chars(story.getSummary())));
         book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.URL, story.getUrl()));
-        book.getMetadata().addPublisher(story.getHostSite());
+        book.getMetadata().addPublisher(story.getHost());
         // Create and add CSS file.
         book.addResource(createCss());
         // Create and add title page.
@@ -83,7 +85,7 @@ public final class EpubCreator {
     }
 
     /**
-     * Creates a title page for the story.
+     * Creates a title page for the ePUB.
      * @return Resource which represents a title page.
      */
     private Resource createTitlePage() {
@@ -146,7 +148,7 @@ public final class EpubCreator {
     }
 
     /**
-     * Create a chapter Resource from the given Chapter.
+     * Create a chapter Resource from the given {@link Chapter}.
      * @param chapter    Chapter to create a resource for.
      * @param chapterNum Number of the chapter.
      * @return Chapter Resource.

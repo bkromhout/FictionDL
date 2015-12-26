@@ -1,6 +1,6 @@
 package bkromhout.fdl.ui;
 
-import bkromhout.fdl.C;
+import bkromhout.fdl.util.C;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -18,7 +18,7 @@ import java.util.HashMap;
 /**
  * Controller class for the GUI.
  */
-public class GuiController {
+public class Controller {
     /* Preference key strings. */
     private static final String PREF_CFG_FILE_PATH = "key_cfg_file_path";
     private static final String PREF_OUT_DIR_PATH = "key_out_dir_path";
@@ -28,7 +28,9 @@ public class GuiController {
     private static final String D_CHOOSE_TITLE = "Choose Directory:";
     private static final String F_CHOOSE_TITLE = "Choose File:";
 
-    /* Gui which owns this controller. */
+    /**
+     * {@link Gui} which owns this controller.
+     */
     private Gui gui;
 
     /* Containers. */
@@ -52,8 +54,8 @@ public class GuiController {
     public TextField tfCfgFile;
     public Button btnChooseCfgFile;
 
-    /* Start button and progress bar. */
-    public Button btnStart;
+    /* Start/Stop button and progress bar. */
+    public Button btnStartStop;
     public ProgressBar pbProgress;
 
     /* Log. */
@@ -64,14 +66,17 @@ public class GuiController {
     private void initialize() {
         // Specifically set the log TextFlow, since it's static.
         flowLog = (TextFlow) spLogCont.getContent();
+
         // Set up the log TextFlow's ScrollPane to always scroll to the bottom when a new line is added.
         flowLog.getChildren().addListener((ListChangeListener<Node>) listener -> {
             flowLog.layout();
             spLogCont.layout();
             spLogCont.setVvalue(1.0d);
         });
+
         // Set default button to clear dir text field.
         btnDefaultOutDir.setOnAction(event1 -> tfOutDir.clear());
+
         // Set choose in file button's action.
         btnChooseInFile.setOnAction(event -> {
             // Create a file chooser.
@@ -86,6 +91,7 @@ public class GuiController {
             // If the user selected a file, put its path into the text field.
             if (selectedFile != null) tfInFile.setText(selectedFile.getAbsolutePath());
         });
+
         // Set choose out dir button's action.
         btnChooseOutDir.setOnAction(event -> {
             // Create a directory chooser.
@@ -100,6 +106,7 @@ public class GuiController {
             // If the user selected a directory, put its path into the text field.
             if (selectedDir != null) tfOutDir.setText(selectedDir.getAbsolutePath());
         });
+
         // Set choose config file button's action.
         btnChooseCfgFile.setOnAction(event -> {
             // Create a file chooser.
@@ -114,22 +121,36 @@ public class GuiController {
             // If the user selected a file, put its path into the text field.
             if (selectedFile != null) tfCfgFile.setText(selectedFile.getAbsolutePath());
         });
-        // Set start button action.
-        btnStart.setOnAction(event -> {
-            // Store the text field values in the prefs file.
-            saveFields();
-            // Reset progress bar, then make arguments map and run FictionDL.
-            pbProgress.setProgress(0d);
-            HashMap<String, String> ficDlArgs = new HashMap<>();
-            ficDlArgs.put(C.ARG_IN_PATH, tfInFile.getText());
-            ficDlArgs.put(C.ARG_OUT_PATH, tfOutDir.getText());
-            ficDlArgs.put(C.ARG_CFG_PATH, tfCfgFile.getText());
-            gui.runFictionDl(ficDlArgs);
+
+        // Set start/stop button action.
+        btnStartStop.setOnAction(event -> {
+            // Do something different depending on if the button currently says "Start" or "Stop".
+            if (btnStartStop.getText().equals("Start")) {
+                btnStartStop.setDisable(true);
+                // Store the text field values in the prefs file.
+                saveFields();
+                // Reset progress bar, then make arguments map and run FictionDL.
+                pbProgress.progressProperty().unbind();
+                pbProgress.setProgress(0d);
+                HashMap<String, String> ficDlArgs = new HashMap<>();
+                ficDlArgs.put(C.ARG_IN_PATH, tfInFile.getText());
+                ficDlArgs.put(C.ARG_OUT_PATH, tfOutDir.getText());
+                ficDlArgs.put(C.ARG_CFG_PATH, tfCfgFile.getText());
+                gui.runFictionDl(ficDlArgs);
+                // Set button text to "Stop" then enable the button again.
+                btnStartStop.setText("Stop");
+                btnStartStop.setDisable(false);
+            } else {
+                btnStartStop.setDisable(true);
+                gui.cancelFictionDLTask();
+                btnStartStop.setText("Start");
+                btnStartStop.setDisable(false);
+            }
         });
     }
 
     /**
-     * Set the Gui which owns this controller.
+     * Set the {@link Gui} which owns this controller.
      * @param gui Gui.
      */
     protected void setGui(Gui gui) {
@@ -138,13 +159,13 @@ public class GuiController {
     }
 
     /**
-     * Called after we have a reference to the Gui which owns us.
+     * Called after we have a reference to the {@link Gui} which owns us.
      */
     private void initGui() {
         // Retrieve the last input and output paths that were used.
         restoreFields();
         // Set the Start button as focused, that way the user can just hit enter.
-        btnStart.setDefaultButton(true);
+        btnStartStop.setDefaultButton(true);
     }
 
     /**
@@ -185,6 +206,5 @@ public class GuiController {
         btnChooseOutDir.setDisable(!areEnabled);
         btnDefaultOutDir.setDisable(!areEnabled);
         btnChooseCfgFile.setDisable(!areEnabled);
-        btnStart.setDisable(!areEnabled);
     }
 }

@@ -1,38 +1,141 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.text.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.TextFlow?>
-
-<AnchorPane id="rootView" fx:id="rootView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="300.0" minWidth="525.0" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bkromhout.fdl.gui.GuiController">
+<AnchorPane id="rootView"
+            fx:id="rootView"
+            maxHeight="-Infinity"
+            maxWidth="-Infinity"
+            minHeight="300.0"
+            minWidth="525.0"
+            prefHeight="600.0"
+            prefWidth="800.0"
+            xmlns="http://javafx.com/javafx/8.0.40"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="bkromhout.fdl.ui.Controller">
     <children>
-        <AnchorPane id="optsView" fx:id="optsView" minHeight="0.0" minWidth="0.0" prefHeight="120.0" prefWidth="800.0" AnchorPane.bottomAnchor="445.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane id="optsView"
+                    fx:id="optsView"
+                    minHeight="0.0"
+                    minWidth="0.0"
+                    prefHeight="120.0"
+                    prefWidth="800.0"
+                    AnchorPane.bottomAnchor="445.0"
+                    AnchorPane.leftAnchor="0.0"
+                    AnchorPane.rightAnchor="0.0"
+                    AnchorPane.topAnchor="0.0">
             <children>
-                <Label fx:id="lblInFile" layoutX="14.0" layoutY="19.0" text="Input File Path:" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="19.0" />
-                <TextField fx:id="tfInFile" layoutX="110.0" layoutY="14.0" prefHeight="27.0" prefWidth="599.0" promptText="Input File Path" AnchorPane.leftAnchor="110.0" AnchorPane.rightAnchor="89.0" AnchorPane.topAnchor="14.0" />
-                <Button fx:id="btnChooseInFile" layoutX="719.0" layoutY="14.0" mnemonicParsing="false" text="Choose" AnchorPane.rightAnchor="14.0" />
-                <Label fx:id="lblOutDir" layoutX="14.0" layoutY="52.0" text="Output Directory:" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="52.0" />
-                <TextField fx:id="tfOutDir" layoutX="125.0" layoutY="47.0" prefHeight="27.0" prefWidth="511.0" promptText="Output Directory Path (Default: Use directory of input file)" AnchorPane.leftAnchor="125.0" AnchorPane.rightAnchor="162.0" AnchorPane.topAnchor="47.0" />
-                <Button fx:id="btnDefaultOutDir" layoutX="646.0" layoutY="47.0" mnemonicParsing="false" text="Default" AnchorPane.rightAnchor="89.0" AnchorPane.topAnchor="47.0">
+                <Label fx:id="lblInFile"
+                       layoutX="14.0"
+                       layoutY="19.0"
+                       text="Input File Path:"
+                       AnchorPane.leftAnchor="14.0"
+                       AnchorPane.topAnchor="19.0"/>
+                <TextField fx:id="tfInFile"
+                           layoutX="110.0"
+                           layoutY="14.0"
+                           prefHeight="27.0"
+                           prefWidth="599.0"
+                           promptText="Input File Path"
+                           AnchorPane.leftAnchor="110.0"
+                           AnchorPane.rightAnchor="89.0"
+                           AnchorPane.topAnchor="14.0"/>
+                <Button fx:id="btnChooseInFile"
+                        layoutX="719.0"
+                        layoutY="14.0"
+                        mnemonicParsing="false"
+                        text="Choose"
+                        AnchorPane.rightAnchor="14.0"/>
+                <Label fx:id="lblOutDir"
+                       layoutX="14.0"
+                       layoutY="52.0"
+                       text="Output Directory:"
+                       AnchorPane.leftAnchor="14.0"
+                       AnchorPane.topAnchor="52.0"/>
+                <TextField fx:id="tfOutDir"
+                           layoutX="125.0"
+                           layoutY="47.0"
+                           prefHeight="27.0"
+                           prefWidth="511.0"
+                           promptText="Output Directory Path (Default: Use directory of input file)"
+                           AnchorPane.leftAnchor="125.0"
+                           AnchorPane.rightAnchor="162.0"
+                           AnchorPane.topAnchor="47.0"/>
+                <Button fx:id="btnDefaultOutDir"
+                        layoutX="646.0"
+                        layoutY="47.0"
+                        mnemonicParsing="false"
+                        text="Default"
+                        AnchorPane.rightAnchor="89.0"
+                        AnchorPane.topAnchor="47.0">
                     <tooltip>
-                        <Tooltip autoHide="true" text="Use the directory where the input file is." wrapText="true" />
+                        <Tooltip autoHide="true"
+                                 text="Use the directory where the input file is."
+                                 wrapText="true"/>
                     </tooltip>
                 </Button>
-                <Button fx:id="btnChooseOutDir" layoutX="719.0" layoutY="47.0" mnemonicParsing="false" text="Choose" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="47.0" />
-                <ProgressBar fx:id="pbProgress" layoutX="14.0" layoutY="121.0" prefHeight="20.0" prefWidth="699.0" progress="0.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="87.0" />
-                <Button fx:id="btnStart" layoutX="721.0" layoutY="118.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="65.0" text="Start" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="14.0" />
-            <Label fx:id="lblCfgFile" layoutX="14.0" layoutY="87.0" text="Config File Path:" />
-            <TextField fx:id="tfCfgFile" layoutX="120.0" layoutY="82.0" prefHeight="27.0" prefWidth="590.0" promptText="Config File Path (Optional)" />
-            <Button fx:id="btnChooseCfgFile" layoutX="721.0" layoutY="82.0" mnemonicParsing="false" text="Choose" />
+                <Button fx:id="btnChooseOutDir"
+                        layoutX="719.0"
+                        layoutY="47.0"
+                        mnemonicParsing="false"
+                        text="Choose"
+                        AnchorPane.rightAnchor="14.0"
+                        AnchorPane.topAnchor="47.0"/>
+                <ProgressBar fx:id="pbProgress"
+                             layoutX="14.0"
+                             layoutY="121.0"
+                             prefHeight="20.0"
+                             prefWidth="699.0"
+                             progress="0.0"
+                             AnchorPane.bottomAnchor="14.0"
+                             AnchorPane.leftAnchor="14.0"
+                             AnchorPane.rightAnchor="87.0"/>
+                <Button fx:id="btnStartStop"
+                        layoutX="721.0"
+                        layoutY="118.0"
+                        mnemonicParsing="false"
+                        prefHeight="27.0"
+                        prefWidth="65.0"
+                        text="Start"
+                        AnchorPane.bottomAnchor="10.0"
+                        AnchorPane.rightAnchor="14.0"/>
+                <Label fx:id="lblCfgFile"
+                       layoutX="14.0"
+                       layoutY="87.0"
+                       text="Config File Path:"/>
+                <TextField fx:id="tfCfgFile"
+                           layoutX="120.0"
+                           layoutY="82.0"
+                           prefHeight="27.0"
+                           prefWidth="590.0"
+                           promptText="Config File Path (Optional)"/>
+                <Button fx:id="btnChooseCfgFile"
+                        layoutX="721.0"
+                        layoutY="82.0"
+                        mnemonicParsing="false"
+                        text="Choose"/>
             </children>
         </AnchorPane>
-        <TitledPane id="logView" fx:id="logView" collapsible="false" layoutX="1.0" layoutY="120.0" prefHeight="380.0" prefWidth="800.0" text="Log" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="155.0">
+        <TitledPane id="logView"
+                    fx:id="logView"
+                    collapsible="false"
+                    layoutX="1.0"
+                    layoutY="120.0"
+                    prefHeight="380.0"
+                    prefWidth="800.0"
+                    text="Log"
+                    AnchorPane.bottomAnchor="0.0"
+                    AnchorPane.leftAnchor="0.0"
+                    AnchorPane.rightAnchor="0.0"
+                    AnchorPane.topAnchor="155.0">
             <content>
-                <ScrollPane id="spLogCont" fx:id="spLogCont" fitToWidth="true">
+                <ScrollPane id="spLogCont"
+                            fx:id="spLogCont"
+                            fitToWidth="true">
                     <content>
-                        <TextFlow id="flowLog" fx:id="flowLog" />
+                        <TextFlow id="flowLog"
+                                  fx:id="flowLog"/>
                     </content>
                 </ScrollPane>
             </content>

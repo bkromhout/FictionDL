@@ -1,23 +1,38 @@
-package bkromhout.fdl;
+package bkromhout.fdl.util;
 
+import bkromhout.fdl.Main;
+import com.google.common.eventbus.EventBus;
 import com.squareup.okhttp.OkHttpClient;
 
 /**
- * Constants file. Only constants which are either used by multiple classes (or are likely to be in the future) or which
- * are exceedingly long (in the case of strings) belong here. All others should be in a more specific class.
+ * Constants
+ * <p>
+ * Only constants which are either used by multiple classes (or are likely to be in the future) or which are exceedingly
+ * long (in the case of strings) belong here. All others should be in a more specific class.
+ * <p>
+ * This class may also be used as a central place from which static variables in other classes may be accessed (that is,
+ * this class is a middle-man) for the sole purpose of convenience (typing "C" is quicker than any other class name).
  */
 public abstract class C {
     /**
      * Program version string.
      */
-    public static final String VER_STRING = "FictionDL, Version 3.0.0";
+    public static final String VER_STRING = "FictionDL, Version 3.1.0";
 
     /**
-     * This is here for code-style convenience. Typing C.getHttpClient() is much shorter than FictionDl.httpClient ;)
-     * @return The OkHttpClient from FictionDl.
+     * Provide access to the OkHttpClient.
+     * @return The OkHttpClient from {@link Main}.
      */
     public static OkHttpClient getHttpClient() {
-        return FictionDL.httpClient;
+        return Main.httpClient;
+    }
+
+    /**
+     * Provide access to the event bus.
+     * @return Event bus from {@link Main}.
+     */
+    public static EventBus getEventBus() {
+        return Main.eventBus;
     }
 
     /*
@@ -25,10 +40,12 @@ public abstract class C {
     it's printed to the TextFlow log in the GUI. The tags are stripped before the string is printed. One color and
     multiple styles can apply, and apply to the *whole* string.
      */
+    public static final String LOG_ULINE = "!underline!";
     public static final String LOG_RED = "!red!";
     public static final String LOG_BLUE = "!blue!";
     public static final String LOG_GREEN = "!green!";
     public static final String LOG_PURPLE = "!purple!";
+    public static final String LOG_GOLD = "!gold!";
 
     /*
     Keys.
@@ -65,6 +82,8 @@ public abstract class C {
 
     public static final String ALL_FINISHED = "\nAll Finished! :)" + LOG_GREEN;
 
+    public static final String RUN_RESULTS = "This run generated %f total units of work.\n" + LOG_PURPLE;
+
     // FictionHunt-specific.
     public static final String FH_ON_FFN = "\"%s\" is still available on FanFiction.net; will download from there.\n\n";
 
@@ -93,6 +112,8 @@ public abstract class C {
 
     public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it.\n" + LOG_RED;
 
+    public static final String NO_ID_STORY_DL_FAILED = "Couldn't get %s story from \"%s\". Skipping it.\n" + LOG_RED;
+
     public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n" + LOG_RED;
 
     public static final String SAVE_FILE_FAILED = "Failed to save file: \"%s\".\n" + LOG_RED;
@@ -110,23 +131,7 @@ public abstract class C {
 
     public static final String CHAP_NUM_NOT_ASSIGNED = "Chapter number hasn't been assigned yet!";
 
-    /*
-    Domains and human-readable names for supported sites.
-     */
-    public static final String NAME_FFN = "FanFiction.net";
-    public static final String HOST_FFN = "fanfiction.net";
-
-    public static final String NAME_FH = "FictionHunt";
-    public static final String HOST_FH = "fictionhunt.com";
-
-    public static final String NAME_SIYE = "SIYE";
-    public static final String HOST_SIYE = "siye.co.uk";
-
-    public static final String NAME_MN = "MuggleNet";
-    public static final String HOST_MN = "fanfiction.mugglenet.com";
-
-    public static final String NAME_AO3 = "Ao3";
-    public static final String HOST_AO3 = "archiveofourown.org";
+    public static final String STALE_UNIT_WORTH = "Unit worth wasn't recalculated prior to use!";
 
     /*
     Default/specific detail values.
