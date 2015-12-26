@@ -93,6 +93,7 @@ public class Main {
                 Util.log(e.getMessage());
             }
         }
+        Main.exit(0); // Because the CLI version is naughty otherwise and keeps the JVM running.
     }
 
     /**

@@ -66,10 +66,12 @@ public class TbcDL extends ParsingDL {
         Element container = chapter.rawHtml.select("div#nav25").first();
         // Start index should be 2 more than the index of the chapter title. This way, we don't include the actual
         // title or the obligatory empty <p> that immediately follows it.
-        int startIdx = container.childNodes().indexOf(container.select("center").first()) + 2;
-        // End index should be 2 less that then number of child nodes. This way, we don't include the last <p>
-        // element, which is always either empty (for oneshots) or a <select> element (for chaptered stories).
-        int endIdx = container.childNodes().size() - 1;
+        int startIdx = container.select("center").first().siblingIndex() + 2;
+        // End index should be the index of the last <p> element, which we don't want to include since it is always
+        // either empty (for oneshots) or a <select> element (for chaptered stories).
+        Element lastChapSelect = container.select("table:has(select)").last();
+        int endIdx = lastChapSelect != null ? lastChapSelect.siblingIndex() :
+                container.select("p").last().siblingIndex();
         // Create the chapter content string and put it into the chapter.
         chapter.contentFromString(Util.divFromChildCopies(container, startIdx, endIdx).html().trim());
     }
