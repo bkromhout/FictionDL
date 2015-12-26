@@ -17,7 +17,7 @@ public abstract class C {
     /**
      * Program version string.
      */
-    public static final String VER_STRING = "FictionDL, Version 3.1.0";
+    public static final String VER_STRING = "FictionDL, Version 3.1.1";
 
     /**
      * Provide access to the OkHttpClient.
