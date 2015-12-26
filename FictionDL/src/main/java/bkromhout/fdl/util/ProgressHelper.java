@@ -94,7 +94,7 @@ public class ProgressHelper {
             if (needsRecalc) throw new IllegalStateException(C.STALE_UNIT_WORTH);
             workDone += currUnitWorth * (double) event.getUnitsToAdd();
         }
-        if (event.didFail()) needsRecalc = true;
+        if (event.didFail() && currUnitWorth != oneStoryWorth) needsRecalc = true;
         // Update progress bar.
         updateTaskProgress();
     }

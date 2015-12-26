@@ -14,9 +14,17 @@ import org.jsoup.select.Elements;
  */
 public class TbcStory extends Story {
     /**
-     * Base url to help create chapter urls.
+     * Base url to help create urls.
      */
     private static final String TBC_BASE_URL = "http://www.thebroomcupboard.net";
+    /**
+     * Chapter url, needs chapter id filled in.
+     */
+    private static final String TBC_C_URL = TBC_BASE_URL + "/mating/story/%s/";
+    /**
+     * Regex to parse chapter ID.
+     */
+    private static final String CHAP_ID_REGEX = "/story/(\\d*)";
 
     /**
      * Create a new {@link TbcStory} based off of a url.
@@ -30,8 +38,10 @@ public class TbcStory extends Story {
 
     @Override
     protected void populateInfo() throws InitStoryException {
-        // Since TBC URLs don't have story IDs, we have to figure out chapter URLs ourselves. We'll do this first so
-        // that we have a first (or only) chapter which we can scrape details from.
+        // Parse fake story ID (really a chapter ID) to normalize the url.
+        url = String.format(TBC_C_URL, parseStoryId(url, CHAP_ID_REGEX, 1));
+        // Since TBC URLs don't have true story IDs, we have to figure out chapter URLs ourselves. We'll do this
+        // first so that we have a first (or only) chapter which we can scrape details from.
         Document infoDoc = Util.downloadHtml(url);
         if (infoDoc == null || infoDoc.select("div#nav25").first() == null) throw initEx(NO_ID_DL_FAIL, url);
 
@@ -40,7 +50,8 @@ public class TbcStory extends Story {
         if (selectElem != null) {
             // If so, we need to create chapter urls from it now.
             Elements selOptions = selectElem.select("option");
-            for (Element option : selOptions) chapterUrls.add(TBC_BASE_URL + option.attr("value"));
+            for (Element option : selOptions)
+                chapterUrls.add(String.format(TBC_C_URL, parseStoryId(option.attr("value"), CHAP_ID_REGEX, 1)));
             // If the first chapter's url isn't the same as the one we just got, re-download it.
             if (!url.equals(chapterUrls.get(0))) {
                 url = chapterUrls.get(0);
