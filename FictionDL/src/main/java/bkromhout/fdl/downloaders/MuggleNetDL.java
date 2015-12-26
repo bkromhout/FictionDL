@@ -96,6 +96,6 @@ public class MuggleNetDL extends ParsingDL {
 
         // Now we can finally output the html.
         chapterText.append(content.html());
-        chapter.content = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText.toString());
+        chapter.contentFromString(chapterText.toString());
     }
 }

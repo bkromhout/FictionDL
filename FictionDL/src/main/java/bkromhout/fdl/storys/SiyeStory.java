@@ -7,11 +7,7 @@ import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
-import org.jsoup.parser.Tag;
-
-import java.util.List;
 
 /**
  * Model object for a <a href="http://siye.co.uk">Sink Into Your Eyes</a> story.
@@ -50,7 +46,8 @@ public class SiyeStory extends Story {
         // Get summary.
         int summaryStartIdx = storyInfoElem.select("b:contains(Summary:)").first().siblingIndex() + 1;
         int summaryEndIdx = storyInfoElem.select("b:contains(Hitcount:)").first().siblingIndex();
-        summary = Util.cleanHtmlString(parseSummary(storyInfoElem, summaryStartIdx, summaryEndIdx));
+        summary = Util.cleanHtmlString(
+                Util.divFromChildCopies(storyInfoElem, summaryStartIdx, summaryEndIdx).html().trim());
         // Get characters.
         Element charsLabel = storyInfoElem.select("b:contains(Characters:)").first();
         characters = ((TextNode) storyInfoElem.childNodes().get(charsLabel.siblingIndex() + 1)).text().trim();
@@ -108,27 +105,5 @@ public class SiyeStory extends Story {
         if (aIdElement == null) throw initEx();
         // Now return the author page url.
         return aIdElement.attr("href");
-    }
-
-    /**
-     * Get the story summary from the story details element based on indices of child nodes.
-     * @param parent   Element to copy nodes from.
-     * @param startIdx Index to start copying nodes from (inclusive).
-     * @param endIdx   Index to copy nodes to (exclusive).
-     * @return Summary HTML string.
-     */
-    private String parseSummary(Element parent, int startIdx, int endIdx) {
-        // Parameter checks.
-        if (parent == null || startIdx < 0 || startIdx >= parent.childNodes().size() || endIdx <= startIdx ||
-                endIdx > parent.childNodes().size()) return null;
-        // Copy parent's child nodes.
-        List<Node> nodeCopies = parent.childNodesCopy();
-        // Create the new div.
-        Element summary = new Element(Tag.valueOf("div"), "");
-        // Loop through the copied nodes, starting at the startIdx and up to but not including the endIdx, and append
-        // those nodes to the new div.
-        for (int i = startIdx; i < endIdx; i++) summary.appendChild(nodeCopies.get(i));
-        // Return the summary HTML.
-        return summary.html().trim();
     }
 }

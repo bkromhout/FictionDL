@@ -136,7 +136,7 @@ public abstract class ParsingDL extends Downloader {
         // Get the chapter's text, keeping all HTML formatting intact.
         String chapterText = chapter.rawHtml.select(chapTextSelector).first().html();
         // Put the chapter's text into a chapter HTML template.
-        chapter.content = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText);
+        chapter.contentFromString(chapterText);
     }
 
     /**

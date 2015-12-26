@@ -44,6 +44,16 @@ public class Chapter {
     }
 
     /**
+     * Convenience method which takes the given content string and puts it into the final chapter XHTML template at
+     * {@link C#CHAPTER_PAGE}. This is a no-op if the given string is null.
+     * @param contentStr Chapter html content string.
+     */
+    public void contentFromString(String contentStr) {
+        if (contentStr == null) return;
+        this.content = String.format(C.CHAPTER_PAGE, title, title, contentStr);
+    }
+
+    /**
      * Create a new {@link Chapter} using an OkHttp Response obtained from the chapter url.
      * @param response Response containing chapter page HTML.
      * @param number   Chapter number.

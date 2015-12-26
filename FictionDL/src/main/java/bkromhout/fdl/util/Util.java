@@ -8,6 +8,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
+import org.jsoup.parser.Tag;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +18,7 @@ import java.io.InputStream;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 /**
@@ -310,5 +314,27 @@ public abstract class Util {
             if (i != literals.length - 1) regex.append('|');
         }
         return regex.toString();
+    }
+
+    /**
+     * Return a new div element whose children are copies of some range of the given parent's child nodes.
+     * @param parent   Element to copy child nodes from.
+     * @param startIdx Index in parent's child node list to start copying from (inclusive)
+     * @param endIdx   Index in parent's child node list to stop copying at (exclusive)
+     * @return A new div Element with copies of nodes from the parent, or null if any of the parameters were invalid.
+     */
+    public static Element divFromChildCopies(Element parent, int startIdx, int endIdx) {
+        // Parameter checks.
+        if (parent == null || startIdx < 0 || startIdx >= parent.childNodes().size() || endIdx <= startIdx ||
+                endIdx > parent.childNodes().size()) return null;
+        // Copy parent's child nodes.
+        List<Node> nodeCopies = parent.childNodesCopy();
+        // Create the new div.
+        Element div = new Element(Tag.valueOf("div"), "");
+        // Loop through the copied nodes, starting at the startIdx and up to but not including the endIdx, and append
+        // those nodes to the new div.
+        for (int i = startIdx; i < endIdx; i++) div.appendChild(nodeCopies.get(i));
+        // Return the summary HTML.
+        return div;
     }
 }

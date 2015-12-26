@@ -64,6 +64,6 @@ public class SiyeDL extends ParsingDL {
 
         // Then, we have to get the actual chapter text itself.
         chapterText.append(chapter.rawHtml.select("td[colspan=\"2\"] span").first().html());
-        chapter.content = String.format(C.CHAPTER_PAGE, chapter.title, chapter.title, chapterText.toString());
+        chapter.contentFromString(chapterText.toString());
     }
 }

@@ -7,11 +7,7 @@ import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.nodes.Node;
-import org.jsoup.parser.Tag;
 import org.jsoup.select.Elements;
-
-import java.util.ArrayList;
 
 /**
  * Model object for a <a href="http://fanfiction.mugglenet.com">MuggleNet</a> story.
@@ -132,28 +128,19 @@ public class MuggleNetStory extends Story {
     private Element makeDetailDivForLabel(Element parent, Elements labels, int labelIdx) {
         // Parameter checks.
         if (parent == null || labelIdx < 0 || labelIdx >= labels.size()) return null;
-        // Copy parent's child nodes.
-        ArrayList<Node> nodeCopies = (ArrayList<Node>) parent.childNodesCopy();
-        // Sometimes MuggleNet wraps the details in a <p> tag, which we don't really want, so we'll unwrap its children.
-        if (nodeCopies.size() == 2) {
-            Node wrapper = nodeCopies.remove(1);
-            nodeCopies.addAll(wrapper.childNodesCopy());
-        }
+        // Sometimes MuggleNet wraps the details in a <p> tag, which we don't really want, so be sure to handle that.
+        Element realParent = parent.childNodes().size() != 2 ? parent : parent.child(1);
         // Figure out start and end indices for copying nodes from parent based on the index of labels[labelIdx] in
         // the parent.
-        // Start index should be one higher than the index of the label in the parent (since we don't need the actual
-        // label).
-        int startIdx = nodeCopies.indexOf(labels.get(labelIdx)) + 1;
-        // If the given labelIdx *doesn't* point to the last label in the labels list, the end index should be the
-        // index (in the parent's list of child nodes) of the next label after the one pointed to by labelIdx.
-        // Otherwise, the end index should be equal to the capacity of the parent's list of child nodes.
-        int endIdx = labelIdx != labels.size() - 1 ? nodeCopies.indexOf(labels.get(labelIdx + 1)) : nodeCopies.size();
-        // Create the new div.
-        Element newDiv = new Element(Tag.valueOf("div"), "");
-        // Loop through the copied nodes, starting at the startIdx and up to but not including the endIdx, and append
-        // those nodes to the new div.
-        for (int i = startIdx; i < endIdx; i++) newDiv.appendChild(nodeCopies.get(i));
+        // Start index should be one higher than the index of the label in the parent (we don't need the actual label).
+        int startIdx = realParent.childNodes().indexOf(labels.get(labelIdx)) + 1;
+        int endIdx = labelIdx != labels.size() - 1
+                // If labelIdx *doesn't* point to the last label in the labels list, the end index should be the
+                // index (in the parent's list of child nodes) of the next label after the one pointed to by labelIdx.
+                ? realParent.childNodes().indexOf(labels.get(labelIdx + 1))
+                // Otherwise, the end index should be equal to the capacity of the parent's list of child nodes.
+                : realParent.childNodes().size();
         // Return the new div.
-        return newDiv;
+        return Util.divFromChildCopies(realParent, startIdx, endIdx);
     }
 }
