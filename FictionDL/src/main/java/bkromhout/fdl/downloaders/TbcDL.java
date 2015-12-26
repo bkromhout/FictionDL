@@ -15,7 +15,7 @@ public class TbcDL extends ParsingDL {
     /**
      * The Broom Cupboard login page url.
      */
-    private static final String TBC_L_URL = "http://thebroomcupboard.net/processlogin.php?cid=";
+    private static final String TBC_L_URL = "http://www.thebroomcupboard.net/processlogin.php?cid=";
 
     /**
      * Create a new {@link TbcDL}.
