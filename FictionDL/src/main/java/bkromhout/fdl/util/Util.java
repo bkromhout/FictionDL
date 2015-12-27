@@ -144,7 +144,8 @@ public abstract class Util {
      */
     public static String escapeAmps(String in) {
         if (in == null) return null;
-        return in.replaceAll("[&](?!(#|amp;|gt;|lt;|quot;|nbsp;))", "&#x26;");
+        //return in.replaceAll("[&](?!(#|amp;|gt;|lt;|quot;|nbsp;))", "&#x26;");
+        return in.replaceAll("&(?![A-Za-z]+[0-9]*;|#[0-9]+;|#x[0-9a-fA-F]+;)", "&#x26;");
     }
 
     /**
