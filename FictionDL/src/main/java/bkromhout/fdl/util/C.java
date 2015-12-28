@@ -55,34 +55,44 @@ public abstract class C {
     public static final String ARG_CFG_PATH = "arg_cfg_path";
 
     /*
-    Log Strings.
+    Log strings.
      */
     // General.
     public static final String DONE = "Done!" + LOG_GREEN;
 
     public static final String PARSING_FILE = "Parsing %s file...";
 
-    public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n" + LOG_BLUE;
-
-    public static final String STARTING_SITE_AUTH_PROCESS = "\nAttempting to log in to %s..." + LOG_BLUE;
-
-    public static final String FETCH_BUILD_MODELS = "Fetching story infos from %s and building story models...\n";
-
-    public static final String DL_STORIES_FROM_SITE = "Downloading stories from %s...\n\n";
-
-    public static final String DL_CONTENT_FOR = "Downloading: \"%s\"\n";
-
     public static final String SANITIZING_CHAPS = "Sanitizing chapters...";
 
     public static final String SAVING_STORY = "Saving Story...";
 
-    public static final String DL_EPUB_FOR = "Downloading ePUB for: \"%s\"...";
-
-    public static final String FINISHED_WITH_SITE = "Finished with %s.\n\n" + LOG_BLUE;
-
     public static final String ALL_FINISHED = "\nAll Finished! :)" + LOG_GREEN;
 
     public static final String RUN_RESULTS = "This run generated %f total units of work.\n" + LOG_PURPLE;
+
+    // Site Story Process
+    public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n" + LOG_BLUE;
+
+    public static final String STARTING_SITE_AUTH_PROCESS = "\nAttempting to log in to %s..." + LOG_BLUE;
+
+    public static final String FETCH_BUILD_MODELS = "Fetching all stories' details from %s to build story models...\n";
+
+    public static final String DL_STORIES_FROM_SITE = "Downloading stories from %s...\n\n";
+
+    public static final String DL_CONTENT_FOR = "Downloading: \"%s\"\n"; // For downloaders which extend ParsingDL.
+
+    public static final String DL_EPUB_FOR = "Downloading ePUB for: \"%s\"..."; // For downloaders which extend EpubDL.
+
+    public static final String FINISHED_WITH_SITE = "Finished with %s.\n\n" + LOG_BLUE;
+
+    // Local Story Process
+    public static final String STARTING_LOCAL_STORY_PROCESS = "\nStarting local story creation process..." + LOG_BLUE;
+
+    public static final String CHECKING_LOCAL_STORY_DIRS = "Verifying local story folders...";
+
+    public static final String CREATING_LOCAL_STORIES = "Creating local stories...\n";
+
+    public static final String FINISHED_WITH_LOCAL_STORIES = "Finished with local stories.\n" + LOG_BLUE;
 
     // FictionHunt-specific.
     public static final String FH_ON_FFN = "\"%s\" is still available on FanFiction.net; will download from there.\n\n";
@@ -97,37 +107,64 @@ public abstract class C {
     // Ao3-specific.
     public static final String AO3_PRE_DL = "Ao3 stories occasionally fail to download, just try them again.";
 
-    // Local story-specific
-    public static final String LOCAL_STORY_NULL = "Got null for storyInfo..." + LOG_GOLD;
+    // Local Story-specific.
 
-    // Non-site-specific errors and warnings.
+    /*
+    Warning and Error log strings. (Site-specific warnings and errors may be above)
+     */
+    // General.
     public static final String INVALID_ARGS = "Bad arguments.";
 
     public static final String INVALID_PATH = "Invalid path: \"%s\".\n" + LOG_RED;
 
     public static final String INVALID_URL = "Invalid URL: \"%s\".\n" + LOG_RED;
 
+    // Parsing.
     public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the %s file: \"%s\".\n" + LOG_RED;
-
-    public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\".\n" + LOG_RED;
 
     public static final String PARSE_HTML_FAILED = "Couldn't parse HTML for \"%s\"." + LOG_RED;
 
+    // General Network.
+    public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\".\n" + LOG_RED;
+
+    public static final String SAVE_FILE_FAILED = "Failed to save file: \"%s\".\n" + LOG_RED;
+
+    // Auth.
+    public static final String MUST_LOGIN = "You must provide %s login info to download story with ID=%s!" + LOG_RED;
+
+    public static final String LOGIN_FAILED = "\nCouldn't log in to %s. Check your login info.\n" + LOG_RED;
+
+    // Site Story Process.
     public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it.\n" + LOG_RED;
 
     public static final String NO_ID_STORY_DL_FAILED = "Couldn't get %s story from \"%s\". Skipping it.\n" + LOG_RED;
 
     public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n" + LOG_RED;
 
-    public static final String SAVE_FILE_FAILED = "Failed to save file: \"%s\".\n" + LOG_RED;
-
     public static final String NO_EPUB_ON_SITE = "Couldn't find ePUB on %s for story \"%s\". Skipping it." + LOG_RED;
 
-    public static final String MUST_LOGIN = "You must provide %s login info to download story with ID=%s!" + LOG_RED;
+    // Local Story Process.
+    public static final String NO_STORYINFO_JSON = "The local story in folder \"%s\" doesn't have a " +
+            "storyinfo.json file. Skipping it.\n" + LOG_RED;
 
-    public static final String LOGIN_FAILED = "\nCouldn't log in to %s. Check your login info.\n" + LOG_RED;
+    public static final String MALFORMED_STORYINFO_JSON = "The local story in folder \"%s\" has a malformed " +
+            "storyinfo.json file. Skipping it.\n" + LOG_RED;
 
-    // Error strings used by exceptions which we don't catch. Don't include log tags, they won't be stripped!
+    public static final String LS_NO_TITLE = "The local story in folder \"%s\" does not have a title in " +
+            "storyinfo.json. Skipping it.\n" + LOG_RED;
+
+    public static final String LS_NO_AUTHOR = "The local story \"%s\" does not have an author in storyinfo.json. " +
+            "Skipping it.\n" + LOG_RED;
+
+    public static final String MISSING_CHAP_FILE = "The local story \"%s\" is missing the file \"%d.html\". " +
+            "Skipping it.\n" + LOG_RED;
+
+    public static final String MALFORMED_CHAP_FILE = "Local story \"%s\" has a malformed \"%s\" file, " +
+            "parsing failed. Skipping the story.\n" + LOG_RED;
+
+    /*
+    Error strings used by exceptions which we don't catch. Don't include log tags, they won't be stripped!
+     */
     public static final String NO_INPUT_PATH = "You must supply an input file path!";
 
     public static final String HTML_UNEXP_RESP = "Unexpected result when trying to download HTML from \"%s\".\n";
