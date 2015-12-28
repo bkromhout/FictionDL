@@ -29,7 +29,7 @@ public class FictionHuntStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public FictionHuntStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Sites.FH());
+        super(url, Sites.FH());
     }
 
     @Override

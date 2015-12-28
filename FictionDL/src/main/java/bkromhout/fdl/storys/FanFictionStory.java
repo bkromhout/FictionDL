@@ -42,7 +42,7 @@ public class FanFictionStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public FanFictionStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Sites.FFN());
+        super(url, Sites.FFN());
     }
 
     @Override

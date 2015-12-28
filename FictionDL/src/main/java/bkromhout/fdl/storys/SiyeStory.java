@@ -29,7 +29,7 @@ public class SiyeStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public SiyeStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Sites.SIYE());
+        super(url, Sites.SIYE());
     }
 
     @Override

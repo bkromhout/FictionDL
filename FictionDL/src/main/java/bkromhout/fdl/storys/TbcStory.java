@@ -33,7 +33,7 @@ public class TbcStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public TbcStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Sites.TBC());
+        super(url, Sites.TBC());
     }
 
     @Override

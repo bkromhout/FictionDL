@@ -51,7 +51,7 @@ public class MuggleNetStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public MuggleNetStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Sites.MN());
+        super(url, Sites.MN());
     }
 
     @Override

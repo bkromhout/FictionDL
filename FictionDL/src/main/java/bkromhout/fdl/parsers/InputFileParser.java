@@ -12,17 +12,21 @@ import java.util.regex.Pattern;
 /**
  * Parses the input file.
  */
-public class LinkFileParser extends FileParser {
+public class InputFileParser extends FileParser {
     /**
      * Regex for extracting host name from a url.
      */
     private static Pattern hostRegex = Pattern.compile("^(http[s]?://)?([^:/\\s]+)(/.*)?$");
+    /**
+     * Regex for matching lines which point to local fic directories.
+     */
+    private static Pattern localFicRegex = Pattern.compile(""); // TODO create regex to match "@fdl#dirbook=[something]"
 
     /**
      * Parse the file, populating the various url lists for the different sites.
      * @param storiesFile Link file.
      */
-    public LinkFileParser(File storiesFile) {
+    public InputFileParser(File storiesFile) {
         super(FileType.URLS, storiesFile);
     }
 
@@ -38,6 +42,9 @@ public class LinkFileParser extends FileParser {
      */
     @Override
     protected void processLine(String line) throws IllegalStateException {
+        // TODO make this support local fics too!
+
+
         // Try to match this line to a url so that we can extract the host.
         Matcher hostMatcher = hostRegex.matcher(line);
         if (!hostMatcher.matches()) {

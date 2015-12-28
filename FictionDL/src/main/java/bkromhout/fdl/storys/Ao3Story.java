@@ -22,7 +22,7 @@ public class Ao3Story extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public Ao3Story(EpubDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Sites.AO3());
+        super(url, Sites.AO3());
     }
 
     @Override

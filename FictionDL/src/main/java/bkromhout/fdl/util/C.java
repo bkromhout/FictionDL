@@ -97,6 +97,9 @@ public abstract class C {
     // Ao3-specific.
     public static final String AO3_PRE_DL = "Ao3 stories occasionally fail to download, just try them again.";
 
+    // Local story-specific
+    public static final String LOCAL_STORY_NULL = "Got null for storyInfo..." + LOG_GOLD;
+
     // Non-site-specific errors and warnings.
     public static final String INVALID_ARGS = "Bad arguments.";
 

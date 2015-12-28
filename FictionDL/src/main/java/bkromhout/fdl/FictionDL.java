@@ -1,8 +1,9 @@
 package bkromhout.fdl;
 
 import bkromhout.fdl.events.UpdateTaskProgressEvent;
+import bkromhout.fdl.localfic.LocalFicProcessor;
 import bkromhout.fdl.parsers.ConfigFileParser;
-import bkromhout.fdl.parsers.LinkFileParser;
+import bkromhout.fdl.parsers.InputFileParser;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
 import bkromhout.fdl.util.Sites;
@@ -41,14 +42,18 @@ public class FictionDL {
      */
     private ConfigFileParser.Config cfg;
     /**
-     * Link file parser.
+     * Input file parser.
      */
-    private static LinkFileParser linkFileParser;
+    private static InputFileParser inputFileParser;
+    /**
+     * Local story processor.
+     */
+    public static LocalFicProcessor localFicProcessor;
 
     /**
      * {@link ProgressHelper} for keeping track of our overall progress.
      */
-    //private static ProgressHelper progressHelper; //TODO remove this maybe?
+    //private static ProgressHelper progressHelper; //TODO remove this maybe? Need to test the GUI again.
 
     /**
      * Create a new {@link FictionDL} to execute the program logic.
@@ -98,11 +103,12 @@ public class FictionDL {
      */
     void run() {
         /* Do pre-run tasks. */
-        // Create Site classes.
+        // Create Site classes and local story processor.
         Sites.init();
+        localFicProcessor = new LocalFicProcessor(inputFile.toPath().getParent());
 
-        // Create a LinkFileParser to get the story urls from the input file.
-        linkFileParser = new LinkFileParser(inputFile);
+        // Create a InputFileParser to get the story urls from the input file.
+        inputFileParser = new InputFileParser(inputFile);
 
         // If we have a config file, create a ConfigFileParser to get options.
         if (configFile != null) cfg = new ConfigFileParser(configFile).getConfig();
@@ -114,6 +120,9 @@ public class FictionDL {
 
         /* Download stories from all sites. */
         for (Site site : Sites.all()) site.download(this, cfg);
+
+        /* Create any local stories that we parsed from the input file. */
+        // TODO!
 
         /* Do post-run tasks. */
         Util.log(C.ALL_FINISHED);
@@ -139,14 +148,6 @@ public class FictionDL {
      */
     public static Path getOutPath() {
         return outPath;
-    }
-
-    /**
-     * Get the parser responsible for parsing the link file.
-     * @return Link file parser.
-     */
-    public static LinkFileParser getLinkFileParser() {
-        return linkFileParser;
     }
 
     /**

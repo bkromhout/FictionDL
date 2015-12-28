@@ -2,7 +2,6 @@ package bkromhout.fdl.storys;
 
 import bkromhout.fdl.Chapter;
 import bkromhout.fdl.Site;
-import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.util.C;
 
@@ -27,8 +26,6 @@ public abstract class Story {
      */
     static final String NO_ID_DL_FAIL = "NO_ID_DL_FAIL";
 
-    // The downloader which owns this story.
-    protected Downloader ownerDl;
     // Story url.
     protected String url;
     // Site story is from (will be used as "Publisher" metadata).
@@ -68,13 +65,11 @@ public abstract class Story {
 
     /**
      * Create a new {@link Story}.
-     * @param ownerDl The downloader which owns this story.
      * @param url     Story url.
      * @param site    Site that story is from.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    protected Story(Downloader ownerDl, String url, Site site) throws InitStoryException {
-        this.ownerDl = ownerDl;
+    protected Story(String url, Site site) throws InitStoryException {
         this.url = url;
         this.site = site;
         populateInfo();
