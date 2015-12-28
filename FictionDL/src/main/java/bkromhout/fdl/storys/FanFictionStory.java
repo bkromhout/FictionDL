@@ -9,6 +9,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -97,8 +100,8 @@ public class FanFictionStory extends Story {
 
         // Get the dates.
         Elements dates = detailElem.select("span > span");
-        datePublished = Util.dateFromFfnTime(dates.last().attr("data-xutime"));
-        dateUpdated = dates.size() > 1 ? Util.dateFromFfnTime(dates.first().attr("data-xutime")) : datePublished;
+        datePublished = dateFromFfnTime(dates.last().attr("data-xutime"));
+        dateUpdated = dates.size() > 1 ? dateFromFfnTime(dates.first().attr("data-xutime")) : datePublished;
 
         status = findDetailsStringIdx(details, "Status: Complete") != -1 ? C.STAT_C : C.STAT_I;
 
@@ -135,5 +138,25 @@ public class FanFictionStory extends Story {
     private int findDetailsStringIdx(String[] details, String search) {
         for (int i = 0; i < details.length; i++) if (details[i].contains(search)) return i;
         return -1;
+    }
+
+
+    /**
+     * Takes a long time value that was parsed from FanFiction.net, multiplies it by 1000 to make it match the Java long
+     * time format, then returns a string with it printed in the format MMM dd, yyyy.
+     * @param ffnTime String long value from an FFN data-xutime attribute.
+     * @return Date string.
+     */
+    public static String dateFromFfnTime(String ffnTime) {
+        // Add some zeros to make it like a Java long.
+        long longFfnTime = Long.parseLong(ffnTime);
+        longFfnTime *= 1000;
+        // Create a Date object.
+        Date date = new Date(longFfnTime);
+        // Create the formatter.
+        DateFormat df = DateFormat.getDateInstance();
+        df.setTimeZone(TimeZone.getTimeZone("US/Pacific"));
+        // Return string.
+        return df.format(date);
     }
 }

@@ -16,10 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.text.DateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Utility class with static methods.
@@ -55,25 +52,6 @@ public abstract class Util {
     }
 
     /**
-     * Takes a long time value that was parsed from FanFiction.net, multiplies it by 1000 to make it match the Java long
-     * time format, then returns a string with it printed in the format MMM dd, yyyy.
-     * @param ffnTime String long value from an FFN data-xutime attribute.
-     * @return Date string.
-     */
-    public static String dateFromFfnTime(String ffnTime) {
-        // Add some zeros to make it like a Java long.
-        long longFfnTime = Long.parseLong(ffnTime);
-        longFfnTime *= 1000;
-        // Create a Date object.
-        Date date = new Date(longFfnTime);
-        // Create the formatter.
-        DateFormat df = DateFormat.getDateInstance();
-        df.setTimeZone(TimeZone.getTimeZone("US/Pacific"));
-        // Return string.
-        return df.format(date);
-    }
-
-    /**
      * Download an HTML document from the given url
      * @param url url to download.
      * @return A Document object, or null if the url was malformed.
@@ -94,13 +72,14 @@ public abstract class Util {
     /**
      * Download a web page using the given OkHttpClient from the given url.
      * @param url url of page to download.
-     * @return Raw HTML of the web page as an InputStream, or null if we failed to download the page.
+     * @return Raw HTML of the web page as an InputStream, or null if we failed to download the page or the status code
+     * wasn't in the range of [200..300).
      */
-    public static InputStream downloadRawHtml(String url) {
+    private static InputStream downloadRawHtml(String url) {
         try {
             Request request = new Request.Builder().url(url).build();
             Response response = C.getHttpClient().newCall(request).execute();
-            return response.body().byteStream();
+            return response.isSuccessful() ? response.body().byteStream() : null;
         } catch (IOException e) {
             e.printStackTrace();
             // We're just ignoring the exception really.
@@ -296,7 +275,7 @@ public abstract class Util {
      * @param in String to strip
      * @return Stripped string.
      */
-    public static String stripLogStyleTags(String in) {
+    private static String stripLogStyleTags(String in) {
         return in.replace(C.LOG_RED, "").replace(C.LOG_BLUE, "").replace(C.LOG_GREEN, "").replace(C.LOG_PURPLE, "")
                  .replace(C.LOG_GOLD, "").replace(C.LOG_ULINE, "");
     }
