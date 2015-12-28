@@ -50,7 +50,7 @@ public class FanFictionStory extends Story {
         // Get story ID and use it to normalize the url, then download the url so that we can parse story info.
         storyId = parseStoryId(url, "/s/(\\d*)", 1);
         url = String.format(FFN_S_URL, storyId);
-        Document infoDoc = Util.downloadHtml(url);
+        Document infoDoc = Util.getHtml(url);
         // Make sure that we got a Document and that this is a valid story.
         if (infoDoc == null || infoDoc.select("span.gui_warning").first() != null) throw initEx();
 

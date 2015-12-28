@@ -41,6 +41,8 @@ public class Chapter {
         this.url = response.request().url().toString();
         this.rawHtml = Jsoup.parse(response.body().byteStream(), null, url);
         this.number = number;
+        // Make sure the ResponseBody is closed so that it doesn't leak.
+        response.body().close();
     }
 
     /**

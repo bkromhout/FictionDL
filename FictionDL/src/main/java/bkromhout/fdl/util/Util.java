@@ -52,14 +52,18 @@ public abstract class Util {
     }
 
     /**
-     * Download an HTML document from the given url
+     * Download an HTML document from the given url.
+     * <p>
+     * This method closes any resources it holds before returning.
      * @param url url to download.
      * @return A Document object, or null if the url was malformed.
      */
-    public static Document downloadHtml(String url) {
-        InputStream responseBodyStream = downloadRawHtml(url);
-        if (responseBodyStream == null) return null;
-        try {
+    public static Document getHtml(String url) {
+        // Use Jsoup to parse the HTML, being sure to close resources before returning. (Note that while this is
+        // typed as an InputStream, whose close method "does nothing", it is actually an Okio type whose close method
+        // does do something.
+        try (InputStream responseBodyStream = getRawHtmlStream(url)) {
+            if (responseBodyStream == null) return null;
             return Jsoup.parse(responseBodyStream, null, url);
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,15 +75,46 @@ public abstract class Util {
 
     /**
      * Download a web page using the given OkHttpClient from the given url.
+     * <p>
+     * Note that while this returns an InputStream type, it is actually an Okio type which subclasses InputStream.
+     * Callers should always be sure to call its {@code close} method when finished using it to ensure that it cannot
+     * leak.
      * @param url url of page to download.
      * @return Raw HTML of the web page as an InputStream, or null if we failed to download the page or the status code
      * wasn't in the range of [200..300).
      */
-    private static InputStream downloadRawHtml(String url) {
+    private static InputStream getRawHtmlStream(String url) {
+        Response response = getRawHtml(url);
+        if (response == null) return null;
+
+        try {
+            return response.body().byteStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // We're just ignoring the exception really.
+            logf(C.HTML_DL_FAILED, url);
+            return null;
+        }
+    }
+
+    /**
+     * Download a web page using the given OkHttpClient from the given url.
+     * <p>
+     * This method will close the Response's ResponseBody before returning null if we were able to get a valid Response
+     * but the status code did not indicate success.
+     * @param url url of page to download.
+     * @return OkHttp Response, or null if we failed to download the page or the status code wasn't in the range of
+     * [200..300).
+     */
+    private static Response getRawHtml(String url) {
         try {
             Request request = new Request.Builder().url(url).build();
             Response response = C.getHttpClient().newCall(request).execute();
-            return response.isSuccessful() ? response.body().byteStream() : null;
+            if (response.isSuccessful()) return response;
+
+            // If the request wasn't successful, close the ResponseBody before returning null so that it cannot leak.
+            response.body().close();
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
             // We're just ignoring the exception really.

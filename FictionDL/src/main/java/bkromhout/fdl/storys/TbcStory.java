@@ -42,7 +42,7 @@ public class TbcStory extends Story {
         url = String.format(TBC_C_URL, parseStoryId(url, CHAP_ID_REGEX, 1));
         // Since TBC URLs don't have true story IDs, we have to figure out chapter URLs ourselves. We'll do this
         // first so that we have a first (or only) chapter which we can scrape details from.
-        Document infoDoc = Util.downloadHtml(url);
+        Document infoDoc = Util.getHtml(url);
         if (infoDoc == null || infoDoc.select("div#nav25").first() == null) throw initEx(NO_ID_DL_FAIL, url);
 
         // Now check and see if we have a select box.
@@ -55,7 +55,7 @@ public class TbcStory extends Story {
             // If the first chapter's url isn't the same as the one we just got, re-download it.
             if (!url.equals(chapterUrls.get(0))) {
                 url = chapterUrls.get(0);
-                infoDoc = Util.downloadHtml(url);
+                infoDoc = Util.getHtml(url);
                 if (infoDoc == null) throw initEx();
             }
         } else {
@@ -72,7 +72,7 @@ public class TbcStory extends Story {
         author = detailDiv.text().replace("Author:", "").replace("- Add Author To Your Email Update List", "").trim();
 
         // Download author page, we'll need it to get summary and total word count.
-        Document authorPage = Util.downloadHtml(TBC_BASE_URL + detailDiv.select("a").first().attr("href"));
+        Document authorPage = Util.getHtml(TBC_BASE_URL + detailDiv.select("a").first().attr("href"));
         if (authorPage == null) throw initEx(NO_ID_DL_FAIL, url);
 
         // Create a relative story link in order to find only summary/word count elements that occur after an <a>
@@ -112,7 +112,7 @@ public class TbcStory extends Story {
      */
     private String getDateUpdatedFromLastChap() {
         // We'll need to download the last chapter to find the last updated date if this isn't a oneshot.
-        Document lastC = Util.downloadHtml(chapterUrls.get(chapterUrls.size() - 1));
+        Document lastC = Util.getHtml(chapterUrls.get(chapterUrls.size() - 1));
         if (lastC == null) return null;
         return lastC.select("div#nav25 > div:has(b:contains(Updated))").first().text().replace("Updated:", "").trim();
     }

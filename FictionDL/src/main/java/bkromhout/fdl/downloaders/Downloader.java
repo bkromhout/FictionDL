@@ -118,7 +118,7 @@ public abstract class Downloader {
             // Log in.
             Response resp = C.getHttpClient().newCall(new Request.Builder().post(formData).url(loginUrl).build())
                              .execute();
-            // Make sure we close the response body so that it doesn't leak.
+            // Make the ResponseBody is closed so that it doesn't leak.
             resp.body().close();
             // Make sure that login cookies were sent back.
             if (resp.headers().values("Set-Cookie").isEmpty())
