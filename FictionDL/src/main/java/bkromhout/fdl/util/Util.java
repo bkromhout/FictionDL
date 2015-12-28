@@ -98,10 +98,31 @@ public abstract class Util {
         // Make sure <br> and <hr> tags are closed.
         htmlStr = closeTags(htmlStr, "br");
         htmlStr = closeTags(htmlStr, "hr");
-        // Escape pesky characters.
-        htmlStr = convertWin1252Chars(htmlStr);
-        // Remove any control characters which are still present.
-        htmlStr = removeControlChars(htmlStr);
+        // Replace unicode replacement/null characters with non breaking spaces.
+        htmlStr = htmlStr.replace('\uFFFD', '\u00A0');
+        // Escape ampersands that aren't part of entities.
+        //htmlStr = htmlStr.replaceAll("[&](?!(#|amp;|gt;|lt;|quot;|nbsp;))", "&#x26;");
+        htmlStr = htmlStr.replaceAll("&(?![A-Za-z]+[0-9]*;|#[0-9]+;|#x[0-9a-fA-F]+;)", "&#x26;");
+        // Convert pesky Win-1252 characters to their correct unicode equivalents.
+        htmlStr = htmlStr.replace('\u0096', '–') // En dash (U+2013)
+                         .replace('\u0097', '—') // Em dash (U+2014)
+                         .replace('\u0091', '‘') // Left single quotation mark (U+2018)
+                         .replace('\u0092', '’') // Right single quotation mark (U+2019)
+                         .replace('\u0093', '“') // Left double quotation mark (U+201C)
+                         .replace('\u0094', '”') // Right double quotation mark (U+201D)
+                         .replace('\u0095', '•') // Bullet (U+2022)
+                         .replace('\u0085', '…'); // Horizontal ellipses (U+2026)
+        // Convert incorrect sequences of UTF-16 characters which were actually UTF-8 to a single, correct character.
+        htmlStr = htmlStr.replace("\u00E2\u0080\u0093", "–") // En dash (U+2013)
+                         .replace("\u00E2\u0080\u0094", "—") // Em dash (U+2014)
+                         .replace("\u00E2\u0080\u0098", "‘") // Left single quotation mark (U+2018)
+                         .replace("\u00E2\u0080\u0099", "’") // Right single quotation mark (U+2019)
+                         .replace("\u00E2\u0080\u009C", "“") // Left double quotation mark (U+201C)
+                         .replace("\u00E2\u0080\u009D", "”") // Right double quotation mark (U+201D)
+                         .replace("\u00E2\u0080\u00A2", "•") // Bullet (U+2022)
+                         .replace("\u00E2\u0080\u00A6", "…"); // Horizontal ellipses (U+2026)
+        // Remove any control characters which are still present, except CR, LF, and tab.
+        htmlStr = htmlStr.replaceAll("[^\\P{Cc}\\t\\r\\n]", "");
         // Squeaky clean!
         return htmlStr;
     }
@@ -111,20 +132,9 @@ public abstract class Util {
      * @param tag The type of tag, such as hr, or br.
      * @return A string with all of the given tags closed.
      */
-    public static String closeTags(String in, String tag) {
+    private static String closeTags(String in, String tag) {
         if (in == null) return null;
         return in.replaceAll(String.format("(\\<%s[^>]*?(?<!/))(\\>)", tag), "$1/>");
-    }
-
-    /**
-     * Escape ampersands that aren't part of code points.
-     * @param in The string to escape.
-     * @return The escaped string.
-     */
-    public static String escapeAmps(String in) {
-        if (in == null) return null;
-        //return in.replaceAll("[&](?!(#|amp;|gt;|lt;|quot;|nbsp;))", "&#x26;");
-        return in.replaceAll("&(?![A-Za-z]+[0-9]*;|#[0-9]+;|#x[0-9a-fA-F]+;)", "&#x26;");
     }
 
     /**
@@ -136,45 +146,6 @@ public abstract class Util {
     public static String unEscapeAmps(String in) {
         if (in == null) return null;
         return in.replace("&amp;", "&").replace("&#x26;", "&");
-    }
-
-    /**
-     * Removes any instance of the Unicode replacement character, U+FFFD. Sadly, some sites appear to be littered with
-     * this character, indicating that the author's original content was likely not correctly converted from their
-     * original character encoding to the site's character encoding :( I think the best choice here is usually to
-     * replace it with a non-breaking space, U+00A0.
-     * @param in String to fix.
-     * @return Fixed string.
-     */
-    public static String removeFFFDChars(String in) {
-        if (in == null) return null;
-        return in.replace('\uFFFD', '\u00A0');
-    }
-
-    /**
-     * Removes any Unicode control characters that still exist in the string. Doesn't remove tab, line feed, or carriage
-     * return.
-     * @param in String to fix.
-     * @return Fixed string.
-     */
-    public static String removeControlChars(String in) {
-        if (in == null) return null;
-        return in.replaceAll("[^\\P{Cc}\\t\\r\\n]", "");
-    }
-
-    /**
-     * Converts characters that, while valid in Windows-1252 are control characters in Unicode, to their corresponding
-     * Unicode representations. Also escapes any ampersands not already part of a character code, and converts any
-     * Unicode replacement characters to non-breaking spaces.
-     * @param in The string to escape.
-     * @return The escaped string.
-     */
-    public static String convertWin1252Chars(String in) {
-        if (in == null) return null;
-        in = removeFFFDChars(in);
-        in = escapeAmps(in);
-        return in.replace('\u0096', '–').replace('\u0097', '—').replace('\u0091', '‘').replace('\u0092', '’').replace(
-                '\u0093', '“').replace('\u0094', '”').replace('\u0095', '•').replace('\u0085', '…');
     }
 
     /**
@@ -193,7 +164,7 @@ public abstract class Util {
      * @param in The file name to fix.
      * @return The fixed file name.
      */
-    public static String ensureLegalFilename(String in) {
+    private static String ensureLegalFilename(String in) {
         if (in == null) return null;
         // Unescape ampersands.
         in = unEscapeAmps(in);
