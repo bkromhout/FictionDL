@@ -1,6 +1,7 @@
 package bkromhout.fdl.parsers;
 
 import bkromhout.fdl.Site;
+import bkromhout.fdl.events.AddLocalStoryDirEvent;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
@@ -19,8 +20,14 @@ public class InputFileParser extends FileParser {
     private static Pattern hostRegex = Pattern.compile("^(http[s]?://)?([^:/\\s]+)(/.*)?$");
     /**
      * Regex for matching lines which point to local story directories.
+     * <p>
+     * Will match a line if, ignoring leading whitespace, it starts with "@fdl:ls=". (There can be whitespace before the
+     * "=", but anything after it will be part of group 1).
+     * <p>
+     * If a line matches, group 1 will contain the rest of the line following "=". This text is intended to be used as
+     * the name of a directory that is relative to the folder that the input file in in.
      */
-    private static Pattern localFicRegex = Pattern.compile(""); // TODO create regex to match "@fdl:dirbook=[name]"
+    private static Pattern localStoryRegex = Pattern.compile("^\\s*@fdl:ls\\s*=(.*)$");
 
     /**
      * Create a new {@link InputFileParser} to parse the given file.
@@ -38,25 +45,29 @@ public class InputFileParser extends FileParser {
         // Do nothing.
     }
 
-    /**
-     * Processes a line from the input file, attempting to parse a story site url and assign it to one of the url lists.
-     * Won't put any invalid or repeat lines in the url lists.
-     * @param line Line from the input file.
-     */
     @Override
     protected void processLine(String line) throws IllegalStateException {
-        // TODO make this support local stories too!
-
-
-        // Try to match this line to a url so that we can extract the host.
-        Matcher hostMatcher = hostRegex.matcher(line);
-        if (!hostMatcher.matches()) {
-            if (!line.trim().isEmpty()) Util.loudf(C.PROCESS_LINE_FAILED, type, line);
+        // Check if this line specifies a local story.
+        Matcher lsMatcher = localStoryRegex.matcher(line);
+        if (lsMatcher.matches()) {
+            // Get the directory name from the line, stripping any leading/trailing whitespace.
+            String dirName = lsMatcher.group(1).trim();
+            // Add the directory name to the list of local story directories in the local story processor if non-empty.
+            if (!dirName.isEmpty()) C.getEventBus().post(new AddLocalStoryDirEvent(dirName));
             return;
         }
-        String hostString = hostMatcher.group(2).toLowerCase();
-        // Add story url to a Site's list, or log it if none of them could take it (malformed or unsupported site url).
-        if (!tryAddUrlToSomeSite(hostString, line)) Util.logf(C.PROCESS_LINE_FAILED, type, line);
+
+        // Try to match this line as an http(s) url so that we can extract the host.
+        Matcher hostMatcher = hostRegex.matcher(line);
+        if (hostMatcher.matches()) {
+            String hostString = hostMatcher.group(2).toLowerCase();
+            // Try to add the line (which we now know is a url) to a Site's list, and return immediately if there is
+            // a site which can handle it.
+            if (tryAddUrlToSomeSite(hostString, line)) return;
+        }
+
+        // Verbose log this line if we got here and it's non-empty, we couldn't process it.
+        if (!line.trim().isEmpty()) Util.loudf(C.PROCESS_LINE_FAILED, type, line);
     }
 
     /**
