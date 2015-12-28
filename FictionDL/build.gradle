@@ -31,7 +31,7 @@ dependencies {
     compile 'com.squareup.okhttp:logging-interceptor:2.7.0'
     // RxJava stuff.
     compile 'io.reactivex:rxjava:1.1.0'
-    compile 'io.reactivex:rxjava-async-util:0.21.0'
+    //compile 'io.reactivex:rxjava-async-util:0.21.0'
 }
 
 artifacts {
