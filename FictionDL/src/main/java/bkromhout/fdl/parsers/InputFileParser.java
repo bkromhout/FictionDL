@@ -1,7 +1,7 @@
 package bkromhout.fdl.parsers;
 
 import bkromhout.fdl.Site;
-import bkromhout.fdl.events.AddLocalStoryDirEvent;
+import bkromhout.fdl.events.AddLSDirNameEvent;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
@@ -53,7 +53,7 @@ public class InputFileParser extends FileParser {
             // Get the directory name from the line, stripping any leading/trailing whitespace.
             String dirName = lsMatcher.group(1).trim();
             // Add the directory name to the list of local story directories in the local story processor if non-empty.
-            if (!dirName.isEmpty()) C.getEventBus().post(new AddLocalStoryDirEvent(dirName));
+            if (!dirName.isEmpty()) C.getEventBus().post(new AddLSDirNameEvent(dirName));
             return;
         }
 

@@ -108,6 +108,11 @@ public abstract class C {
     public static final String AO3_PRE_DL = "Ao3 stories occasionally fail to download, just try them again.";
 
     // Local Story-specific.
+    public static final String LS_NO_TITLE = "The local story in folder \"%s\" does not have a title in " +
+            "storyinfo.json. Skipping it.\n" + LOG_RED;
+
+    public static final String LS_NO_AUTHOR = "The local story \"%s\" does not have an author in storyinfo.json. " +
+            "Skipping it.\n" + LOG_RED;
 
     /*
     Warning and Error log strings. (Site-specific warnings and errors may be above)
@@ -144,17 +149,13 @@ public abstract class C {
     public static final String NO_EPUB_ON_SITE = "Couldn't find ePUB on %s for story \"%s\". Skipping it." + LOG_RED;
 
     // Local Story Process.
+    public static final String INVALID_STORY_DIR = "\"%s\" is not a valid story folder.\n" + LOG_RED;
+
     public static final String NO_STORYINFO_JSON = "The local story in folder \"%s\" doesn't have a " +
             "storyinfo.json file. Skipping it.\n" + LOG_RED;
 
     public static final String MALFORMED_STORYINFO_JSON = "The local story in folder \"%s\" has a malformed " +
             "storyinfo.json file. Skipping it.\n" + LOG_RED;
-
-    public static final String LS_NO_TITLE = "The local story in folder \"%s\" does not have a title in " +
-            "storyinfo.json. Skipping it.\n" + LOG_RED;
-
-    public static final String LS_NO_AUTHOR = "The local story \"%s\" does not have an author in storyinfo.json. " +
-            "Skipping it.\n" + LOG_RED;
 
     public static final String MISSING_CHAP_FILE = "The local story \"%s\" is missing the file \"%d.html\". " +
             "Skipping it.\n" + LOG_RED;
