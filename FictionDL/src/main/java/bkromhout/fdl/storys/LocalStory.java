@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 import java.nio.file.Path;
 
 /**
- * Represents a story which is created using local files. This class is given
+ * Represents a story which is created using local files.
  */
 public class LocalStory extends Story {
     /**
@@ -42,6 +42,6 @@ public class LocalStory extends Story {
         // When the super constructor first calls this, we haven't set the variables we need yet, so just return.
         if (storyInfo == null || storyDir == null) return;
 
-        //
+        // TODO
     }
 }

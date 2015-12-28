@@ -1,7 +1,7 @@
 package bkromhout.fdl;
 
 import bkromhout.fdl.events.UpdateTaskProgressEvent;
-import bkromhout.fdl.localfic.LocalFicProcessor;
+import bkromhout.fdl.localfic.LocalStoryProcessor;
 import bkromhout.fdl.parsers.ConfigFileParser;
 import bkromhout.fdl.parsers.InputFileParser;
 import bkromhout.fdl.util.C;
@@ -41,14 +41,6 @@ public class FictionDL {
      * Config options parsed from the config file. Never null, but it might not contain any options.
      */
     private ConfigFileParser.Config cfg;
-    /**
-     * Input file parser.
-     */
-    private static InputFileParser inputFileParser;
-    /**
-     * Local story processor.
-     */
-    public static LocalFicProcessor localFicProcessor;
 
     /**
      * {@link ProgressHelper} for keeping track of our overall progress.
@@ -105,41 +97,30 @@ public class FictionDL {
         /* Do pre-run tasks. */
         // Create Site classes and local story processor.
         Sites.init();
-        localFicProcessor = new LocalFicProcessor(inputFile.toPath().getParent());
+        LocalStoryProcessor localStoryProcessor = new LocalStoryProcessor(inputFile.toPath().getParent());
+        C.getEventBus().register(localStoryProcessor);
 
-        // Create a InputFileParser to get the story urls from the input file.
-        inputFileParser = new InputFileParser(inputFile);
+        // Create a InputFileParser so that site url lists and the local story list are populated.
+        new InputFileParser(inputFile);
 
         // If we have a config file, create a ConfigFileParser to get options.
         if (configFile != null) cfg = new ConfigFileParser(configFile).getConfig();
 
-        // Figure out how many stories we will be downloading, then create a ProgressHelper and pass it in.
-        int totalStories = 0;
-        for (Site site : Sites.all()) totalStories += site.getUrls().size();
-        ProgressHelper progressHelper = new ProgressHelper(totalStories);
+        // Figure out how work we will be doing, then create a ProgressHelper and pass it in.
+        int totalWork = 0;
+        for (Site site : Sites.all()) totalWork += site.getWorkCount(); // Add total number of site stories.
+        totalWork += localStoryProcessor.getWorkCount(); // Add number of local stories.
+        ProgressHelper progressHelper = new ProgressHelper(totalWork);
 
         /* Download stories from all sites. */
-        for (Site site : Sites.all()) site.download(this, cfg);
+        for (Site site : Sites.all()) site.process(this, cfg);
 
         /* Create any local stories that we parsed from the input file. */
-        // TODO!
+        localStoryProcessor.process();
 
         /* Do post-run tasks. */
         Util.log(C.ALL_FINISHED);
         Util.loudf(C.RUN_RESULTS, progressHelper.getTotalWork());
-        freeResources();
-    }
-
-    /**
-     * Explicitly free resources which could keep the JVM from shutting down.
-     */
-    private void freeResources() {
-        //Main.httpClient.getDispatcher().getExecutorService().shutdownNow(); // Shut down OkHttp dispatcher's
-        // ExecutorService.
-        //Schedulers.shutdown(); // Shut down all RxJava schedulers.
-        //ConnectionPool.getDefault().evictAll(); // Evict OkHttp's connection pool.
-        //C.getHttpClient().getConnectionPool().evictAll();
-        //Main.eventBusExecutor.shutdownNow(); // Shut down event bus executor.
     }
 
     /**
@@ -181,7 +162,6 @@ public class FictionDL {
 
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
-            fictionDL.freeResources();
             fictionDL = null;
             return super.cancel(mayInterruptIfRunning);
         }

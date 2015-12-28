@@ -33,10 +33,6 @@ public class Main {
      */
     public static boolean isVerbose = false;
     /**
-     * Executor for the async event bus. Have to have a reference to it in order to shut it down when we're done.
-     */
-    public static ExecutorService eventBusExecutor;
-    /**
      * Global EventBus.
      */
     public static EventBus eventBus;
@@ -101,7 +97,7 @@ public class Main {
      */
     private static void init() {
         // Create event bus executor and event bus.
-        eventBusExecutor = Executors.newSingleThreadExecutor(
+        ExecutorService eventBusExecutor = Executors.newSingleThreadExecutor(
                 new ThreadFactoryBuilder().setNameFormat("fdl-event-bus-%d").setDaemon(true).build());
         eventBus = new AsyncEventBus("fdl-event-bus", eventBusExecutor);
         //eventBus = new EventBus("fdl-event-bus");

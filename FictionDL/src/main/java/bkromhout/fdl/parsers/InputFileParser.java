@@ -18,16 +18,19 @@ public class InputFileParser extends FileParser {
      */
     private static Pattern hostRegex = Pattern.compile("^(http[s]?://)?([^:/\\s]+)(/.*)?$");
     /**
-     * Regex for matching lines which point to local fic directories.
+     * Regex for matching lines which point to local story directories.
      */
-    private static Pattern localFicRegex = Pattern.compile(""); // TODO create regex to match "@fdl#dirbook=[something]"
+    private static Pattern localFicRegex = Pattern.compile(""); // TODO create regex to match "@fdl:dirbook=[name]"
 
     /**
-     * Parse the file, populating the various url lists for the different sites.
-     * @param storiesFile Link file.
+     * Create a new {@link InputFileParser} to parse the given file.
+     * <p>
+     * This class should be used as a oneshot call since it parses the file upon creation and exposes no public
+     * members.
+     * @param inputFile Input file.
      */
-    public InputFileParser(File storiesFile) {
-        super(FileType.URLS, storiesFile);
+    public InputFileParser(File inputFile) {
+        super(FileType.INPUT, inputFile);
     }
 
     @Override
@@ -42,7 +45,7 @@ public class InputFileParser extends FileParser {
      */
     @Override
     protected void processLine(String line) throws IllegalStateException {
-        // TODO make this support local fics too!
+        // TODO make this support local stories too!
 
 
         // Try to match this line to a url so that we can extract the host.

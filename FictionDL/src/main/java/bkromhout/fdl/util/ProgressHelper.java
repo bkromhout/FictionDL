@@ -38,15 +38,15 @@ public class ProgressHelper {
     /**
      * Create a new {@link ProgressHelper} using the total number of stories to download as a baseline for the amount of
      * work which will be completed.
-     * @param totalStories Aggregate number of stories to process.
+     * @param totalWork Number of total work units.
      */
-    public ProgressHelper(long totalStories) {
+    public ProgressHelper(long totalWork) {
         // Register with the event bus.
         C.getEventBus().register(this);
         // Set work done to 0.
         this.workDone = 0.0;
         // Set total work to the number of stories.
-        this.totalWork = totalStories;
+        this.totalWork = totalWork;
         // Set the current work unit worth to be equal to one story's worth of work. For now.
         this.currUnitWorth = oneStoryWorth;
         // Update GUI progress bar.
