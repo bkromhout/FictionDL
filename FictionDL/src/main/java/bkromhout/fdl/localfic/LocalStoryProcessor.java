@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * Similar to how {@link bkromhout.fdl.FictionDL} delegates each site's story downloading process to a specific {@link
@@ -37,19 +38,6 @@ public class LocalStoryProcessor implements IWorkProducer {
     }
 
     /**
-     * Try to process and create stories for all of the directories in {@link #storyDirNames}.
-     */
-    public void process() {
-        Util.log(C.STARTING_LOCAL_STORY_PROCESS);
-
-        Util.log(C.CHECKING_LOCAL_STORY_DIRS);
-        // Try to get a valid directory path from each directory name.
-        ArrayList<Path> storyDirs = storyDirsFromDirNames();
-
-        //
-    }
-
-    /**
      * Return a list of valid story directory Paths that were resolved from the directory names in {@link
      * #storyDirNames}, which it is assumed contains no nulls or empty strings.
      * @return List of story directory Paths.
@@ -71,6 +59,52 @@ public class LocalStoryProcessor implements IWorkProducer {
             }
         }
         return storyDirs;
+    }
+
+    /**
+     * Iterates through the given list of local story directories and removes any that don't have a storyinfo.json file
+     * in them.
+     * @param storyDirs List of local story directory Paths.
+     */
+    private void checkForStoryinfoJson(ArrayList<Path> storyDirs) {
+        Iterator<Path> storyDirIterator = storyDirs.iterator();
+        while (storyDirIterator.hasNext()) {
+            Path storyDir = storyDirIterator.next();
+            // Check to see if this story directory has a storyinfo.json file.
+            if (storyDir.toFile().list((dir, name) -> name.equalsIgnoreCase("storyinfo.json")).length != 1) {
+                // This story directory doesn't have a storyinfo.json file, so we'll remove it from the list.
+                Util.logf(C.NO_STORYINFO_JSON, storyDir.toString());
+                storyDirIterator.remove();
+                ProgressHelper.storyFailed(0L);
+            }
+        }
+    }
+
+    /**
+     * Process a local story at the given path.
+     * @param storyDir Story directory Path.
+     */
+    private void processStory(Path storyDir) {
+
+    }
+
+    /**
+     * Try to process and create stories for all of the directories in {@link #storyDirNames}.
+     */
+    public void process() {
+        Util.log(C.STARTING_LOCAL_STORY_PROCESS);
+
+        Util.log(C.CHECKING_LOCAL_STORY_DIRS);
+        // Try to get a valid directory path from each directory name.
+        ArrayList<Path> storyDirs = storyDirsFromDirNames();
+        // Make sure that all story directories have a storyinfo.json file in them.
+        checkForStoryinfoJson(storyDirs);
+
+        Util.log(C.CREATING_LOCAL_STORIES);
+        // Process stories.
+        storyDirs.forEach(this::processStory);
+
+        Util.log(C.FINISHED_WITH_LOCAL_STORIES);
     }
 
     @Override
