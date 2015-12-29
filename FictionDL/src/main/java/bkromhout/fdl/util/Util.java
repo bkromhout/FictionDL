@@ -1,7 +1,13 @@
 package bkromhout.fdl.util;
 
 import bkromhout.fdl.Main;
+import bkromhout.fdl.ex.StoryinfoJsonException;
 import bkromhout.fdl.ui.Controller;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import javafx.scene.paint.Color;
@@ -16,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -322,5 +329,87 @@ public abstract class Util {
         for (int i = startIdx; i < endIdx; i++) div.appendChild(nodeCopies.get(i));
         // Return the summary HTML.
         return div;
+    }
+
+    /**
+     * Get the value of an element in {@code json} called {@code elemName} as a String.
+     * @param json     JSON object which contains an element called {@code elemName}.
+     * @param elemName Name of the JSON element to get the String value of.
+     * @return Returns the value of the {@code elemName} element as a String.<br/>If either of {@code json} or {@code
+     * elemName} are null, {@code elemName} is the empty string, {@code json} does not contain an element named {@code
+     * elemName}, or the value of the element is {@code null}, returns null instead.
+     * @throws StoryinfoJsonException if we cannot return the value of the element as a String.
+     */
+    public static String getJsonStr(JsonObject json, String elemName) throws StoryinfoJsonException {
+        // Parameter checks.
+        if (json == null || elemName == null || elemName.isEmpty() || !json.has(elemName)) return null;
+        // Element checks.
+        JsonElement elem = json.get(elemName);
+        if (elem.isJsonNull()) return null;
+
+        // Try to get a String value from the element, catching any exceptions thrown if this isn't a string element.
+        try {
+            return elem.getAsJsonPrimitive().getAsString();
+        } catch (IllegalStateException | ClassCastException e) {
+            // We'll set the message to a format string and fill in the element name, but we'll keep the %s for the
+            // title so that the caller can fill it in when it prints to the log.
+            throw new StoryinfoJsonException("%s", elemName, e);
+        }
+    }
+
+    /**
+     * Get the value of an element in {@code json} called {@code elemName} as an integer.
+     * @param json     JSON object which contains an element called {@code elemName}.
+     * @param elemName Name of the JSON element to get the integer value of.
+     * @return Returns the value of the {@code elemName} element as an integer.<br/>If either of {@code json} or {@code
+     * elemName} are null, {@code elemName} is the empty string, {@code json} does not contain an element named {@code
+     * elemName}, or the value of the element is {@code null}, returns null instead.
+     * @throws StoryinfoJsonException if we cannot return the value of the element as a integer.
+     */
+    public static Integer getJsonInt(JsonObject json, String elemName) throws StoryinfoJsonException {
+        // Parameter checks.
+        if (json == null || elemName == null || elemName.isEmpty() || !json.has(elemName)) return null;
+        // Element checks.
+        JsonElement elem = json.get(elemName);
+        if (elem.isJsonNull()) return null;
+
+        // Try to get an int value from the element, catching any exceptions thrown if this isn't a number element.
+        try {
+            return elem.getAsJsonPrimitive().getAsInt();
+        } catch (IllegalStateException | ClassCastException | NumberFormatException e) {
+            // We'll set the message to a format string and fill in the element name, but we'll keep the %s for the
+            // title so that the caller can fill it in when it prints to the log.
+            throw new StoryinfoJsonException("%s", elemName, e);
+        }
+    }
+
+    /**
+     * Creates a {@code HashMap<String, String>} from a JSON object in {@code json} called {@code elemName}.
+     * @param json     JSON object which contains an object called {@code elemName}.
+     * @param elemName Name of the JSON object to convert.
+     * @return Returns a {@code HashMap<String, String>} containing the names and values of the {@code elemName}
+     * object.<br/>If either of {@code json} or {@code elemName} are null, {@code elemName} is the empty string, {@code
+     * json} does not contain an element named {@code elemName}, or the {@code elemName} element is not a JSON object,
+     * returns null instead.
+     * @throws StoryinfoJsonException if we cannot convert the {@code elemName} object into a {@code HashMap<String,
+     *                                String>}.
+     */
+    public static HashMap<String, String> getJsonStrMap(JsonObject json, String elemName) throws
+            StoryinfoJsonException {
+        // Parameter checks.
+        if (json == null || elemName == null || elemName.isEmpty() || !json.has(elemName)) return null;
+        // Element checks.
+        JsonElement elem = json.get(elemName);
+        if (!elem.isJsonObject()) return null;
+
+        // Try to create a HashMap<String, String> using the element, catching any exceptions thrown if this isn't a
+        // JSON object, or if it is but cannot be used to create a HashMap<String, String>.
+        try {
+            return new Gson().fromJson(elem.getAsJsonObject(), new TypeToken<HashMap<String, String>>() {}.getType());
+        } catch (JsonParseException | ClassCastException | IllegalStateException e) {
+            // We'll set the message to a format string and fill in the element name, but we'll keep the %s for the
+            // title so that the caller can fill it in when it prints to the log.
+            throw new StoryinfoJsonException("%s", elemName, e);
+        }
     }
 }

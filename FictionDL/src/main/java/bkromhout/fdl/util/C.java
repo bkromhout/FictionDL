@@ -163,8 +163,7 @@ public abstract class C {
 
     public static final String JSON_BAD_ELEM = LS_ERR_DIR + "doesn't have a valid \"%s\" element." + LOG_RED_SKIPN;
 
-    public static final String JSON_BAD_ELEM_TITLE = LS_ERR_TITLE + "doesn't have a valid \"%s\" element." +
-            LOG_RED_SKIPN;
+    public static final String JSON_BAD_ELEM_T = JSON_BAD_ELEM.replace(LS_ERR_DIR, LS_ERR_TITLE);
 
     public static final String MISSING_CHAP_FILE = LS_ERR_TITLE + "is missing \"%d.html\"." + LOG_RED_SKIPN;
 
