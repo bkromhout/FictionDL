@@ -333,12 +333,17 @@ public abstract class Util {
 
     /**
      * Get the value of an element in {@code json} called {@code elemName} as a String.
+     * <p>
+     * Note the distinction between returning null and throwing an exception here.<br/>Null is returned if we either
+     * don't have what we need to access the element, or if the element doesn't exist.<br/>An exception is thrown if the
+     * element exists, be it is not in the form we expected (and so, some exception was thrown which we caught).
      * @param json     JSON object which contains an element called {@code elemName}.
      * @param elemName Name of the JSON element to get the String value of.
      * @return Returns the value of the {@code elemName} element as a String.<br/>If either of {@code json} or {@code
      * elemName} are null, {@code elemName} is the empty string, {@code json} does not contain an element named {@code
      * elemName}, or the value of the element is {@code null}, returns null instead.
-     * @throws StoryinfoJsonException if we cannot return the value of the element as a String.
+     * @throws StoryinfoJsonException if we cannot return the value of the element as a String. The exception message
+     *                                will be {@code elemName}.
      */
     public static String getJsonStr(JsonObject json, String elemName) throws StoryinfoJsonException {
         // Parameter checks.
@@ -351,40 +356,45 @@ public abstract class Util {
         try {
             return elem.getAsJsonPrimitive().getAsString();
         } catch (IllegalStateException | ClassCastException e) {
-            // We'll set the message to a format string and fill in the element name, but we'll keep the %s for the
-            // title so that the caller can fill it in when it prints to the log.
-            throw new StoryinfoJsonException("%s", elemName, e);
+            throw new StoryinfoJsonException(elemName, e);
         }
     }
 
     /**
      * Get the value of an element in {@code json} called {@code elemName} as an integer.
+     * <p>
+     * Note the distinction between returning null and throwing an exception here.<br/>Null is returned if we either
+     * don't have what we need to access the element, or if the element doesn't exist.<br/>An exception is thrown if the
+     * element exists, be it is not in the form we expected (and so, some exception was thrown which we caught).
      * @param json     JSON object which contains an element called {@code elemName}.
      * @param elemName Name of the JSON element to get the integer value of.
      * @return Returns the value of the {@code elemName} element as an integer.<br/>If either of {@code json} or {@code
      * elemName} are null, {@code elemName} is the empty string, {@code json} does not contain an element named {@code
-     * elemName}, or the value of the element is {@code null}, returns null instead.
-     * @throws StoryinfoJsonException if we cannot return the value of the element as a integer.
+     * elemName}, or the value of the element is {@code null}, returns -1 instead.
+     * @throws StoryinfoJsonException if we cannot return the value of the element as a integer. The exception message
+     *                                will be {@code elemName}.
      */
-    public static Integer getJsonInt(JsonObject json, String elemName) throws StoryinfoJsonException {
+    public static int getJsonInt(JsonObject json, String elemName) throws StoryinfoJsonException {
         // Parameter checks.
-        if (json == null || elemName == null || elemName.isEmpty() || !json.has(elemName)) return null;
+        if (json == null || elemName == null || elemName.isEmpty() || !json.has(elemName)) return -1;
         // Element checks.
         JsonElement elem = json.get(elemName);
-        if (elem.isJsonNull()) return null;
+        if (elem.isJsonNull()) return -1;
 
         // Try to get an int value from the element, catching any exceptions thrown if this isn't a number element.
         try {
             return elem.getAsJsonPrimitive().getAsInt();
         } catch (IllegalStateException | ClassCastException | NumberFormatException e) {
-            // We'll set the message to a format string and fill in the element name, but we'll keep the %s for the
-            // title so that the caller can fill it in when it prints to the log.
-            throw new StoryinfoJsonException("%s", elemName, e);
+            throw new StoryinfoJsonException(elemName, e);
         }
     }
 
     /**
      * Creates a {@code HashMap<String, String>} from a JSON object in {@code json} called {@code elemName}.
+     * <p>
+     * Note the distinction between returning null and throwing an exception here.<br/>Null is returned if we either
+     * don't have what we need to access the element, or if the element doesn't exist.<br/>An exception is thrown if the
+     * element exists, be it is not in the form we expected (and so, some exception was thrown which we caught).
      * @param json     JSON object which contains an object called {@code elemName}.
      * @param elemName Name of the JSON object to convert.
      * @return Returns a {@code HashMap<String, String>} containing the names and values of the {@code elemName}
@@ -392,7 +402,7 @@ public abstract class Util {
      * json} does not contain an element named {@code elemName}, or the {@code elemName} element is not a JSON object,
      * returns null instead.
      * @throws StoryinfoJsonException if we cannot convert the {@code elemName} object into a {@code HashMap<String,
-     *                                String>}.
+     *                                String>}. The exception message will be {@code elemName}.
      */
     public static HashMap<String, String> getJsonStrMap(JsonObject json, String elemName) throws
             StoryinfoJsonException {
@@ -407,9 +417,7 @@ public abstract class Util {
         try {
             return new Gson().fromJson(elem.getAsJsonObject(), new TypeToken<HashMap<String, String>>() {}.getType());
         } catch (JsonParseException | ClassCastException | IllegalStateException e) {
-            // We'll set the message to a format string and fill in the element name, but we'll keep the %s for the
-            // title so that the caller can fill it in when it prints to the log.
-            throw new StoryinfoJsonException("%s", elemName, e);
+            throw new StoryinfoJsonException(elemName, e);
         }
     }
 }

@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 /**
  * Similar to how {@link bkromhout.fdl.FictionDL} delegates each site's story downloading process to a specific {@link
  * bkromhout.fdl.downloaders.Downloader}, it delegates to this class for all types of local stories.
+ * @author Brenden Kromhout
  */
 public class LocalStoryProcessor implements IWorkProducer {
     /**
@@ -148,6 +149,7 @@ public class LocalStoryProcessor implements IWorkProducer {
         // Check to make sure that the JSON is valid for our purposes.
         String title; // Need this for logging in a bit.
         try {
+            // TODO make this use the utility methods to help us know what part failed and communicate that to the user.
             // Check that the meta object exists.
             if (!storyInfo.has(C.J_META)) throw new StoryinfoJsonException(storyDir, C.J_META);
             JsonObject meta = storyInfo.getAsJsonObject(C.J_META);
@@ -177,7 +179,6 @@ public class LocalStoryProcessor implements IWorkProducer {
         } catch (UnsupportedOperationException | ClassCastException | IllegalStateException e) {
             // Something wasn't what we expected, so we couldn't cast it. Sadly, we can't really know what part was
             // wrong, so we can't be very specific with the user.
-            // TODO make this use the utility methods to help us know what part failed and communicate that to the user.
             Util.logf(C.MALFORMED_STORYINFO_JSON, storyDir.toString());
             ProgressHelper.storyFailed(0L);
             return;

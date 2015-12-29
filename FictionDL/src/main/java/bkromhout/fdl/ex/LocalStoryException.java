@@ -10,10 +10,11 @@ package bkromhout.fdl.ex;
 public class LocalStoryException extends Exception {
 
     /**
-     * Create a new {@link LocalStoryException} with some {@code message}.
+     * Create a new {@link LocalStoryException} with some {@code message} and previous throwable as the {@code cause}.
      * @param message Message.
+     * @param cause   Cause.
      */
-    public LocalStoryException(String message) {
-        super(message);
+    public LocalStoryException(String message, Throwable cause) {
+        super(message, cause);
     }
 }
