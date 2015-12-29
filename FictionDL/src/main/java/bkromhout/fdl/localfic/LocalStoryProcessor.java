@@ -156,7 +156,7 @@ public class LocalStoryProcessor implements IWorkProducer {
             if (!meta.has(C.J_TYPE)) throw new StoryinfoJsonException(storyDir, C.J_TYPE);
             if (!meta.has(C.J_VERSION)) throw new StoryinfoJsonException(storyDir, C.J_VERSION);
             String type = meta.getAsJsonPrimitive(C.J_TYPE).getAsString();
-            int version = meta.getAsJsonPrimitive(C.J_VERSION).getAsInt();
+            Integer version = meta.getAsJsonPrimitive(C.J_VERSION).getAsInt();
 
             // Check to make sure that the meta elements are correct.
             if (!C.J_TYPE_LS.equals(type)) throw new StoryinfoJsonException(storyDir, C.J_TYPE);
@@ -174,9 +174,10 @@ public class LocalStoryProcessor implements IWorkProducer {
             if (!info.has(C.J_AUTHOR)) throw new StoryinfoJsonException(title, C.J_AUTHOR);
             String author = info.getAsJsonPrimitive(C.J_AUTHOR).getAsString();
             if (author == null || author.trim().isEmpty()) throw new StoryinfoJsonException(title, C.J_AUTHOR);
-        } catch (ClassCastException e) {
+        } catch (UnsupportedOperationException | ClassCastException | IllegalStateException e) {
             // Something wasn't what we expected, so we couldn't cast it. Sadly, we can't really know what part was
-            // wrong, so we can't be very specific with the user. Maybe we'll find a way someday.
+            // wrong, so we can't be very specific with the user.
+            // TODO make this use the utility methods to help us know what part failed and communicate that to the user.
             Util.logf(C.MALFORMED_STORYINFO_JSON, storyDir.toString());
             ProgressHelper.storyFailed(0L);
             return;
