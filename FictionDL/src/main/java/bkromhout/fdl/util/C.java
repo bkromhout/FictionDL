@@ -44,8 +44,8 @@ public abstract class C {
     public static final String LOG_RED = "!red!";
     public static final String LOG_BLUE = "!blue!";
     public static final String LOG_GREEN = "!green!";
-    public static final String LOG_PURPLE = "!purple!";
-    public static final String LOG_GOLD = "!gold!";
+    public static final String LOG_PURPLE = "!purple!"; // Should only be used for verbose log output.
+    public static final String LOG_GOLD = "!gold!"; // Should only be used for verbose log output.
 
     /*
     Keys.
@@ -92,6 +92,10 @@ public abstract class C {
 
     public static final String CREATING_LOCAL_STORIES = "Creating local stories...\n";
 
+    public static final String PROCESSING_LOCAL_STORY = "Processing: \"%s\"\n";
+
+    public static final String READING_CHAP_FILE = "Reading chapter file: \"%s\"\n" + LOG_PURPLE;
+
     public static final String FINISHED_WITH_LOCAL_STORIES = "Finished with local stories.\n" + LOG_BLUE;
 
     // FictionHunt-specific.
@@ -107,17 +111,14 @@ public abstract class C {
     // Ao3-specific.
     public static final String AO3_PRE_DL = "Ao3 stories occasionally fail to download, just try them again.";
 
-    // Local Story-specific.
-    public static final String LS_NO_TITLE = "The local story in folder \"%s\" does not have a title in " +
-            "storyinfo.json. Skipping it.\n" + LOG_RED;
-
-    public static final String LS_NO_AUTHOR = "The local story \"%s\" does not have an author in storyinfo.json. " +
-            "Skipping it.\n" + LOG_RED;
-
     /*
     Warning and Error log strings. (Site-specific warnings and errors may be above)
      */
     // General.
+    private static final String LOG_RED_SKIP = " Skipping it." + LOG_RED; // Common error string suffix.
+
+    private static final String LOG_RED_SKIPN = LOG_RED_SKIP + "\n"; // Common error string suffix.
+
     public static final String INVALID_ARGS = "Bad arguments.";
 
     public static final String INVALID_PATH = "Invalid path: \"%s\".\n" + LOG_RED;
@@ -140,28 +141,34 @@ public abstract class C {
     public static final String LOGIN_FAILED = "\nCouldn't log in to %s. Check your login info.\n" + LOG_RED;
 
     // Site Story Process.
-    public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s. Skipping it.\n" + LOG_RED;
+    public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s." + LOG_RED_SKIPN;
 
-    public static final String NO_ID_STORY_DL_FAILED = "Couldn't get %s story from \"%s\". Skipping it.\n" + LOG_RED;
+    public static final String NO_ID_STORY_DL_FAILED = "Couldn't get %s story from \"%s\"." + LOG_RED_SKIPN;
 
     public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n" + LOG_RED;
 
-    public static final String NO_EPUB_ON_SITE = "Couldn't find ePUB on %s for story \"%s\". Skipping it." + LOG_RED;
+    public static final String NO_EPUB_ON_SITE = "Couldn't find ePUB on %s for story \"%s\"." + LOG_RED_SKIP;
 
     // Local Story Process.
+    private static final String LS_ERR_DIR = "The local story in folder \"%s\" "; // Common local story error prefix.
+
+    private static final String LS_ERR_TITLE = "The local story \"%s\" "; // Common local story error prefix.
+
     public static final String INVALID_STORY_DIR = "\"%s\" is not a valid story folder.\n" + LOG_RED;
 
-    public static final String NO_STORYINFO_JSON = "The local story in folder \"%s\" doesn't have a " +
-            "storyinfo.json file. Skipping it.\n" + LOG_RED;
+    public static final String NO_STORYINFO_JSON = LS_ERR_DIR + "doesn't have a storyinfo.json file." + LOG_RED_SKIPN;
 
-    public static final String MALFORMED_STORYINFO_JSON = "The local story in folder \"%s\" has a malformed " +
-            "storyinfo.json file. Skipping it.\n" + LOG_RED;
+    public static final String MALFORMED_STORYINFO_JSON = LS_ERR_DIR + "has a malformed storyinfo.json file." +
+            LOG_RED_SKIPN;
 
-    public static final String MISSING_CHAP_FILE = "The local story \"%s\" is missing the file \"%d.html\". " +
-            "Skipping it.\n" + LOG_RED;
+    public static final String JSON_BAD_ELEM = LS_ERR_DIR + "doesn't have a valid \"%s\" element." + LOG_RED_SKIPN;
 
-    public static final String MALFORMED_CHAP_FILE = "Local story \"%s\" has a malformed \"%s\" file, " +
-            "parsing failed. Skipping the story.\n" + LOG_RED;
+    public static final String JSON_BAD_ELEM_TITLE = LS_ERR_TITLE + "doesn't have a valid \"%s\" element." +
+            LOG_RED_SKIPN;
+
+    public static final String MISSING_CHAP_FILE = LS_ERR_TITLE + "is missing \"%d.html\"." + LOG_RED_SKIPN;
+
+    public static final String MALFORMED_CHAP_FILE = LS_ERR_TITLE + "has a malformed \"%s\" file." + LOG_RED_SKIPN;
 
     /*
     Error strings used by exceptions which we don't catch. Don't include log tags, they won't be stripped!
@@ -196,6 +203,51 @@ public abstract class C {
      * Used for incomplete stories.
      */
     public static final String STAT_I = "Incomplete";
+
+    /*
+    JSON element names and expected values.
+     */
+    // "meta" Object.
+    public static final String J_META = "meta";
+
+    public static final String J_TYPE = "type";
+    public static final String J_TYPE_LS = "localstory";
+
+    public static final String J_VERSION = "version";
+
+    // "info" object.
+    public static final String J_INFO = "info";
+
+    public static final String J_TITLE = "title";
+
+    public static final String J_AUTHOR = "author";
+
+    public static final String J_URL = "url";
+
+    public static final String J_SUMMARY = "summary";
+
+    public static final String J_SERIES = "series";
+
+    public static final String J_FIC_TYPE = "ficType";
+
+    public static final String J_WARNINGS = "warnings";
+
+    public static final String J_RATING = "rating";
+
+    public static final String J_GENRES = "genres";
+
+    public static final String J_CHARACTERS = "characters";
+
+    public static final String J_WORD_COUNT = "wordCount";
+
+    public static final String J_DATE_PUBLISHED = "datePublished";
+
+    public static final String J_DATE_UPDATED = "dateUpdated";
+
+    public static final String J_STATUS = "status";
+
+    // "chapterTitles" array.
+    public static final String J_CHAPTER_TITLES = "chapterTitles";
 
     /*
     File Template Strings. These are long and would be annoying to have in the EpubCreator class.

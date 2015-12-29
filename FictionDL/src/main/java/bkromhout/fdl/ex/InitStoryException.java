@@ -6,7 +6,7 @@ package bkromhout.fdl.ex;
 public class InitStoryException extends Exception {
 
     /**
-     * Create a new {@link InitStoryException} with some message text.
+     * Create a new {@link InitStoryException} with some message.
      * @param message Message.
      */
     public InitStoryException(String message) {

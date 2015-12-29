@@ -70,7 +70,7 @@ public class ProgressHelper {
     }
 
     /**
-     * When received, recalculated the value of {@link #currUnitWorth} by dividing {@link #oneStoryWorth} by {@link
+     * When received, recalculate the value of {@link #currUnitWorth} by dividing {@link #oneStoryWorth} by {@link
      * RecalcUnitWorthEvent#divisorVal}.
      * @param event Event instance.
      */
@@ -89,6 +89,7 @@ public class ProgressHelper {
      */
     @Subscribe
     public void onIncWorkDoneEvent(IncWorkDoneEvent event) {
+        // If <= 0L, add one story's worth of work.
         if (event.getUnitsToAdd() <= 0L) workDone += oneStoryWorth;
         else {
             if (needsRecalc) throw new IllegalStateException(C.STALE_UNIT_WORTH);
@@ -104,24 +105,23 @@ public class ProgressHelper {
     */
 
     /**
-     * Recalculates the current worth of a single work unit based on the divisor value given.
+     * Recalculates the current worth of a single work unit based on {@code divisor}.
      * <p>
-     * Keeping in mind that the worth of one work unit is always <= one story's worth of work, the value passed must be
-     * the max possible number of times that {@link #finishedWorkUnit()} will be called before this method is called
+     * Keeping in mind that the worth of one work unit is always <= one story's worth of work, so {@code divisor} must
+     * be the max possible number of times that {@link #finishedWorkUnit()} will be called before this method is called
      * again.
-     * @param divisorVal Value to divide {@link ProgressHelper#oneStoryWorth} by in order to calculate the new worth of
-     *                   one work unit. If this is set to <= 0, the worth of one unit will be set to {@link
-     *                   ProgressHelper#oneStoryWorth}.
+     * @param divisorVal Value to divide {@link #oneStoryWorth} by in order to calculate the new worth of one work unit.
+     *                   If this is set to <= 0L, the worth of one unit will be set to {@link #oneStoryWorth}.
      */
     public static void recalcUnitWorth(long divisorVal) {
         C.getEventBus().post(new RecalcUnitWorthEvent(divisorVal));
     }
 
     /**
-     * Call if a {@link Story} has failed to be successfully downloaded and saved.
+     * Call if a {@link Story} has failed to be successfully saved.
      * <p>
-     * If the value passed for workUnitsLeft is > 0, {@link #recalcUnitWorth(long)} <i>must</i> be called again prior to
-     * calling either {@link #finishedWorkUnit()} or this method again with workUnitsLeft > 0.
+     * If {@code workUnitsLeft} > 0, {@link #recalcUnitWorth(long)} <i>must</i> be called again prior to calling either
+     * this method again with a {@code workUnitsLeft} value > 0L, or {@link #finishedWorkUnit()}.
      * @param workUnitsLeft Number of work units that are still left at this point.
      */
     public static void storyFailed(long workUnitsLeft) {
