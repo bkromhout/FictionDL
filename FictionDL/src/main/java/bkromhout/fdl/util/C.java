@@ -5,19 +5,20 @@ import com.google.common.eventbus.EventBus;
 import com.squareup.okhttp.OkHttpClient;
 
 /**
- * Constants
+ * Constants.
  * <p>
- * Only constants which are either used by multiple classes (or are likely to be in the future) or which are exceedingly
- * long (in the case of strings) belong here. All others should be in a more specific class.
- * <p>
- * This class may also be used as a central place from which static variables in other classes may be accessed (that is,
- * this class is a middle-man) for the sole purpose of convenience (typing "C" is quicker than any other class name).
+ * <b>Note on String constants:</b> All human-readable strings should be here. Other than that, only strings which are
+ * used by multiple classes (or potentially could be), which are private to this class, or which are exceedingly long
+ * should be put here. Strings that do not fall under these requirements should be in a more context-specific class.
  */
 public abstract class C {
     /**
      * Program version string.
      */
     public static final String VER_STRING = "FictionDL, Version 3.1.1";
+
+
+    /* Global accessors. These are here purely for the convenience of typing "C" rather than a longer class name. */
 
     /**
      * Provide access to the OkHttpClient.
@@ -36,19 +37,20 @@ public abstract class C {
     }
 
     /*
-    Log style tags. Putting these anywhere within a log string will cause the string to be formatted accordingly if
+    Log style tags.
+    Putting these anywhere within a log string will cause the string to be formatted accordingly if
     it's printed to the TextFlow log in the GUI. The tags are stripped before the string is printed. One color and
     multiple styles can apply, and apply to the *whole* string.
      */
-    public static final String LOG_ULINE = "!underline!";
-    public static final String LOG_RED = "!red!";
-    public static final String LOG_BLUE = "!blue!";
-    public static final String LOG_GREEN = "!green!";
-    public static final String LOG_PURPLE = "!purple!"; // Should only be used for verbose log output.
-    public static final String LOG_GOLD = "!gold!"; // Should only be used for verbose log output.
+    static final String LOG_ULINE = "!underline!";
+    static final String LOG_BLUE = "!blue!";
+    static final String LOG_GREEN = "!green!";
+    public static final String LOG_LOUD = "!purple!"; // Verbose only. Purple
+    static final String LOG_WARN = "!yellow!"; // Warnings only. Yellow.
+    static final String LOG_ERR = "!red!"; // Errors only. Red.
 
     /*
-    Keys.
+    Program argument map keys.
      */
     public static final String ARG_IN_PATH = "arg_in_path";
     public static final String ARG_OUT_PATH = "arg_out_path";
@@ -68,7 +70,7 @@ public abstract class C {
 
     public static final String ALL_FINISHED = "\nAll Finished! :)" + LOG_GREEN;
 
-    public static final String RUN_RESULTS = "This run generated %f total units of work.\n" + LOG_PURPLE;
+    public static final String RUN_RESULTS = "This run generated %f total units of work.\n" + LOG_LOUD;
 
     // Site Story Process
     public static final String STARTING_SITE_DL_PROCESS = "\nStarting %s download process...\n" + LOG_BLUE;
@@ -92,11 +94,11 @@ public abstract class C {
 
     public static final String CREATING_LOCAL_STORIES = "Creating local stories...\n";
 
-    public static final String CHECKING_LOCAL_STORY = "Checking story in: \"%s\"\n" + LOG_PURPLE;
+    public static final String CHECKING_LOCAL_STORY = "Checking story in: \"%s\"\n" + LOG_LOUD;
 
     public static final String PROCESSING_LOCAL_STORY = "Processing: \"%s\"\n";
 
-    public static final String READING_CHAP_FILE = "Reading chapter file: \"%s\"\n" + LOG_PURPLE;
+    public static final String READING_CHAP_FILE = "Reading chapter file: \"%s\"\n" + LOG_LOUD;
 
     public static final String FINISHED_WITH_LOCAL_STORIES = "Finished with local stories.\n" + LOG_BLUE;
 
@@ -104,7 +106,7 @@ public abstract class C {
     public static final String FH_ON_FFN = "\"%s\" is still available on FanFiction.net; will download from there.\n\n";
 
     public static final String FH_FFN_CHECK_FAILED = "Failed to check if story is still active on FFN. Oh well, " +
-            "never hurts to try!" + LOG_RED;
+            "never hurts to try!" + LOG_WARN;
 
     // SIYE-specific.
     public static final String SIYE_PRE_DL = "SIYE's process is *very slow* due to their horrid HTML structure, " +
@@ -115,80 +117,84 @@ public abstract class C {
 
     /*
     Warning and Error log strings. (Site-specific warnings and errors may be above)
+    Warning strings should have LOG_WARN appended, and error strings should have LOG_ERR appended.
      */
+    // Common suffixes for when we're going to skip a story.
+    private static final String LOG_ERR_SKIP = " Skipping it." + LOG_ERR;
+    private static final String LOG_ERR_SKIPN = LOG_ERR_SKIP + "\n";
+
     // General.
-    private static final String LOG_RED_SKIP = " Skipping it." + LOG_RED; // Common error string suffix.
+    public static final String INVALID_PATH = "Invalid path: \"%s\".\n" + LOG_ERR;
 
-    private static final String LOG_RED_SKIPN = LOG_RED_SKIP + "\n"; // Common error string suffix.
-
-    public static final String INVALID_ARGS = "Bad arguments.";
-
-    public static final String INVALID_PATH = "Invalid path: \"%s\".\n" + LOG_RED;
-
-    public static final String INVALID_URL = "Invalid URL: \"%s\".\n" + LOG_RED;
+    public static final String INVALID_URL = "Invalid URL: \"%s\".\n" + LOG_ERR;
 
     // Parsing.
-    public static final String PROCESS_LINE_FAILED = "Couldn't process this line from the %s file: \"%s\".\n" + LOG_RED;
+    public static final String PROCESS_LINE_FAILED = "Couldn't process this line from %s file: \"%s\".\n" + LOG_WARN;
 
-    public static final String PARSE_HTML_FAILED = "Couldn't parse HTML for \"%s\"." + LOG_RED;
+    public static final String PARSE_HTML_FAILED = "Couldn't parse HTML for \"%s\"." + LOG_WARN;
 
     // General Network.
-    public static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\".\n" + LOG_RED;
+    static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\".\n" + LOG_WARN;
 
-    public static final String SAVE_FILE_FAILED = "Failed to save file: \"%s\".\n" + LOG_RED;
+    public static final String SAVE_FILE_FAILED = "Failed to save file: \"%s\".\n" + LOG_ERR;
 
     // Auth.
-    public static final String MUST_LOGIN = "You must provide %s login info to download story with ID=%s!" + LOG_RED;
+    public static final String MUST_LOGIN = "You must provide %s login info to download story with ID=%s!" + LOG_WARN;
 
-    public static final String LOGIN_FAILED = "\nCouldn't log in to %s. Check your login info.\n" + LOG_RED;
+    public static final String LOGIN_FAILED = "\nCouldn't log in to %s. Check your login info.\n" + LOG_ERR;
 
     // Site Story Process.
-    public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s." + LOG_RED_SKIPN;
+    public static final String STORY_DL_FAILED = "Couldn't get %s story with ID=%s." + LOG_ERR_SKIPN;
 
-    public static final String NO_ID_STORY_DL_FAILED = "Couldn't get %s story from \"%s\"." + LOG_RED_SKIPN;
+    public static final String NO_ID_STORY_DL_FAILED = "Couldn't get %s story from \"%s\"." + LOG_ERR_SKIPN;
 
-    public static final String PARTIAL_DL_FAIL = "Skipping this story; some chapters failed to download!\n" + LOG_RED;
+    public static final String PARTIAL_DL_FAIL = "Skipping this story; some chapters failed to download!\n" + LOG_ERR;
 
-    public static final String NO_EPUB_ON_SITE = "Couldn't find ePUB on %s for story \"%s\"." + LOG_RED_SKIP;
+    public static final String NO_EPUB_ON_SITE = "Couldn't find ePUB on %s for story \"%s\"." + LOG_ERR_SKIP;
 
     // Local Story Process.
-    private static final String LS_ERR_DIR = "The local story in folder \"%s\" "; // Common local story error prefix.
+    private static final String LS_PRE_DIR = "The local story in folder \"%s\" "; // Common local story error prefix.
+    private static final String LS_PRE_TITLE = "The local story \"%s\" "; // Common local story error prefix.
 
-    private static final String LS_ERR_TITLE = "The local story \"%s\" "; // Common local story error prefix.
+    public static final String INVALID_STORY_DIR = "\"%s\" is not a valid story folder.\n" + LOG_ERR;
 
-    public static final String INVALID_STORY_DIR = "\"%s\" is not a valid story folder.\n" + LOG_RED;
+    public static final String NO_STORYINFO_JSON = LS_PRE_DIR + "doesn't have a storyinfo.json file." + LOG_ERR_SKIPN;
 
-    public static final String NO_STORYINFO_JSON = LS_ERR_DIR + "doesn't have a storyinfo.json file." + LOG_RED_SKIPN;
+    public static final String MALFORMED_STORYINFO_JSON = LS_PRE_DIR + "has a malformed storyinfo.json file." +
+            LOG_ERR_SKIPN;
 
-    public static final String MALFORMED_STORYINFO_JSON = LS_ERR_DIR + "has a malformed storyinfo.json file." +
-            LOG_RED_SKIPN;
+    public static final String JSON_NO_ELEM = LS_PRE_DIR + "doesn't have a valid \"%s\" element." + LOG_ERR_SKIPN;
 
-    public static final String JSON_BAD_ELEM = LS_ERR_DIR + "doesn't have a valid \"%s\" element." + LOG_RED_SKIPN;
+    public static final String JSON_NO_ELEM_TITLE = JSON_NO_ELEM.replace(LS_PRE_DIR, LS_PRE_TITLE);
 
-    public static final String JSON_BAD_ELEM_TITLE = JSON_BAD_ELEM.replace(LS_ERR_DIR, LS_ERR_TITLE);
+    public static final String JSON_BAD_ELEM_TITLE = LS_PRE_TITLE + "has a malformed \"%s\" element, skipping the " +
+            "element.\n" + LOG_WARN;
 
-    public static final String NO_CHAP_FILES = LS_ERR_TITLE + "has no chapter files." + LOG_RED_SKIPN;
+    public static final String NO_CHAP_FILES = LS_PRE_TITLE + "has no chapter files." + LOG_ERR_SKIPN;
 
-    public static final String MISSING_CHAP_FILE = LS_ERR_TITLE + "is missing \"%d.html\".\n" + LOG_RED;
+    public static final String MISSING_CHAP_FILE = LS_PRE_TITLE + "is missing \"%d.html\".\n" + LOG_ERR;
 
-    public static final String MALFORMED_CHAP_FILE = LS_ERR_TITLE + "has a malformed \"%d.html\" file.\n" + LOG_RED;
+    public static final String MALFORMED_CHAP_FILE = LS_PRE_TITLE + "has a malformed \"%d.html\" file.\n" + LOG_ERR;
 
     public static final String PARTIAL_READ_FAIL = "Skipping this story; some chapter files couldn't be read.\n" +
-            LOG_RED;
+            LOG_ERR;
 
     /*
     Error strings used by exceptions which we don't catch. Don't include log tags, they won't be stripped!
      */
+    // Technically we print this one, but it's used before the could be started anyway.
+    public static final String INVALID_ARGS = "Bad arguments.";
+
     public static final String NO_INPUT_PATH = "You must supply an input file path!";
 
     public static final String HTML_UNEXP_RESP = "Unexpected result when trying to download HTML from \"%s\".\n";
 
     public static final String CHAP_NUM_NOT_ASSIGNED = "Chapter number hasn't been assigned yet!";
 
-    public static final String STALE_UNIT_WORTH = "Unit worth wasn't recalculated prior to use!";
+    static final String STALE_UNIT_WORTH = "Unit worth wasn't recalculated prior to use!";
 
     /*
-    Default/specific detail values.
+    Default/specific story detail values.
      */
     /**
      * Useful for anything we want to set to None.
@@ -211,52 +217,41 @@ public abstract class C {
     public static final String STAT_I = "Incomplete";
 
     /*
-    JSON element names and expected values.
+    storyinfo.json element names and expected values.
+    These are *technically* human-readable, since users are in charge of creating storyinfo.json files. Also, some
+    are used by multiple classes in the localfic package.
      */
-    // "meta" Object.
+    // Top-level element names.
     public static final String J_META = "meta";
-
-    public static final String J_TYPE = "type";
-    public static final String J_TYPE_LS = "localstory";
-
-    public static final String J_VERSION = "version";
-
-    // "info" object.
     public static final String J_INFO = "info";
-
-    public static final String J_TITLE = "title";
-
-    public static final String J_AUTHOR = "author";
-
-    public static final String J_URL = "url";
-
-    public static final String J_SUMMARY = "summary";
-
-    public static final String J_SERIES = "series";
-
-    public static final String J_FIC_TYPE = "ficType";
-
-    public static final String J_WARNINGS = "warnings";
-
-    public static final String J_RATING = "rating";
-
-    public static final String J_GENRES = "genres";
-
-    public static final String J_CHARACTERS = "characters";
-
-    public static final String J_WORD_COUNT = "wordCount";
-
-    public static final String J_DATE_PUBLISHED = "datePublished";
-
-    public static final String J_DATE_UPDATED = "dateUpdated";
-
-    public static final String J_STATUS = "status";
-
-    // "chapterTitles" array.
     public static final String J_CHAPTER_TITLES = "chapterTitles";
 
+    // "meta" object element names.
+    public static final String J_TYPE = "type";
+    public static final String J_VERSION = "version";
+
+    // "meta" -> "type" element expected values.
+    public static final String J_TYPE_LS = "localstory";
+
+    // "info" object elements names.
+    public static final String J_TITLE = "title";
+    public static final String J_AUTHOR = "author";
+    public static final String J_URL = "url";
+    public static final String J_SUMMARY = "summary";
+    public static final String J_SERIES = "series";
+    public static final String J_FIC_TYPE = "ficType";
+    public static final String J_WARNINGS = "warnings";
+    public static final String J_RATING = "rating";
+    public static final String J_GENRES = "genres";
+    public static final String J_CHARACTERS = "characters";
+    public static final String J_WORD_COUNT = "wordCount";
+    public static final String J_DATE_PUBLISHED = "datePublished";
+    public static final String J_DATE_UPDATED = "dateUpdated";
+    public static final String J_STATUS = "status";
+
     /*
-    File Template Strings. These are long and would be annoying to have in the EpubCreator class.
+    File Template Strings.
+    These are long and would be annoying to have in the EpubCreator class.
      */
     /**
      * Yay CSS. It doesn't honestly matter that much anyway though, ePUB readers can do whatever they want to.

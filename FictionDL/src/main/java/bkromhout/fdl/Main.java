@@ -119,7 +119,7 @@ public class Main {
      */
     private static void addOkHttpLogging() {
         // Pass the Util.loud() function to the logger so that it uses our logging methods.
-        HttpLoggingInterceptor logger = new HttpLoggingInterceptor(str -> Util.loud(str + C.LOG_PURPLE));
+        HttpLoggingInterceptor logger = new HttpLoggingInterceptor(str -> Util.loud(str + C.LOG_LOUD));
         logger.setLevel(HttpLoggingInterceptor.Level.BASIC);
         Main.httpClient.interceptors().add(logger);
     }

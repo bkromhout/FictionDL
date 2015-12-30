@@ -10,7 +10,11 @@ import bkromhout.fdl.rx.RxMakeChapters;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
 import bkromhout.fdl.util.Util;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.reflect.TypeToken;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
@@ -56,6 +60,7 @@ public class LocalStory extends Story {
 
         this.storyInfo = storyInfo;
         this.storyDir = storyDir;
+        this.chapTitles = new HashMap<>();
         // Call populateInfo() again now.
         populateInfo();
     }
@@ -71,31 +76,85 @@ public class LocalStory extends Story {
         title = info.getAsJsonPrimitive(C.J_TITLE).getAsString();
         author = info.getAsJsonPrimitive(C.J_AUTHOR).getAsString();
 
-        // Everything else we have to wrap in a try/catch for safety.
-        try {
-            // Get the rest of the story details.
-            url = Util.getJsonStr(info, C.J_URL);
-            summary = Util.cleanHtmlString(Util.getJsonStr(info, C.J_SUMMARY));
-            series = Util.getJsonStr(info, C.J_SERIES);
-            ficType = Util.getJsonStr(info, C.J_FIC_TYPE);
-            warnings = Util.getJsonStr(info, C.J_WARNINGS);
-            warnings = Util.getJsonStr(info, C.J_WARNINGS);
-            rating = Util.getJsonStr(info, C.J_RATING);
-            genres = Util.getJsonStr(info, C.J_GENRES);
-            characters = Util.getJsonStr(info, C.J_CHARACTERS);
-            wordCount = Util.getJsonInt(info, C.J_WORD_COUNT);
-            datePublished = Util.getJsonStr(info, C.J_DATE_PUBLISHED);
-            dateUpdated = Util.getJsonStr(info, C.J_DATE_UPDATED);
-            status = Util.getJsonStr(info, C.J_STATUS);
+        // Get the rest of the story details.
+        url = safeGetJsonStr(info, C.J_URL);
+        summary = Util.cleanHtmlString(safeGetJsonStr(info, C.J_SUMMARY));
+        series = safeGetJsonStr(info, C.J_SERIES);
+        ficType = safeGetJsonStr(info, C.J_FIC_TYPE);
+        warnings = safeGetJsonStr(info, C.J_WARNINGS);
+        warnings = safeGetJsonStr(info, C.J_WARNINGS);
+        rating = safeGetJsonStr(info, C.J_RATING);
+        genres = safeGetJsonStr(info, C.J_GENRES);
+        characters = safeGetJsonStr(info, C.J_CHARACTERS);
+        wordCount = safeGetJsonInt(info, C.J_WORD_COUNT);
+        datePublished = safeGetJsonStr(info, C.J_DATE_PUBLISHED);
+        dateUpdated = safeGetJsonStr(info, C.J_DATE_UPDATED);
+        status = safeGetJsonStr(info, C.J_STATUS);
 
-            // Try to get a map containing any chapter titles that were provided.
-            chapTitles = Util.getJsonStrMap(storyInfo, C.J_CHAPTER_TITLES);
-        } catch (StoryinfoJsonException e) {
-            // The element we were trying to get a value from exists, but we had issues while getting the value from it.
-            // The string in the exception is the name of the element we were trying to access when this exception
-            // occurred, so we'll use that to create a proper message.
-            throw new InitStoryException(String.format(C.JSON_BAD_ELEM_TITLE, title, e.getMessage()), e);
+        // Try to get the chapterTitles object.
+        JsonObject chapTitlesObj = tryGetChapTitlesObj();
+        if (chapTitlesObj == null) return; // If it doesn't exist, or isn't an object, we're done now.
+
+        // Try to create a HashMap<String, String> using the object.
+        try {
+            chapTitles = new Gson().fromJson(chapTitlesObj, new TypeToken<HashMap<String, String>>() {}.getType());
+        } catch (JsonParseException | ClassCastException | IllegalStateException e) {
+            // The object exists, but its contents are not formed in such a way that we can turn it into a
+            // HashMap<String, String>.
+            Util.logf(C.JSON_BAD_ELEM_TITLE, title, C.J_CHAPTER_TITLES);
         }
+    }
+
+    /**
+     * Calls through to {@link Util#getJsonStr(JsonObject, String)}, but if it throws an exception, catches it, prints a
+     * log line, and returns null.
+     * <p>
+     * The log line used is {@link C#JSON_BAD_ELEM_TITLE}, which requires a story title and an element name.
+     * @param json     JSON object which contains an element called {@code elemName}.
+     * @param elemName Name of the JSON element to get the String value of.
+     * @return Return value of {@link Util#getJsonStr(JsonObject, String)}, or null an exception is caught.
+     */
+    private String safeGetJsonStr(JsonObject json, String elemName) {
+        try {
+            return Util.getJsonStr(json, elemName);
+        } catch (StoryinfoJsonException e) {
+            // Print a warning and return null.
+            Util.logf(C.JSON_BAD_ELEM_TITLE, title, elemName);
+            return null;
+        }
+    }
+
+    /**
+     * Calls through to {@link Util#getJsonInt(JsonObject, String)}, but if it throws an exception, catches it, prints a
+     * log line, and returns -1.
+     * <p>
+     * The log line used is {@link C#JSON_BAD_ELEM_TITLE}, which requires a story title and an element name.
+     * @param json     JSON object which contains an element called {@code elemName}.
+     * @param elemName Name of the JSON element to get the integer value of.
+     * @return Return value of {@link Util#getJsonInt(JsonObject, String)}, or -1 an exception is caught.
+     */
+    private int safeGetJsonInt(JsonObject json, String elemName) {
+        try {
+            return Util.getJsonInt(json, elemName);
+        } catch (StoryinfoJsonException e) {
+            // Print a warning and return null.
+            Util.logf(C.JSON_BAD_ELEM_TITLE, title, elemName);
+            return -1;
+        }
+    }
+
+    /**
+     * Try to get the "chapterTitles" object from {@link #storyInfo}.
+     * @return The object if is exists, otherwise null.
+     */
+    private JsonObject tryGetChapTitlesObj() {
+        if (!storyInfo.has(C.J_CHAPTER_TITLES)) return null;
+        JsonElement elem = storyInfo.get(C.J_CHAPTER_TITLES);
+        if (!elem.isJsonObject()) {
+            Util.logf(C.JSON_BAD_ELEM_TITLE, title, C.J_CHAPTER_TITLES);
+            return null;
+        }
+        return elem.getAsJsonObject();
     }
 
     /**
