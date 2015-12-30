@@ -179,7 +179,7 @@ public abstract class Story {
      * @return Story site.
      */
     public String getHost() {
-        return site.getHost();
+        return site != null ? site.getHost() : null;
     }
 
     /**
