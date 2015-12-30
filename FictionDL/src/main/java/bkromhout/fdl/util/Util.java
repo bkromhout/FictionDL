@@ -33,7 +33,7 @@ public abstract class Util {
     public static void log(String str) {
         if (str == null) return;
         if (Main.isGui) logGuiString(str + "\n");
-        else logCliString(str);
+        else logCliString(str + "\n");
     }
 
     /**
@@ -67,18 +67,27 @@ public abstract class Util {
 
     /**
      * Log a string to System.out, after processing it some.
+     * <p>
+     * Note: Does not add a new line to the end of the string.
      * @param s String to log.
      */
     private static void logCliString(String s) {
+        // Print any leading new lines.
+        while (s.startsWith("\n")) {
+            System.out.println();
+            s = s.replaceFirst("\n", "");
+        }
         // Potentially prepend line type, strip tags, then print.
         s = prependLogLineType(s);
         s = stripLogStyleTags(s);
-        System.out.println(s);
+        System.out.printf(s);
     }
 
     /**
      * Log a string to a GUI TextFlow, making sure to process any log color indicators (See near the top of the C.java
      * file).
+     * <p>
+     * Note: Does not add a new line to the end of the string.
      * @param s String to log.
      */
     private static void logGuiString(String s) {
