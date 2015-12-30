@@ -42,6 +42,11 @@ public class LocalStory extends Story {
      */
     private int numChapFiles;
     /**
+     * Tracks whether or not we have already called {@link #setNumChapFiles(int)}, since calling it more than once is a
+     * fallacy of logic.
+     */
+    private boolean numChapFilesAlreadySet;
+    /**
      * Chapter titles which were parsed from storyinfo.json.
      */
     private HashMap<String, String> chapTitles;
@@ -206,9 +211,10 @@ public class LocalStory extends Story {
      * @throws InitStoryException    if {@code numChapFiles} is < 1.
      */
     public void setNumChapFiles(int numChapFiles) throws InitStoryException {
-        if (this.numChapFiles != -1) throw new IllegalStateException();
+        if (numChapFilesAlreadySet) throw new IllegalStateException();
         if (numChapFiles < 1) throw new InitStoryException(String.format(C.NO_CHAP_FILES, title));
         this.numChapFiles = numChapFiles;
+        this.numChapFilesAlreadySet = true;
     }
 
     /**

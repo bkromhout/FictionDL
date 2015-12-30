@@ -37,9 +37,9 @@ public class LocalStoryProcessor implements IWorkProducer {
      */
     private static final FilenameFilter STORYINFO_JSON_FILTER = (dir, name) -> name.equalsIgnoreCase("storyinfo.json");
     /**
-     * Pattern which matches filenames in the format "#.html".
+     * Pattern which matches filenames in the format "#.html". The "?i" indicates that the pattern is case insensitive.
      */
-    private static final Pattern chapFileRegex = Pattern.compile("^\\d+\\.html$");
+    private static final Pattern chapFileRegex = Pattern.compile("(?i)^\\d+\\.html$");
 
     /**
      * This is the directory which holds any local story directories.
