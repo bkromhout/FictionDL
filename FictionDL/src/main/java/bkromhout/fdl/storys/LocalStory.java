@@ -1,19 +1,27 @@
 package bkromhout.fdl.storys;
 
+import bkromhout.fdl.chapter.Chapter;
+import bkromhout.fdl.chapter.ChapterSource;
 import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.ex.LocalStoryException;
 import bkromhout.fdl.ex.StoryinfoJsonException;
+import bkromhout.fdl.rx.RxChapAction;
+import bkromhout.fdl.rx.RxMakeChapters;
 import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.ProgressHelper;
 import bkromhout.fdl.util.Util;
 import com.google.gson.JsonObject;
+import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Represents a story which is created using local files.
  * <p>
- * Unlike most story classes, this one is in charge of its own {@link bkromhout.fdl.Chapter Chapter} creation.
+ * Unlike most story classes, this one is in charge of its own {@link Chapter Chapter} creation.
  * @author Brenden Kromhout
  */
 public class LocalStory extends Story {
@@ -86,42 +94,71 @@ public class LocalStory extends Story {
             // The element we were trying to get a value from exists, but we had issues while getting the value from it.
             // The string in the exception is the name of the element we were trying to access when this exception
             // occurred, so we'll use that to create a proper message.
-            throw new InitStoryException(String.format(C.JSON_BAD_ELEM_T, title, e.getMessage()), e);
+            throw new InitStoryException(String.format(C.JSON_BAD_ELEM_TITLE, title, e.getMessage()), e);
         }
     }
 
     /**
-     * Attempts to read all chapter HTML files in this local story's directory and make {@link bkromhout.fdl.Chapter
-     * Chapter}s from them.
+     * Attempts to read all chapter HTML files in this local story's directory and make {@link Chapter Chapter}s from
+     * them.
      * @throws LocalStoryException   if there were issues while processing chapter files.
-     * @throws IllegalStateException if this is called and {@link #numChapFiles} is < 0.
+     * @throws IllegalStateException if this is called and {@link #numChapFiles} is < 1.
      */
     public void processChapters() throws LocalStoryException {
-        if (this.numChapFiles < 0) throw new IllegalStateException();
-        // TODO (note, will need to add another public static Chapter creation method to that class)
+        if (this.numChapFiles < 1) throw new IllegalStateException();
 
-        // TODO At some point in here, make sure that we call Util.loudf(C.PARSING_FILE, [chapfilename]);
+        // Have ProgressHelper recalculate the worth of work units based on the number of chapters we expect to process.
+        ProgressHelper.recalcUnitWorth(numChapFiles);
 
-        // TODO At some point in here, make sure that we call Util.log(C.SANITIZING_CHAPS);
+        // Create chapters using an Observable from a range [1..numChapFiles]. We use the IO Scheduler from the start
+        // for two reasons; First is, obviously, that we'll be reading files at some point; Second is that we don't
+        // need to keep anything in order since the chapter filenames have the chapter number in them.
+        chapters = (ArrayList<Chapter>) Observable
+                //.range(1, numChapFiles)
+                .range(1, numChapFiles, Schedulers.io())
+                //.subscribeOn(Schedulers.newThread())
+                .map(i -> storyDir.resolve(String.format("%d.html", i)).toFile()) // Create Files.
+                .map(f -> new ChapterSource(f, true)) // Wrap the Files in ChapterSource objects.
+                .compose(new RxMakeChapters(this)) // Create Chapter objects.
+                //.observeOn(Schedulers.io()) // Using the IO scheduler, since we're reading from files.
+                .filter(chap -> chap != null) // Filter out nulls.
+                .compose(new RxChapAction(chapter -> {
+                    // Give the chapters titles; either one parsed from storyinfo.json, or "Chapter #".
+                    String t = chapTitles.get(String.valueOf(chapter.number));
+                    chapter.title = (t != null && !t.isEmpty()) ? t : String.format("Chapter %d", chapter.number);
+                }))
+                .compose(new RxChapAction(Chapter::wrapContentInTemplate)) // Wrap chapter content in chapter template.
+                .compose(new RxChapAction(Chapter::sanitizeContent)) // Sanitize chapter content.
+                .compose(new RxChapAction(chapter -> ProgressHelper.finishedWorkUnit()))
+                .doOnCompleted(() -> Util.log(C.SANITIZING_CHAPS))
+                .observeOn(Schedulers.immediate())
+                .toSortedList(Chapter::sort) // Get the chapters as a properly sorted list.
+                .toBlocking()
+                .single();
+
+        // Make sure that we got all of the chapters, throw an exception if we didn't.
+        if (chapters.size() != numChapFiles) throw new LocalStoryException(C.PARTIAL_READ_FAIL);
     }
 
     /**
      * Set {@link #numChapFiles} to the number of files in the directory which have names like "#.html".
      * @param numChapFiles Number of chapter files in the directory.
      * @throws IllegalStateException if this is called more than once.
+     * @throws InitStoryException    if {@code numChapFiles} is < 1.
      */
-    public void setNumChapFiles(int numChapFiles) {
+    public void setNumChapFiles(int numChapFiles) throws InitStoryException {
         if (this.numChapFiles != -1) throw new IllegalStateException();
+        if (numChapFiles < 1) throw new InitStoryException(String.format(C.NO_CHAP_FILES, title));
         this.numChapFiles = numChapFiles;
     }
 
     /**
-     * Get the number of chapter files which haven't been turned into {@link bkromhout.fdl.Chapter Chapter}s yet.
+     * Get the number of chapter files which haven't been turned into {@link Chapter Chapter}s yet.
      * @return Number of chapters remaining.
-     * @throws IllegalStateException if this is called and {@link #numChapFiles} is < 0.
+     * @throws IllegalStateException if this is called and {@link #numChapFiles} is < 1.
      */
     public int getNumChapsLeft() {
-        if (this.numChapFiles < 0) throw new IllegalStateException();
+        if (this.numChapFiles < 1) throw new IllegalStateException();
         return numChapFiles - chapters.size();
     }
 }

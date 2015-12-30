@@ -145,7 +145,7 @@ public abstract class C {
 
     public static final String NO_ID_STORY_DL_FAILED = "Couldn't get %s story from \"%s\"." + LOG_RED_SKIPN;
 
-    public static final String SOME_CHAPS_FAILED = "Skipping this story; some chapters failed to download!\n" + LOG_RED;
+    public static final String PARTIAL_DL_FAIL = "Skipping this story; some chapters failed to download!\n" + LOG_RED;
 
     public static final String NO_EPUB_ON_SITE = "Couldn't find ePUB on %s for story \"%s\"." + LOG_RED_SKIP;
 
@@ -163,11 +163,16 @@ public abstract class C {
 
     public static final String JSON_BAD_ELEM = LS_ERR_DIR + "doesn't have a valid \"%s\" element." + LOG_RED_SKIPN;
 
-    public static final String JSON_BAD_ELEM_T = JSON_BAD_ELEM.replace(LS_ERR_DIR, LS_ERR_TITLE);
+    public static final String JSON_BAD_ELEM_TITLE = JSON_BAD_ELEM.replace(LS_ERR_DIR, LS_ERR_TITLE);
 
-    public static final String MISSING_CHAP_FILE = LS_ERR_TITLE + "is missing \"%d.html\"." + LOG_RED_SKIPN;
+    public static final String NO_CHAP_FILES = LS_ERR_TITLE + "has no chapter files." + LOG_RED_SKIPN;
 
-    public static final String MALFORMED_CHAP_FILE = LS_ERR_TITLE + "has a malformed \"%s\" file." + LOG_RED_SKIPN;
+    public static final String MISSING_CHAP_FILE = LS_ERR_TITLE + "is missing \"%d.html\".\n" + LOG_RED;
+
+    public static final String MALFORMED_CHAP_FILE = LS_ERR_TITLE + "has a malformed \"%d.html\" file.\n" + LOG_RED;
+
+    public static final String PARTIAL_READ_FAIL = "Skipping this story; some chapter files couldn't be read.\n" +
+            LOG_RED;
 
     /*
     Error strings used by exceptions which we don't catch. Don't include log tags, they won't be stripped!

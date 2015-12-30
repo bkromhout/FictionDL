@@ -194,17 +194,15 @@ public class LocalStoryProcessor implements IWorkProducer {
         LocalStory story;
         try {
             story = new LocalStory(storyInfo, storyDir);
+            // Figure out how many chapter files there are in the directory, store value in the LocalStory.
+            int numChapFiles = storyDir.toFile().listFiles((dir, name) -> chapFileRegex.matcher(name).matches()).length;
+            story.setNumChapFiles(numChapFiles);
         } catch (InitStoryException e) {
             // Issues while creating the local story.
             Util.log(e.getMessage());
             ProgressHelper.storyFailed(0L);
             return;
         }
-        // Figure out how many chapter files there are in the directory, store value in the LocalStory.
-        int numChapFiles = storyDir.toFile().listFiles((dir, name) -> chapFileRegex.matcher(name).matches()).length;
-        story.setNumChapFiles(numChapFiles);
-        // Also update the current work unit worth based on this number before we start processing story chapters.
-        ProgressHelper.recalcUnitWorth(numChapFiles);
 
         // Process chapters for the story.
         try {

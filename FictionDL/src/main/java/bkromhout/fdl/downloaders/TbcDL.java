@@ -1,7 +1,7 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 import com.squareup.okhttp.MultipartBuilder;

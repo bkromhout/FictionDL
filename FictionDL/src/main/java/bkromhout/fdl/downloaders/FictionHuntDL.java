@@ -1,7 +1,7 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.storys.FanFictionStory;
 import bkromhout.fdl.storys.FictionHuntStory;
 import bkromhout.fdl.storys.Story;

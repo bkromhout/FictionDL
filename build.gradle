@@ -23,4 +23,11 @@ allprojects {
         jcenter()
         maven {url 'https://github.com/psiegman/mvn-repo/raw/master/releases'}
     }
+
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            // Uncomment the line below when we want to add argument to the javac compiler.
+            //options.compilerArgs << "-Xlint:unchecked"
+        }
+    }
 }

@@ -34,12 +34,12 @@ public class StoryinfoJsonException extends InitStoryException {
     /**
      * Create a new {@link StoryinfoJsonException}.
      * <p>
-     * Substitute {@code storyDir.toString()} and {@code elementName} into {@link C#JSON_BAD_ELEM_T} and use it as the
-     * message.
+     * Substitute {@code storyDir.toString()} and {@code elementName} into {@link C#JSON_BAD_ELEM_TITLE} and use it as
+     * the message.
      * @param storyTitle  Title of local story.
      * @param elementName Name of JSON element that is missing/malformed.
      */
     public StoryinfoJsonException(String storyTitle, String elementName) {
-        super(String.format(C.JSON_BAD_ELEM_T, storyTitle, elementName));
+        super(String.format(C.JSON_BAD_ELEM_TITLE, storyTitle, elementName));
     }
 }

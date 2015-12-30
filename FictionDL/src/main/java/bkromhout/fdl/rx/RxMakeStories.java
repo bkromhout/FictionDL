@@ -1,9 +1,9 @@
 package bkromhout.fdl.rx;
 
 import bkromhout.fdl.Main;
-import bkromhout.fdl.util.Util;
 import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.util.Util;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import rx.Observable;
 import rx.Subscriber;

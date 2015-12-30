@@ -1,7 +1,7 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.Chapter;
 import bkromhout.fdl.Site;
+import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.util.C;
 
@@ -65,8 +65,8 @@ public abstract class Story {
 
     /**
      * Create a new {@link Story}.
-     * @param url     Story url.
-     * @param site    Site that story is from.
+     * @param url  Story url.
+     * @param site Site that story is from.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     protected Story(String url, Site site) throws InitStoryException {
