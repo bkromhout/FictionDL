@@ -88,9 +88,11 @@ public abstract class C {
     // Local Story Process
     public static final String STARTING_LOCAL_STORY_PROCESS = "\nStarting local story creation process..." + LOG_BLUE;
 
-    public static final String CHECKING_LOCAL_STORY_DIRS = "Verifying local story folders...";
+    public static final String VALIDATING_LOCAL_STORY_DIRS = "Validating local story folders...";
 
     public static final String CREATING_LOCAL_STORIES = "Creating local stories...\n";
+
+    public static final String CHECKING_LOCAL_STORY = "Checking story in: \"%s\"\n" + LOG_PURPLE;
 
     public static final String PROCESSING_LOCAL_STORY = "Processing: \"%s\"\n";
 

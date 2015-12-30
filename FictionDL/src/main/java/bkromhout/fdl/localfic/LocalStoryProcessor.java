@@ -67,7 +67,7 @@ public class LocalStoryProcessor implements IWorkProducer {
         Util.log(C.STARTING_LOCAL_STORY_PROCESS);
 
         // Check directory.
-        Util.log(C.CHECKING_LOCAL_STORY_DIRS);
+        Util.log(C.VALIDATING_LOCAL_STORY_DIRS);
         // Try to get a valid directory path from each directory name.
         ArrayList<Path> storyDirs = storyDirsFromDirNames();
         // Make sure that all story directories have a storyinfo.json file in them.
@@ -128,6 +128,7 @@ public class LocalStoryProcessor implements IWorkProducer {
      * @param storyDir Story directory Path.
      */
     private void processStory(Path storyDir) {
+        Util.loudf(C.CHECKING_LOCAL_STORY, storyDir.toString());
         // Read the storyinfo.json file into a JsonObject.
         Path storyInfoFile = storyDir.resolve(storyDir.toFile().list(STORYINFO_JSON_FILTER)[0]);
         JsonObject storyInfo;
