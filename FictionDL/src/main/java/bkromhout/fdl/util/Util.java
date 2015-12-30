@@ -32,16 +32,8 @@ public abstract class Util {
      */
     public static void log(String str) {
         if (str == null) return;
-        if (Main.isGui) logString(str + "\n");
-        else System.out.println(stripLogStyleTags(str));
-    }
-
-    /**
-     * Calls Util.log if verbose output is enabled.
-     * @param str String to log.
-     */
-    public static void loud(String str) {
-        if (Main.isVerbose) log(str);
+        if (Main.isGui) logGuiString(str + "\n");
+        else logCliString(str);
     }
 
     /**
@@ -52,8 +44,16 @@ public abstract class Util {
      */
     public static void logf(String format, Object... args) {
         if (format == null) return;
-        if (Main.isGui) logString(String.format(format, args));
-        else System.out.printf(stripLogStyleTags(format), args);
+        if (Main.isGui) logGuiString(String.format(format, args));
+        else logCliString(String.format(format, args));
+    }
+
+    /**
+     * Calls Util.log if verbose output is enabled.
+     * @param str String to log.
+     */
+    public static void loud(String str) {
+        if (Main.isVerbose) log(str);
     }
 
     /**
@@ -66,11 +66,22 @@ public abstract class Util {
     }
 
     /**
+     * Log a string to System.out, after processing it some.
+     * @param s String to log.
+     */
+    private static void logCliString(String s) {
+        // Potentially prepend line type, strip tags, then print.
+        s = prependLogLineType(s);
+        s = stripLogStyleTags(s);
+        System.out.println(s);
+    }
+
+    /**
      * Log a string to a GUI TextFlow, making sure to process any log color indicators (See near the top of the C.java
      * file).
      * @param s String to log.
      */
-    private static void logString(String s) {
+    private static void logGuiString(String s) {
         Text text = new Text();
 
         // Process any log color style tags, in order of priority.
@@ -83,19 +94,18 @@ public abstract class Util {
         // Process any log style tags.
         if (s.contains(C.LOG_ULINE)) text.setUnderline(true);
 
-        // Potentially prepend line type, strip tags, then print.
-        s = prependLogLineType(s);
+        // Strip tags, then print.
         text.setText(stripLogStyleTags(s));
         Controller.appendLogText(text);
     }
 
     /**
-     * If running in verbose, non-GUI mode, prepend the log line with a type indicator, such as "I:" or "W:".
+     * If running in verbose mode, prepend the log line with a type indicator, such as "I:" or "W:", based on log tags.
      * @param s String to log.
-     * @return Prepended log line. If we aren't running in verbose, non-GUI mode, return the same string, unchanged.
+     * @return Prepended log line. If we aren't running in verbose mode, return the same string, unchanged.
      */
     private static String prependLogLineType(String s) {
-        if (!(Main.isVerbose && !Main.isGui)) return s;
+        if (!Main.isVerbose) return s;
 
         // Prepend line types based on log tags.
         if (s.contains(C.LOG_ERR)) return "E: " + s;
