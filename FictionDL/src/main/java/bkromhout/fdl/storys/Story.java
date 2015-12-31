@@ -1,8 +1,8 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.Site;
 import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.site.Site;
 import bkromhout.fdl.util.C;
 
 import java.util.ArrayList;
@@ -249,11 +249,19 @@ public abstract class Story {
     }
 
     /**
-     * Get this story's chapter count based off of the number of chapter urls there are.
+     * Get the number of chapter urls for this story.
+     * @return Story chapter url count.
+     */
+    public int getChapterUrlCount() {
+        return chapterUrls.size();
+    }
+
+    /**
+     * Get this story's chapter count.
      * @return Story chapter count.
      */
     public int getChapterCount() {
-        return chapterUrls.size();
+        return chapters.size();
     }
 
     /**

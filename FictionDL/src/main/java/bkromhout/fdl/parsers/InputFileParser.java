@@ -1,9 +1,9 @@
 package bkromhout.fdl.parsers;
 
-import bkromhout.fdl.Site;
 import bkromhout.fdl.events.AddLSDirNameEvent;
+import bkromhout.fdl.site.Site;
+import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
-import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 
 import java.io.File;
@@ -73,11 +73,10 @@ public class InputFileParser extends FileParser {
     /**
      * Using the given host string, figure out which site we can add the given url string to and add it.
      * @param hostString String parsed from the line that should contain a substring which is equal to some {@link
-     *                   bkromhout.fdl.Site#host} value.
-     * @param url        The url to add to some {@link bkromhout.fdl.Site Site}'s {@link bkromhout.fdl.Site#urls url
-     *                   list}.
-     * @return True if a {@link bkromhout.fdl.Site} was found to add the url to, otherwise false. Returns false
-     * immediately if either parameter is null or empty.
+     *                   Site#host} value.
+     * @param url        The url to add to some {@link Site Site}'s {@link Site#urls url list}.
+     * @return True if a {@link Site} was found to add the url to, otherwise false. Returns false immediately if either
+     * parameter is null or empty.
      */
     private boolean tryAddUrlToSomeSite(String hostString, String url) {
         if (hostString == null || hostString.isEmpty() || url == null || url.isEmpty()) return false;

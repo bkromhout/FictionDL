@@ -2,8 +2,8 @@ package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.chapter.Chapter;
+import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
-import bkromhout.fdl.util.Sites;
 import org.jsoup.nodes.Element;
 
 import java.util.regex.Matcher;

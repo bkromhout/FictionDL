@@ -218,7 +218,7 @@ public class LocalStoryProcessor implements IWorkProducer {
         // Save the story as an ePUB file.
         Util.logf(C.SAVING_STORY);
         new EpubCreator(story).makeEpub(FictionDL.getOutPath());
-        Util.log(C.DONE + "\n");
+        Util.log(C.DONE + "%n");
     }
 
     @Override

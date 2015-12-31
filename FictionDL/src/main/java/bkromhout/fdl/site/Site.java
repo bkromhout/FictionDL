@@ -1,10 +1,11 @@
-package bkromhout.fdl;
+package bkromhout.fdl.site;
 
+import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.Main;
 import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.parsers.ConfigFileParser;
 import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.IWorkProducer;
-import bkromhout.fdl.util.Sites;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import java.lang.reflect.InvocationTargetException;
@@ -13,9 +14,9 @@ import java.util.HashSet;
 /**
  * Represents a supported site, and is in charge of knowing what to call to initiate a site's download process.
  * <p>
- * All instances of this class should be created in the {@link Sites#init()} method to ensure that the methods in the
+ * All instances of this class should be created in the {@link Sites#init()} function to ensure that the methods in the
  * {@link Sites} class will operate on every supported site's implementation.
- * @see bkromhout.fdl.util.Sites
+ * @see Sites
  */
 public final class Site implements IWorkProducer {
     /**

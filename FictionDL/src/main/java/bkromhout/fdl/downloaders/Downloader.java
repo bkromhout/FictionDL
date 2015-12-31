@@ -1,8 +1,8 @@
 package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Site;
 import bkromhout.fdl.rx.RxMakeStories;
+import bkromhout.fdl.site.Site;
 import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
@@ -77,7 +77,7 @@ public abstract class Downloader {
                       if (story == null) ProgressHelper.storyFailed(1L);
                           // Otherwise, update the total work count by adding the number of chapters that will be
                           // downloaded for this story.
-                      else ProgressHelper.recalcUnitWorth(story.getChapterCount());
+                      else ProgressHelper.recalcUnitWorth(story.getChapterUrlCount());
                   })
                   .filter(story -> story != null) // Get rid of failed stories.
                   .toList()

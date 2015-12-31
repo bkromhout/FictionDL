@@ -1,7 +1,7 @@
 package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Site;
+import bkromhout.fdl.site.Site;
 import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
@@ -43,7 +43,7 @@ public abstract class EpubDL extends Downloader {
         try (final InputStream in = dlUrl.toURL().openStream()) {
             // Download the ePUB file.
             Files.copy(in, file, StandardCopyOption.REPLACE_EXISTING);
-            Util.log(C.DONE + "\n");
+            Util.log(C.DONE + "%n");
         } catch (IOException e) {
             Util.logf(C.SAVE_FILE_FAILED, file.toAbsolutePath().toString());
         }
