@@ -62,10 +62,11 @@ public class ChapterSource {
     /**
      * Create a new {@link ChapterSource} using a String.
      * @param string String.
-     * @throws IllegalArgumentException if {@code string} is null.
+     * @param number Chapter number, must be >= 1.
+     * @throws IllegalArgumentException if {@code string} is null or {@code number} < 1.
      */
     public ChapterSource(String string, int number) {
-        if (string == null) throw new IllegalArgumentException();
+        if (string == null || number < 1) throw new IllegalArgumentException();
         this.response = null;
         this.file = null;
         this.string = string;
@@ -85,7 +86,7 @@ public class ChapterSource {
         if (story == null || (response == null && file == null && string == null)) return null;
 
         this.story = story;
-        if (number == -1) number = chapNum();
+        number = chapNum();
 
         // Create a Chapter.
         if (response != null) return fromResponse();
@@ -156,7 +157,7 @@ public class ChapterSource {
      */
     private int chapNum() {
         // Don't redo work.
-        if (number != -1) return number;
+        if (number > 0) return number;
 
         // If the source is a Response, we can use the request url to get the number by finding its index in the
         // Story's list of urls.
