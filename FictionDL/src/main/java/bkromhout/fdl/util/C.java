@@ -327,5 +327,5 @@ public abstract class C {
     /**
      * The end part of the title page.
      */
-    public static final String TITLE_PAGE_END = "%n</body>%n</html>";
+    public static final String TITLE_PAGE_END = String.format("%n</body>%n</html>");
 }
