@@ -2,14 +2,28 @@
 
 ## Release 4.0.0 [Upcoming]
 * **New:** Local stories feature (CLI ONLY!), see [this wiki page](../../wiki/Supported-Sites) for more details
+* **Fixed:** Made ampersand escaping/unescaping/*reescaping*/😑 smarter
+* **Fixed:** Some likely-leaky code revolving around OkHttp Response objects
+* Consolidated various HTML cleaning functions, as they were becoming unwieldy in number
+* Changes to `Chapter` creation, must be done using the newly created `ChapterSource` class, which enables cleaner, more standard RxJava code, and therefore better concurrency-related improvements
+* CLI logging with verbose mode on (`-v`) is now makes it more obvious what things are what (warnings, errors, etc.)
+* Prevented a potential bug for Windows users (since I use OS X) when it comes to logging
 
 ## Release 3.1.1
 * First public release!
+* **Fixed** A few small bugs, since having the first public release contain bugs is just silly
 
 ## Release 3.1.0
+* **New:** Added support for [The Broom Cupboard (NSFW)](http://thebroomcupboard.net), supports logging in
+* **New:** The GUI's "Start" button now doubles as a "Stop" button
+* **Improved:** The GUI progress bar is more granular now, it updates per chapter processed instead of per story
+* **Fixed:** A potential bug with login support
+* Actually created a `Site` class, finally, in order to have more elegant code, lots of refactoring involved
+
 
 ## Release 3.0.0
 * **New:** Added support for [Ao3](http://archiveofourown.org), we download the ePubs that Ao3 already makes available
+* **New:** Verbose mode, for both the CLI (`-v`) and the GUI (run the CLI with `-g`/`--gui` and `-v`)
 * Integrated RxJava, mostly because it looked interesting, but also because it lets us do some very cool concurrency-related stuff
 * Switched from using Jsoup's built in connections to [OkHttp](https://github.com/square/OkHttp) since it's more robust and performant, especially in combination with RxJava
 * Large refactoring, most notably due to the conversion of some code to use RxJava, but also because we now have a new class called `EpubDL`, which along with `ParsingDL` now extends another new class simply called `Downloader`
