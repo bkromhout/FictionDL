@@ -73,10 +73,10 @@ public abstract class Util {
      */
     private static void logCliString(String s) {
         // Print any leading new lines.
-        while (s.startsWith(System.getProperty("line.separator"))) {
+        while (s.startsWith("%n") || s.startsWith(String.format("%n"))) {
             System.out.println();
             // Yes, IntelliJ is marking this as an error. It isn't, and it still compiles.
-            s = s.replaceFirst("\\R", "");
+            s = s.replaceFirst("\\R|\\Q%n\\E", "");
         }
         // Potentially prepend line type, strip tags, then print.
         s = prependLogLineType(s);
