@@ -1,5 +1,5 @@
 # FictionDL
-#### A fanfiction downloader which tries to be simple, yet flexible.
+#### A fanfiction downloader which strives to be simple, yet flexible.
 
 ## Usage
 **You need Java 8 installed to run FictionDL.**
