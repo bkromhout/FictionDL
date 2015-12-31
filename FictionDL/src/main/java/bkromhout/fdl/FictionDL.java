@@ -1,11 +1,13 @@
 package bkromhout.fdl;
 
 import bkromhout.fdl.events.UpdateTaskProgressEvent;
+import bkromhout.fdl.localfic.LocalStoryProcessor;
 import bkromhout.fdl.parsers.ConfigFileParser;
-import bkromhout.fdl.parsers.LinkFileParser;
+import bkromhout.fdl.parsers.InputFileParser;
+import bkromhout.fdl.site.Site;
+import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
-import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 import com.google.common.eventbus.Subscribe;
 import javafx.concurrent.Task;
@@ -40,15 +42,11 @@ public class FictionDL {
      * Config options parsed from the config file. Never null, but it might not contain any options.
      */
     private ConfigFileParser.Config cfg;
-    /**
-     * Link file parser.
-     */
-    private static LinkFileParser linkFileParser;
 
     /**
      * {@link ProgressHelper} for keeping track of our overall progress.
      */
-    //private static ProgressHelper progressHelper; //TODO remove this maybe?
+    //private static ProgressHelper progressHelper; //TODO remove this maybe? Need to test the GUI again.
 
     /**
      * Create a new {@link FictionDL} to execute the program logic.
@@ -98,39 +96,32 @@ public class FictionDL {
      */
     void run() {
         /* Do pre-run tasks. */
-        // Create Site classes.
+        // Create Site classes and local story processor.
         Sites.init();
+        LocalStoryProcessor localStoryProcessor = new LocalStoryProcessor(inputFile.toPath().getParent());
+        C.getEventBus().register(localStoryProcessor);
 
-        // Create a LinkFileParser to get the story urls from the input file.
-        linkFileParser = new LinkFileParser(inputFile);
+        // Create a InputFileParser so that site url lists and the local story list are populated.
+        new InputFileParser(inputFile);
 
         // If we have a config file, create a ConfigFileParser to get options.
         if (configFile != null) cfg = new ConfigFileParser(configFile).getConfig();
 
-        // Figure out how many stories we will be downloading, then create a ProgressHelper and pass it in.
-        int totalStories = 0;
-        for (Site site : Sites.all()) totalStories += site.getUrls().size();
-        ProgressHelper progressHelper = new ProgressHelper(totalStories);
+        // Figure out how work we will be doing, then create a ProgressHelper and pass it in.
+        int totalWork = 0;
+        for (Site site : Sites.all()) totalWork += site.getWorkCount(); // Add total number of site stories.
+        totalWork += localStoryProcessor.getWorkCount(); // Add number of local stories.
+        ProgressHelper progressHelper = new ProgressHelper(totalWork);
 
         /* Download stories from all sites. */
-        for (Site site : Sites.all()) site.download(this, cfg);
+        for (Site site : Sites.all()) site.process(this, cfg);
+
+        /* Create any local stories that we parsed from the input file. */
+        localStoryProcessor.process();
 
         /* Do post-run tasks. */
         Util.log(C.ALL_FINISHED);
         Util.loudf(C.RUN_RESULTS, progressHelper.getTotalWork());
-        freeResources();
-    }
-
-    /**
-     * Explicitly free resources which could keep the JVM from shutting down.
-     */
-    private void freeResources() {
-        //Main.httpClient.getDispatcher().getExecutorService().shutdownNow(); // Shut down OkHttp dispatcher's
-        // ExecutorService.
-        //Schedulers.shutdown(); // Shut down all RxJava schedulers.
-        //ConnectionPool.getDefault().evictAll(); // Evict OkHttp's connection pool.
-        //C.getHttpClient().getConnectionPool().evictAll();
-        //Main.eventBusExecutor.shutdownNow(); // Shut down event bus executor.
     }
 
     /**
@@ -139,14 +130,6 @@ public class FictionDL {
      */
     public static Path getOutPath() {
         return outPath;
-    }
-
-    /**
-     * Get the parser responsible for parsing the link file.
-     * @return Link file parser.
-     */
-    public static LinkFileParser getLinkFileParser() {
-        return linkFileParser;
     }
 
     /**
@@ -180,7 +163,6 @@ public class FictionDL {
 
         @Override
         public boolean cancel(boolean mayInterruptIfRunning) {
-            fictionDL.freeResources();
             fictionDL = null;
             return super.cancel(mayInterruptIfRunning);
         }

@@ -1,5 +1,6 @@
 package bkromhout.fdl;
 
+import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
@@ -67,8 +68,9 @@ public final class EpubCreator {
         book.getMetadata().addTitle(Util.unEscapeAmps(story.getTitle()));
         book.getMetadata().addAuthor(new Author(story.getAuthor()));
         book.getMetadata().addDescription(Util.cleanHtmlString(story.getSummary()));
-        book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.URL, story.getUrl()));
-        book.getMetadata().addPublisher(story.getHost());
+        if (story.getUrl() != null)
+            book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.URL, story.getUrl()));
+        if (story.getHost() != null) book.getMetadata().addPublisher(story.getHost());
         // Create and add CSS file.
         book.addResource(createCss());
         // Create and add title page.

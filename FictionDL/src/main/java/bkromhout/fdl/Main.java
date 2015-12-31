@@ -33,10 +33,6 @@ public class Main {
      */
     public static boolean isVerbose = false;
     /**
-     * Executor for the async event bus. Have to have a reference to it in order to shut it down when we're done.
-     */
-    public static ExecutorService eventBusExecutor;
-    /**
      * Global EventBus.
      */
     public static EventBus eventBus;
@@ -101,7 +97,7 @@ public class Main {
      */
     private static void init() {
         // Create event bus executor and event bus.
-        eventBusExecutor = Executors.newSingleThreadExecutor(
+        ExecutorService eventBusExecutor = Executors.newSingleThreadExecutor(
                 new ThreadFactoryBuilder().setNameFormat("fdl-event-bus-%d").setDaemon(true).build());
         eventBus = new AsyncEventBus("fdl-event-bus", eventBusExecutor);
         //eventBus = new EventBus("fdl-event-bus");
@@ -123,7 +119,7 @@ public class Main {
      */
     private static void addOkHttpLogging() {
         // Pass the Util.loud() function to the logger so that it uses our logging methods.
-        HttpLoggingInterceptor logger = new HttpLoggingInterceptor(str -> Util.loud(str + C.LOG_PURPLE));
+        HttpLoggingInterceptor logger = new HttpLoggingInterceptor(str -> Util.loud(str + C.LOG_LOUD));
         logger.setLevel(HttpLoggingInterceptor.Level.BASIC);
         Main.httpClient.interceptors().add(logger);
     }

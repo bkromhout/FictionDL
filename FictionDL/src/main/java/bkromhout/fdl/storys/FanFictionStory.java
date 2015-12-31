@@ -2,8 +2,8 @@ package bkromhout.fdl.storys;
 
 import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
-import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -42,7 +42,7 @@ public class FanFictionStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public FanFictionStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Sites.FFN());
+        super(url, Sites.FFN());
     }
 
     @Override
@@ -50,7 +50,7 @@ public class FanFictionStory extends Story {
         // Get story ID and use it to normalize the url, then download the url so that we can parse story info.
         storyId = parseStoryId(url, "/s/(\\d*)", 1);
         url = String.format(FFN_S_URL, storyId);
-        Document infoDoc = Util.downloadHtml(url);
+        Document infoDoc = Util.getHtml(url);
         // Make sure that we got a Document and that this is a valid story.
         if (infoDoc == null || infoDoc.select("span.gui_warning").first() != null) throw initEx();
 

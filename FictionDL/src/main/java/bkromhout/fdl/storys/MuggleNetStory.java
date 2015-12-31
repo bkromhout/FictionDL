@@ -2,8 +2,8 @@ package bkromhout.fdl.storys;
 
 import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
-import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -51,7 +51,7 @@ public class MuggleNetStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public MuggleNetStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Sites.MN());
+        super(url, Sites.MN());
     }
 
     @Override
@@ -61,7 +61,7 @@ public class MuggleNetStory extends Story {
         // Get story ID and use it to normalize the url, then download the url so that we can parse story info.
         storyId = parseStoryId(url, "sid=(\\d*)", 1);
         url = String.format(MN_S_URL, storyId, warnBypass);
-        Document infoDoc = Util.downloadHtml(url);
+        Document infoDoc = Util.getHtml(url);
         if (infoDoc == null) throw initEx();
 
         // Figure out if we need to change the warning bypass.
@@ -70,13 +70,13 @@ public class MuggleNetStory extends Story {
             // We're logged in, but need to change our warning bypass to 3 for this story and re-download the info page.
             warnBypass = MN_PART_WARN_3;
             url = String.format(MN_S_URL, storyId, warnBypass);
-            infoDoc = Util.downloadHtml(url);
+            infoDoc = Util.getHtml(url);
             if (infoDoc == null) throw initEx();
         } else if (errorText != null && errorText.ownText().trim().equals(MN_NEEDS_WARN_5)) {
             // We're logged in, but need to change our warning bypass to 5 for this story and re-download the info page.
             warnBypass = MN_PART_WARN_5;
             url = String.format(MN_S_URL, storyId, warnBypass);
-            infoDoc = Util.downloadHtml(url);
+            infoDoc = Util.getHtml(url);
             if (infoDoc == null) throw initEx();
         } else if (errorText != null) throw initEx(errorText.ownText().trim()); // Just throw some exception
 

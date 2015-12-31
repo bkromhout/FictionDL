@@ -1,7 +1,10 @@
 package bkromhout.fdl.util;
 
 import bkromhout.fdl.Main;
+import bkromhout.fdl.ex.StoryinfoJsonException;
 import bkromhout.fdl.ui.Controller;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import javafx.scene.paint.Color;
@@ -22,6 +25,114 @@ import java.util.List;
  * Utility class with static methods.
  */
 public abstract class Util {
+
+    /**
+     * Log a string. If running from the CLI, goes to System.out. If running from the GUI, goes to the log TextFlow.
+     * @param str String to log.
+     */
+    public static void log(String str) {
+        if (str == null) return;
+        if (Main.isGui) logGuiString(str + "%n");
+        else logCliString(str + "%n");
+    }
+
+    /**
+     * Log a formatted string. If running from the CLI, goes to System.out. If running from the GUI, goes to the log
+     * TextFlow.
+     * @param format Format string.
+     * @param args   Objects to substitute into format string.
+     */
+    public static void logf(String format, Object... args) {
+        if (format == null) return;
+        if (Main.isGui) logGuiString(String.format(format, args));
+        else logCliString(String.format(format, args));
+    }
+
+    /**
+     * Calls Util.log if verbose output is enabled.
+     * @param str String to log.
+     */
+    public static void loud(String str) {
+        if (Main.isVerbose) log(str);
+    }
+
+    /**
+     * Calls Util.logf if verbose output is enabled.
+     * @param format Format string.
+     * @param args   Objects to substitute into format string.
+     */
+    public static void loudf(String format, Object... args) {
+        if (Main.isVerbose) logf(format, args);
+    }
+
+    /**
+     * Log a string to System.out, after processing it some.
+     * <p>
+     * Note: Does not add a new line to the end of the string.
+     * @param s String to log.
+     */
+    private static void logCliString(String s) {
+        // Print any leading new lines.
+        while (s.startsWith("%n") || s.startsWith(String.format("%n"))) {
+            System.out.println();
+            // Yes, IntelliJ is marking this as an error. It isn't, and it still compiles.
+            s = s.replaceFirst("\\R|\\Q%n\\E", "");
+        }
+        // Potentially prepend line type, strip tags, then print.
+        s = prependLogLineType(s);
+        s = stripLogStyleTags(s);
+        System.out.printf(s);
+    }
+
+    /**
+     * Log a string to a GUI TextFlow, making sure to process any log color indicators (See near the top of the C.java
+     * file).
+     * <p>
+     * Note: Does not add a new line to the end of the string.
+     * @param s String to log.
+     */
+    private static void logGuiString(String s) {
+        Text text = new Text();
+
+        // Process any log color style tags, in order of priority.
+        if (s.contains(C.LOG_ERR)) text.setFill(Color.ORANGERED); // Errors.
+        else if (s.contains(C.LOG_WARN)) text.setFill(Color.GOLD); // Warnings.
+        else if (s.contains(C.LOG_LOUD)) text.setFill(Color.rgb(152, 118, 170)); // Verbose; Purple.
+        else if (s.contains(C.LOG_BLUE)) text.setFill(Color.ROYALBLUE); // Info.
+        else if (s.contains(C.LOG_GREEN)) text.setFill(Color.FORESTGREEN); // Info.
+
+        // Process any log style tags.
+        if (s.contains(C.LOG_ULINE)) text.setUnderline(true);
+
+        // Strip tags, then print.
+        text.setText(stripLogStyleTags(s));
+        Controller.appendLogText(text);
+    }
+
+    /**
+     * If running in verbose mode, prepend the log line with a type indicator, such as "I:" or "W:", based on log tags.
+     * @param s String to log.
+     * @return Prepended log line. If we aren't running in verbose mode, return the same string, unchanged.
+     */
+    private static String prependLogLineType(String s) {
+        if (!Main.isVerbose) return s;
+
+        // Prepend line types based on log tags.
+        if (s.contains(C.LOG_ERR)) return "E: " + s;
+        else if (s.contains(C.LOG_WARN)) return "W: " + s;
+        else if (s.contains(C.LOG_LOUD)) return "V: " + s;
+        else return "I: " + s;
+    }
+
+    /**
+     * String log color indicators from a string.
+     * @param s String to strip
+     * @return Stripped string.
+     */
+    private static String stripLogStyleTags(String s) {
+        return s.replace(C.LOG_ERR, "").replace(C.LOG_BLUE, "").replace(C.LOG_GREEN, "").replace(C.LOG_LOUD, "")
+                .replace(C.LOG_WARN, "").replace(C.LOG_ULINE, "");
+    }
 
     /**
      * Attempt to verify that a directory path exists (or can be created), then return a Path of it.
@@ -52,14 +163,18 @@ public abstract class Util {
     }
 
     /**
-     * Download an HTML document from the given url
+     * Download an HTML document from the given url.
+     * <p>
+     * This method closes any resources it holds before returning.
      * @param url url to download.
      * @return A Document object, or null if the url was malformed.
      */
-    public static Document downloadHtml(String url) {
-        InputStream responseBodyStream = downloadRawHtml(url);
-        if (responseBodyStream == null) return null;
-        try {
+    public static Document getHtml(String url) {
+        // Use Jsoup to parse the HTML, being sure to close resources before returning. (Note that while this is
+        // typed as an InputStream, whose close method "does nothing", it is actually an Okio type whose close method
+        // does do something.
+        try (InputStream responseBodyStream = getRawHtmlStream(url)) {
+            if (responseBodyStream == null) return null;
             return Jsoup.parse(responseBodyStream, null, url);
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,15 +186,46 @@ public abstract class Util {
 
     /**
      * Download a web page using the given OkHttpClient from the given url.
+     * <p>
+     * Note that while this returns an InputStream type, it is actually an Okio type which subclasses InputStream.
+     * Callers should always be sure to call its {@code close} method when finished using it to ensure that it cannot
+     * leak.
      * @param url url of page to download.
      * @return Raw HTML of the web page as an InputStream, or null if we failed to download the page or the status code
      * wasn't in the range of [200..300).
      */
-    private static InputStream downloadRawHtml(String url) {
+    private static InputStream getRawHtmlStream(String url) {
+        Response response = getRawHtml(url);
+        if (response == null) return null;
+
+        try {
+            return response.body().byteStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // We're just ignoring the exception really.
+            logf(C.HTML_DL_FAILED, url);
+            return null;
+        }
+    }
+
+    /**
+     * Download a web page using the given OkHttpClient from the given url.
+     * <p>
+     * This method will close the Response's ResponseBody before returning null if we were able to get a valid Response
+     * but the status code did not indicate success.
+     * @param url url of page to download.
+     * @return OkHttp Response, or null if we failed to download the page or the status code wasn't in the range of
+     * [200..300).
+     */
+    private static Response getRawHtml(String url) {
         try {
             Request request = new Request.Builder().url(url).build();
             Response response = C.getHttpClient().newCall(request).execute();
-            return response.isSuccessful() ? response.body().byteStream() : null;
+            if (response.isSuccessful()) return response;
+
+            // If the request wasn't successful, close the ResponseBody before returning null so that it cannot leak.
+            response.body().close();
+            return null;
         } catch (IOException e) {
             e.printStackTrace();
             // We're just ignoring the exception really.
@@ -181,77 +327,6 @@ public abstract class Util {
     }
 
     /**
-     * Log a string. If running from the CLI, goes to System.out. If running from the GUI, goes to the log TextFlow.
-     * @param str String to log.
-     */
-    public static void log(String str) {
-        if (str == null) return;
-        if (Main.isGui) logString(str + "\n");
-        else System.out.println(stripLogStyleTags(str));
-    }
-
-    /**
-     * Calls Util.log if verbose output is enabled.
-     * @param str String to log.
-     */
-    public static void loud(String str) {
-        if (Main.isVerbose) log(str);
-    }
-
-    /**
-     * Log a formatted string. If running from the CLI, goes to System.out. If running from the GUI, goes to the log
-     * TextFlow.
-     * @param format Format string.
-     * @param args   Objects to substitute into format string.
-     */
-    public static void logf(String format, Object... args) {
-        if (format == null) return;
-        if (Main.isGui) logString(String.format(format, args));
-        else System.out.printf(stripLogStyleTags(format), args);
-    }
-
-    /**
-     * Calls Util.logf if verbose output is enabled.
-     * @param format Format string.
-     * @param args   Objects to substitute into format string.
-     */
-    public static void loudf(String format, Object... args) {
-        if (Main.isVerbose) logf(format, args);
-    }
-
-    /**
-     * Log a string to a GUI TextFlow, making sure to process any log color indicators (See near the top of the C.java
-     * file).
-     * @param s String to log.
-     */
-    private static void logString(String s) {
-        Text text = new Text();
-        // Process any log color style tags, in order of priority.
-        if (s.contains(C.LOG_RED)) text.setFill(Color.ORANGERED);
-        else if (s.contains(C.LOG_BLUE)) text.setFill(Color.ROYALBLUE);
-        else if (s.contains(C.LOG_GREEN)) text.setFill(Color.FORESTGREEN);
-        else if (s.contains(C.LOG_PURPLE)) text.setFill(Color.rgb(152, 118, 170)); // Verbose only.
-        else if (s.contains(C.LOG_GOLD)) text.setFill(Color.GOLD); // Verbose only, but usually just for dev use.
-
-        // Process any log style tags.
-        if (s.contains(C.LOG_ULINE)) text.setUnderline(true);
-
-        // Strip log tags, then send to the TextFlow.
-        text.setText(stripLogStyleTags(s));
-        Controller.appendLogText(text);
-    }
-
-    /**
-     * String log color indicators from a string.
-     * @param in String to strip
-     * @return Stripped string.
-     */
-    private static String stripLogStyleTags(String in) {
-        return in.replace(C.LOG_RED, "").replace(C.LOG_BLUE, "").replace(C.LOG_GREEN, "").replace(C.LOG_PURPLE, "")
-                 .replace(C.LOG_GOLD, "").replace(C.LOG_ULINE, "");
-    }
-
-    /**
      * Build a simple regex string which is some number of string literals OR'ed together.
      * @param literals Strings to OR together in the regex. It is assumed that at least one String is supplied.
      * @return Regex string suitable for using with .find() (it doesn't capture any specific groups), or null if no
@@ -287,5 +362,63 @@ public abstract class Util {
         for (int i = startIdx; i < endIdx; i++) div.appendChild(nodeCopies.get(i));
         // Return the summary HTML.
         return div;
+    }
+
+    /**
+     * Get the value of an element in {@code json} called {@code elemName} as a String.
+     * <p>
+     * Note the distinction between returning null and throwing an exception here.<br/>Null is returned if we either
+     * don't have what we need to access the element, or if the element doesn't exist.<br/>An exception is thrown if the
+     * element exists, be it is not in the form we expected (and so, some exception was thrown which we caught).
+     * @param json     JSON object which contains an element called {@code elemName}.
+     * @param elemName Name of the JSON element to get the String value of.
+     * @return Returns the value of the {@code elemName} element as a String.<br/>If either of {@code json} or {@code
+     * elemName} are null, {@code elemName} is the empty string, {@code json} does not contain an element named {@code
+     * elemName}, or the value of the element is {@code null}, returns null instead.
+     * @throws StoryinfoJsonException if we cannot return the value of the element as a String. The exception message
+     *                                will be {@code elemName}.
+     */
+    public static String getJsonStr(JsonObject json, String elemName) throws StoryinfoJsonException {
+        // Parameter checks.
+        if (json == null || elemName == null || elemName.isEmpty() || !json.has(elemName)) return null;
+        // Element checks.
+        JsonElement elem = json.get(elemName);
+        if (elem.isJsonNull()) return null;
+
+        // Try to get a String value from the element, catching any exceptions thrown if this isn't a string element.
+        try {
+            return elem.getAsJsonPrimitive().getAsString();
+        } catch (IllegalStateException | ClassCastException e) {
+            throw new StoryinfoJsonException(elemName, e);
+        }
+    }
+
+    /**
+     * Get the value of an element in {@code json} called {@code elemName} as an integer.
+     * <p>
+     * Note the distinction between returning null and throwing an exception here.<br/>Null is returned if we either
+     * don't have what we need to access the element, or if the element doesn't exist.<br/>An exception is thrown if the
+     * element exists, be it is not in the form we expected (and so, some exception was thrown which we caught).
+     * @param json     JSON object which contains an element called {@code elemName}.
+     * @param elemName Name of the JSON element to get the integer value of.
+     * @return Returns the value of the {@code elemName} element as an integer.<br/>If either of {@code json} or {@code
+     * elemName} are null, {@code elemName} is the empty string, {@code json} does not contain an element named {@code
+     * elemName}, or the value of the element is {@code null}, returns -1 instead.
+     * @throws StoryinfoJsonException if we cannot return the value of the element as a integer. The exception message
+     *                                will be {@code elemName}.
+     */
+    public static int getJsonInt(JsonObject json, String elemName) throws StoryinfoJsonException {
+        // Parameter checks.
+        if (json == null || elemName == null || elemName.isEmpty() || !json.has(elemName)) return -1;
+        // Element checks.
+        JsonElement elem = json.get(elemName);
+        if (elem.isJsonNull()) return -1;
+
+        // Try to get an int value from the element, catching any exceptions thrown if this isn't a number element.
+        try {
+            return elem.getAsJsonPrimitive().getAsInt();
+        } catch (IllegalStateException | ClassCastException | NumberFormatException e) {
+            throw new StoryinfoJsonException(elemName, e);
+        }
     }
 }

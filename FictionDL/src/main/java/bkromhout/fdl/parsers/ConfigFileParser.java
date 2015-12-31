@@ -1,8 +1,8 @@
 package bkromhout.fdl.parsers;
 
-import bkromhout.fdl.Site;
+import bkromhout.fdl.site.Site;
+import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
-import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 import rx.Observable;
 

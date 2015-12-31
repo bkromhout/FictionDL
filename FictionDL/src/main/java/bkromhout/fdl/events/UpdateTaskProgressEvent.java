@@ -16,7 +16,7 @@ public class UpdateTaskProgressEvent {
 
     /**
      * Create a new {@link UpdateTaskProgressEvent}.
-     * @param workDone Number of work units completed.
+     * @param workDone  Number of work units completed.
      * @param totalWork Total number of work units.
      */
     public UpdateTaskProgressEvent(double workDone, double totalWork) {

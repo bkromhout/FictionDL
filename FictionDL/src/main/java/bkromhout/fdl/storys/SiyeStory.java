@@ -2,8 +2,8 @@ package bkromhout.fdl.storys;
 
 import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
-import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,14 +29,14 @@ public class SiyeStory extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public SiyeStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Sites.SIYE());
+        super(url, Sites.SIYE());
     }
 
     @Override
     protected void populateInfo() throws InitStoryException {
         // Get story ID and use it to normalize the url, then download the url so that we can parse story info.
         storyId = parseStoryId(url, "sid=(\\d*)", 1);
-        Document infoDoc = Util.downloadHtml(String.format(SIYE_C_URL, storyId, 1));
+        Document infoDoc = Util.getHtml(String.format(SIYE_C_URL, storyId, 1));
         if (infoDoc == null) throw initEx();
 
         // Get story info element from story page to get some of the details.
@@ -55,7 +55,7 @@ public class SiyeStory extends Story {
         // Figure out the SIYE story ID and author ID link, because we'll get the rest of the general details from
         // the story entry on the author's page after downloading it.
         String authorIdLink = findAuthorIdLink(infoDoc);
-        Document doc = Util.downloadHtml(String.format(SIYE_A_URL, authorIdLink));
+        Document doc = Util.getHtml(String.format(SIYE_A_URL, authorIdLink));
         if (doc == null) throw initEx();
         // Get the story entry on the author's page.
         Element storyRow = doc.select(String.format("td tr td:has(a[href=\"viewstory.php?sid=%s\"])", storyId)).last();

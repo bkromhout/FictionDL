@@ -2,7 +2,7 @@ package bkromhout.fdl.storys;
 
 import bkromhout.fdl.downloaders.EpubDL;
 import bkromhout.fdl.ex.InitStoryException;
-import bkromhout.fdl.util.Sites;
+import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.Util;
 import org.jsoup.nodes.Document;
 
@@ -22,7 +22,7 @@ public class Ao3Story extends Story {
      * @throws InitStoryException if we can't create this story object for some reason.
      */
     public Ao3Story(EpubDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Sites.AO3());
+        super(url, Sites.AO3());
     }
 
     @Override
@@ -30,7 +30,7 @@ public class Ao3Story extends Story {
         // Get story ID and use it to normalize the url, then download the url so that we can parse story info.
         storyId = parseStoryId(url, "/works/(\\d*)", 1);
         url = String.format(AO3_S_URL, storyId);
-        Document infoDoc = Util.downloadHtml(url);
+        Document infoDoc = Util.getHtml(url);
         // Make sure that we got a Document and that this is a valid story.
         if (infoDoc == null || infoDoc.select("div[class*=\"error\"]").first() != null) throw initEx();
 

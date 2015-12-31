@@ -1,12 +1,12 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.Chapter;
 import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.chapter.Chapter;
+import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.storys.FanFictionStory;
 import bkromhout.fdl.storys.FictionHuntStory;
 import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.C;
-import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 
 /**

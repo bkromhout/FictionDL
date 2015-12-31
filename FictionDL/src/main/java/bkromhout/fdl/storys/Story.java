@@ -1,9 +1,8 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.Chapter;
-import bkromhout.fdl.Site;
-import bkromhout.fdl.downloaders.Downloader;
+import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.site.Site;
 import bkromhout.fdl.util.C;
 
 import java.util.ArrayList;
@@ -27,8 +26,6 @@ public abstract class Story {
      */
     static final String NO_ID_DL_FAIL = "NO_ID_DL_FAIL";
 
-    // The downloader which owns this story.
-    protected Downloader ownerDl;
     // Story url.
     protected String url;
     // Site story is from (will be used as "Publisher" metadata).
@@ -68,13 +65,11 @@ public abstract class Story {
 
     /**
      * Create a new {@link Story}.
-     * @param ownerDl The downloader which owns this story.
-     * @param url     Story url.
-     * @param site    Site that story is from.
+     * @param url  Story url.
+     * @param site Site that story is from.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    protected Story(Downloader ownerDl, String url, Site site) throws InitStoryException {
-        this.ownerDl = ownerDl;
+    protected Story(String url, Site site) throws InitStoryException {
         this.url = url;
         this.site = site;
         populateInfo();
@@ -184,7 +179,7 @@ public abstract class Story {
      * @return Story site.
      */
     public String getHost() {
-        return site.getHost();
+        return site != null ? site.getHost() : null;
     }
 
     /**
@@ -254,11 +249,19 @@ public abstract class Story {
     }
 
     /**
-     * Get this story's chapter count based off of the number of chapter urls there are.
+     * Get the number of chapter urls for this story.
+     * @return Story chapter url count.
+     */
+    public int getChapterUrlCount() {
+        return chapterUrls.size();
+    }
+
+    /**
+     * Get this story's chapter count.
      * @return Story chapter count.
      */
     public int getChapterCount() {
-        return chapterUrls.size();
+        return chapters.size();
     }
 
     /**

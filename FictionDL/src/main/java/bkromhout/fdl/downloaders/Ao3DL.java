@@ -1,8 +1,8 @@
 package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
-import bkromhout.fdl.util.Sites;
 
 /**
  * Downloader for <a href="http://archiveofourown.org/">Ao3</a> stories.

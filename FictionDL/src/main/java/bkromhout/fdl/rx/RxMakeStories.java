@@ -1,9 +1,9 @@
 package bkromhout.fdl.rx;
 
 import bkromhout.fdl.Main;
-import bkromhout.fdl.util.Util;
 import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.util.Util;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import rx.Observable;
 import rx.Subscriber;
@@ -55,9 +55,9 @@ public class RxMakeStories implements Observable.Transformer<String, Story> {
                 sub.onCompleted();
             } catch (InvocationTargetException e) {
                 // Now figure out what the heck to put in the log.
-                if (e.getCause() == null) e.printStackTrace();
-                else if (e.getCause().getMessage() == null) e.getCause().printStackTrace();
-                else Util.log(e.getCause().getMessage());
+                if (e.getCause() == null) e.printStackTrace(); // Who knows what caused it.
+                else if (e.getCause().getMessage() == null) e.getCause().printStackTrace(); // Ditto.
+                else Util.log(e.getCause().getMessage()); // Probably an InitStoryException, print its message.
                 // We just return null if a story fails.
                 sub.onNext(null);
                 sub.onCompleted();

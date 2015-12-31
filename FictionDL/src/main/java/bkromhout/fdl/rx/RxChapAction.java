@@ -1,6 +1,6 @@
 package bkromhout.fdl.rx;
 
-import bkromhout.fdl.Chapter;
+import bkromhout.fdl.chapter.Chapter;
 import rx.Observable;
 import rx.functions.Action1;
 

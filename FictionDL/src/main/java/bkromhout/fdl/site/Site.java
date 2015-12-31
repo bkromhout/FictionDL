@@ -1,18 +1,24 @@
-package bkromhout.fdl;
+package bkromhout.fdl.site;
 
+import bkromhout.fdl.FictionDL;
+import bkromhout.fdl.Main;
 import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.parsers.ConfigFileParser;
 import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.util.IWorkProducer;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 
 /**
- * Represents a supported site.
- * @see bkromhout.fdl.util.Sites
+ * Represents a supported site, and is in charge of knowing what to call to initiate a site's download process.
+ * <p>
+ * All instances of this class should be created in the {@link Sites#init()} function to ensure that the methods in the
+ * {@link Sites} class will operate on every supported site's implementation.
+ * @see Sites
  */
-public class Site {
+public final class Site implements IWorkProducer {
     /**
      * Human-readable name for this site.
      */
@@ -72,7 +78,7 @@ public class Site {
      * @param fictionDL Instance of {@link FictionDL} to use when creating this site's {@link Downloader} class.
      * @param config    Options parsed from the config file, in case this site needs them.
      */
-    public void download(FictionDL fictionDL, ConfigFileParser.Config config) {
+    public void process(FictionDL fictionDL, ConfigFileParser.Config config) {
         if (urls.isEmpty()) return;
         try {
             // Create the downloader class.
@@ -122,5 +128,10 @@ public class Site {
      */
     public HashSet<String> getUrls() {
         return urls;
+    }
+
+    @Override
+    public int getWorkCount() {
+        return urls.size();
     }
 }

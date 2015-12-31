@@ -1,12 +1,13 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.Chapter;
 import bkromhout.fdl.EpubCreator;
 import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Site;
+import bkromhout.fdl.chapter.Chapter;
+import bkromhout.fdl.chapter.ChapterSource;
 import bkromhout.fdl.rx.RxChapAction;
 import bkromhout.fdl.rx.RxMakeChapters;
 import bkromhout.fdl.rx.RxOkHttpCall;
+import bkromhout.fdl.site.Site;
 import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
@@ -48,7 +49,7 @@ public abstract class ParsingDL extends Downloader {
      */
     @Override
     protected void downloadStory(Story story) {
-        ProgressHelper.recalcUnitWorth(story.getChapterCount());
+        ProgressHelper.recalcUnitWorth(story.getChapterUrlCount());
         // Create Chapter objects.
         ArrayList<Chapter> chapters = (ArrayList<Chapter>) downloadStoryChaps(story)
                 .compose(new RxChapAction(this::generateChapTitle))
@@ -60,20 +61,22 @@ public abstract class ParsingDL extends Downloader {
                 .toSortedList(Chapter::sort) // Get the chapters as a list.
                 .toBlocking()
                 .single();
+        // The .toSortedList() operator will *always* return a list (ArrayList, as of the last time I checked), even if
+        // it's just an empty list.
+        assert chapters != null;
         // Make sure we got all of the chapters. If we didn't we won't continue with this story, it fails.
-        // TODO not sure this would ever be null due to RxJava's toList() call, so may not need this null check.
-        if (chapters == null || story.getChapterCount() != chapters.size()) {
-            Util.log(C.SOME_CHAPS_FAILED);
+        if (story.getChapterUrlCount() != chapters.size()) {
+            Util.log(C.PARTIAL_DL_FAIL);
             // Add the number of chapters which failed to download to the number of work units completed so that the
             // progress bar remains accurate.
-            ProgressHelper.storyFailed(chapters == null ? 1L : story.getChapterCount() - chapters.size());
+            ProgressHelper.storyFailed(story.getChapterUrlCount() - chapters.size());
         } else {
             // Associate the chapters with the story.
             story.setChapters(chapters);
             // Save the story as an ePUB file.
             Util.logf(C.SAVING_STORY);
             new EpubCreator(story).makeEpub(FictionDL.getOutPath());
-            Util.log(C.DONE + "\n");
+            Util.log(C.DONE + "%n");
         }
     }
 
@@ -99,6 +102,7 @@ public abstract class ParsingDL extends Downloader {
                 .subscribeOn(Schedulers.newThread())
                 .map(url -> new Request.Builder().url(url).build()) // Create OkHttp Requests from urls.
                 .compose(new RxOkHttpCall()) // Get Responses by executing Requests.
+                .map(ChapterSource::new) // Wrap the Responses in ChapterSources.
                 .compose(new RxMakeChapters(story)) // Create Chapter objects.
                 .observeOn(Schedulers.computation())
                 .filter(chap -> chap.rawHtml != null); // Filter out any nulls, they're chapters we failed to make.
