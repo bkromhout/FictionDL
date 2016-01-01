@@ -28,8 +28,6 @@
 * Switched from using Jsoup's built in connections to [OkHttp](https://github.com/square/OkHttp) since it's more robust and performant, especially in combination with RxJava
 * Large refactoring, most notably due to the conversion of some code to use RxJava, but also because we now have a new class called `EpubDL`, which along with `ParsingDL` now extends another new class simply called `Downloader`
 
-(Note: While this release only added support for Ao3 in terms of user-facing features, the giant amount of code movement that was done underneath warranted a major release number bump.)
-
 ## Release 2.0.1
 * **Fixed:** Overzealous ampersand escaping in a few places
 * **Fixed:** The obligatory SIYE parsing issue, though just a couple this time, to do with failing to get the characters and not parsing the whole summary
