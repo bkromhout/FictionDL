@@ -17,11 +17,11 @@ import java.util.prefs.Preferences;
  */
 public class Gui extends Application {
     // Preferences object for persisting things across runs.
-    Preferences prefs;
+    private Preferences prefs;
     // GUI Controller.
-    Controller controller;
+    private Controller controller;
     // Current task.
-    FictionDL.FictionDLTask fictionDLTask = null;
+    private FictionDL.FictionDLTask fictionDLTask = null;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -32,8 +32,9 @@ public class Gui extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FictionDLGui.fxml"));
         Parent root = loader.load();
         controller = loader.getController();
-        // Tell the controller we own it.
+        // Tell the controller we own it, and to possibly set some of its fields based on parameters passed to us.
         controller.setGui(this);
+        controller.setFieldsFromParams(getParameters());
 
         // Configure the stage.
         primaryStage.setTitle(C.VER_STRING);
@@ -54,8 +55,8 @@ public class Gui extends Application {
      * Create a {@link FictionDL} object with the given strings.
      * @param args Arguments, mapped to keys.
      */
-    @SuppressWarnings("unchecked")
-    protected void runFictionDl(HashMap<String, String> args) {
+    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+    void runFictionDl(HashMap<String, String> args) {
         fictionDLTask = new FictionDL.FictionDLTask(args);
         // Set the task's handlers.
         fictionDLTask.setOnScheduled(handler -> {
@@ -93,7 +94,7 @@ public class Gui extends Application {
     /**
      * Cancel the {@link bkromhout.fdl.FictionDL.FictionDLTask} currently running.
      */
-    protected void cancelFictionDLTask() {
+    void cancelFictionDLTask() {
         if (fictionDLTask != null) fictionDLTask.cancel();
     }
 
@@ -102,7 +103,7 @@ public class Gui extends Application {
      * @param key   Preference key.
      * @param value Preference value.
      */
-    protected void putPref(String key, String value) {
+    void putPref(String key, String value) {
         if (value != null) prefs.put(key, value);
         else prefs.remove(key);
     }
@@ -112,7 +113,7 @@ public class Gui extends Application {
      * @param key Preference key.
      * @return Preference value, or null if the preference doesn't exist yet.
      */
-    protected String getPref(String key) {
+    String getPref(String key) {
         return prefs.get(key, null);
     }
 }

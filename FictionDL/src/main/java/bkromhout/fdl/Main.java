@@ -15,6 +15,7 @@ import org.apache.commons.cli.*;
 
 import java.net.CookieManager;
 import java.net.CookiePolicy;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,35 +55,35 @@ public class Main {
         // Process CLI input.
         Options options = getOptions();
         CommandLineParser parser = new DefaultParser();
-        CommandLine line;
+        CommandLine cmds;
         try {
-            line = parser.parse(options, args);
+            cmds = parser.parse(options, args);
         } catch (ParseException e) {
             Util.log(C.INVALID_ARGS);
             printHelp(options);
             return;
         }
         // If the user wants help, help them.
-        if (line.hasOption("?")) {
+        if (cmds.hasOption("?")) {
             printHelp(options);
             return;
         }
         // Check verbosity.
-        if (line.hasOption("v")) isVerbose = true;
+        if (cmds.hasOption("v")) isVerbose = true;
         // Check GUI.
-        if (line.hasOption("g")) {
+        if (cmds.hasOption("g")) {
             // Run FictionDL using the GUI.
             isGui = true;
-            Application.launch(Gui.class);
+            Application.launch(Gui.class, makeGuiArgs(cmds));
         } else {
             // Run FictionDL using the CLI.
             Util.log(C.VER_STRING);
             try {
                 // Create arguments map.
                 HashMap<String, String> ficDlArgs = new HashMap<>();
-                ficDlArgs.put(C.ARG_IN_PATH, line.getOptionValue("i"));
-                ficDlArgs.put(C.ARG_OUT_PATH, line.getOptionValue("o"));
-                ficDlArgs.put(C.ARG_CFG_PATH, line.getOptionValue("c"));
+                ficDlArgs.put(C.ARG_IN_PATH, cmds.getOptionValue("i"));
+                ficDlArgs.put(C.ARG_OUT_PATH, cmds.getOptionValue("o"));
+                ficDlArgs.put(C.ARG_CFG_PATH, cmds.getOptionValue("c"));
                 // Run FictionDL.
                 new FictionDL(ficDlArgs).run();
             } catch (IllegalArgumentException e) {
@@ -122,6 +123,22 @@ public class Main {
         HttpLoggingInterceptor logger = new HttpLoggingInterceptor(str -> Util.loud(str + C.LOG_LOUD));
         logger.setLevel(HttpLoggingInterceptor.Level.BASIC);
         Main.httpClient.interceptors().add(logger);
+    }
+
+    /**
+     * Create an array of arguments for {@link Gui} using the command line arguments. The strings in the resulting array
+     * are created in such a way as to make it possible to use the {@link Application.Parameters#getNamed()} method.
+     * @param cmds Command line arguments.
+     * @return String array.
+     */
+    private static String[] makeGuiArgs(CommandLine cmds) {
+        ArrayList<String> args = new ArrayList<>();
+
+        if (cmds.hasOption("i")) args.add("--" + C.ARG_IN_PATH + "=" + cmds.getOptionValue("i"));
+        if (cmds.hasOption("o")) args.add("--" + C.ARG_OUT_PATH + "=" + cmds.getOptionValue("o"));
+        if (cmds.hasOption("c")) args.add("--" + C.ARG_CFG_PATH + "=" + cmds.getOptionValue("c"));
+
+        return args.toArray(new String[args.size()]);
     }
 
     /**
