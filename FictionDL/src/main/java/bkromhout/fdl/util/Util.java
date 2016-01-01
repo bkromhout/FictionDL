@@ -116,6 +116,8 @@ public abstract class Util {
      */
     private static String prependLogLineType(String s) {
         if (!Main.isVerbose) return s;
+        // This string is always used on the same line as another one, don't prefix it again.
+        if (s.contains(C.DONE)) return s;
 
         // Prepend line types based on log tags.
         if (s.contains(C.LOG_ERR)) return "E: " + s;

@@ -147,7 +147,7 @@ public final class EpubCreator {
         detail = story.getStatus();
         if (detail != null) titleHtml.append(String.format(C.TITLE_PAGE_S_PART, "Status", detail));
 
-        // Add link to the story, if we have a valid URL.
+        // Add link to the story, if we have a valid URL (which we might not for local stories).
         detail = story.getUrl();
         if (detail != null && !detail.isEmpty()) {
             try {

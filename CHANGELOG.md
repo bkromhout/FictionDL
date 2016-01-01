@@ -2,8 +2,9 @@
 
 ## Release 4.0.0 [Upcoming]
 * **New:** Local stories feature (CLI ONLY!), see [this wiki page](../../wiki/Supported-Sites) for more details
-* **Fixed:** Made ampersand escaping/unescaping/*reescaping*/😑 smarter
-* **Fixed:** Some likely-leaky code revolving around OkHttp Response objects
+* **New:** Include a link to the story on the generated title page
+* **Fixed:** Made ampersand escaping/unescaping/*re-escaping*/😑 smarter
+* **Fixed:** Some likely leaky code revolving around OkHttp Response objects
 * Consolidated various HTML cleaning functions, as they were becoming unwieldy in number
 * Changes to `Chapter` creation, must be done using the newly created `ChapterSource` class, which enables cleaner, more standard RxJava code, and therefore better concurrency-related improvements
 * CLI logging with verbose mode on (`-v`) is now makes it more obvious what things are what (warnings, errors, etc.)

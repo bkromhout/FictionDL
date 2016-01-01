@@ -14,6 +14,7 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -69,24 +70,29 @@ public abstract class Downloader {
         Util.logf(C.FETCH_BUILD_MODELS, site.getName());
 
         // Use RxJava to handle the logic.
-        Observable.from(storyUrls)
-                  .subscribeOn(Schedulers.computation())
-                  .compose(new RxMakeStories(storyClass, this))
-                  .doOnNext(story -> {
-                      // If a story failed, we just add one completed work unit.
-                      if (story == null) ProgressHelper.storyFailed(1L);
-                          // Otherwise, update the total work count by adding the number of chapters that will be
-                          // downloaded for this story.
-                      else ProgressHelper.recalcUnitWorth(story.getChapterUrlCount());
-                  })
-                  .filter(story -> story != null) // Get rid of failed stories.
-                  .toList()
-                  .doOnCompleted(() -> Util.logf(C.DL_STORIES_FROM_SITE, site.getName()))
-                  .observeOn(Schedulers.immediate())
-                  .toBlocking().single() // Put all of the stories into a List.
-                  // Download the stories. (Note that this is the JDK 8 Iterable.forEach() method, because we want
-                  // our RxJava flow to finish creating the story models before we download any of them.)
-                  .forEach(this::downloadStory);
+        ArrayList<Story> stories = (ArrayList<Story>) Observable
+                .from(storyUrls)
+                .subscribeOn(Schedulers.computation())
+                .compose(new RxMakeStories(storyClass, this))
+                .doOnNext(story -> {
+                    // If a story failed, we just add one completed work unit.
+                    if (story == null) ProgressHelper.storyFailed(1L);
+                        // Otherwise, update the total work count by adding the number of chapters that will be
+                        // downloaded for this story.
+                    else ProgressHelper.recalcUnitWorth(story.getChapterUrlCount());
+                })
+                .filter(story -> story != null) // Get rid of failed stories.
+                .toList()
+                .observeOn(Schedulers.immediate())
+                .toBlocking().single(); // Put all of the stories into a List.
+
+        // Download the stories. (Note that this is the JDK 8 Iterable.forEach() method, because we want our RxJava
+        // flow to finish creating the story models before we download any of them.)
+        if (!stories.isEmpty()) {
+            // In the case where we no longer have any stories because they all failed before now, we don't want to log.
+            Util.logf(C.DL_STORIES_FROM_SITE, site.getName());
+            stories.forEach(this::downloadStory);
+        }
 
         //Post-download logging.
         Util.logf(C.FINISHED_WITH_SITE, site.getName());
