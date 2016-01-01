@@ -179,6 +179,9 @@ public abstract class C {
     public static final String PARTIAL_READ_FAIL = "Skipping this story; some chapter files couldn't be read.%n" +
             LOG_ERR;
 
+    // EPub Creation Process.
+    public static final String NOT_A_URL = "\"%s\" is not a valid URL, excluding from the title page.%n" + LOG_WARN;
+
     /*
     Error strings used by exceptions which we don't catch. Don't include log tags, they won't be stripped!
      */
