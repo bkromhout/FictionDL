@@ -7,6 +7,7 @@
 * **Fixed:** Some likely leaky code revolving around OkHttp Response objects
 * **Fixed:** When starting the GUI from the CLI, other arguments won't be ignored anymore
 * **Fixed:** Fail nicely when we try to download stories from The Broom Cupboard but aren't logged in
+* **Fixed:** The latest SIYE parsing bug, this time to do with not properly detecting and reporting invalid story links
 * Consolidated various HTML cleaning functions, as they were becoming unwieldy in number
 * Cleaned up Story exception throwing a bit to be more explicit
 * Changes to `Chapter` creation, must be done using the newly created `ChapterSource` class, which enables cleaner, more standard RxJava code, and therefore better concurrency-related improvements
