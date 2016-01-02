@@ -1,8 +1,7 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.FictionDL;
-import bkromhout.fdl.Site;
 import bkromhout.fdl.rx.RxMakeStories;
+import bkromhout.fdl.site.Site;
 import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
@@ -14,6 +13,7 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -26,21 +26,17 @@ import java.util.HashSet;
  */
 public abstract class Downloader {
     /**
-     * The FictionDL instance which owns this Downloader.
-     */
-    protected FictionDL fictionDL;
-    /**
      * This is the specific {@link Story} subclass whose constructor will be called which creating stories.
      */
-    private Class<? extends Story> storyClass;
+    private final Class<? extends Story> storyClass;
     /**
      * {@link Site} that this downloader services.
      */
-    protected Site site;
+    private final Site site;
     /**
      * Story urls.
      */
-    private HashSet<String> storyUrls;
+    private final HashSet<String> storyUrls;
     /**
      * Any extra messages to print prior to starting the download process. Can be set by a subclass at some point after
      * initialization.
@@ -49,11 +45,9 @@ public abstract class Downloader {
 
     /**
      * Create a new {@link Downloader}.
-     * @param fictionDL FictionDL object which owns this downloader.
-     * @param site      Site that this downloader services.
+     * @param site Site that this downloader services.
      */
-    protected Downloader(FictionDL fictionDL, Site site) {
-        this.fictionDL = fictionDL;
+    Downloader(Site site) {
         this.site = site;
         this.storyClass = site.getStoryClass();
         this.storyUrls = site.getUrls();
@@ -69,24 +63,29 @@ public abstract class Downloader {
         Util.logf(C.FETCH_BUILD_MODELS, site.getName());
 
         // Use RxJava to handle the logic.
-        Observable.from(storyUrls)
-                  .subscribeOn(Schedulers.computation())
-                  .compose(new RxMakeStories(storyClass, this))
-                  .doOnNext(story -> {
-                      // If a story failed, we just add one completed work unit.
-                      if (story == null) ProgressHelper.storyFailed(1L);
-                          // Otherwise, update the total work count by adding the number of chapters that will be
-                          // downloaded for this story.
-                      else ProgressHelper.recalcUnitWorth(story.getChapterCount());
-                  })
-                  .filter(story -> story != null) // Get rid of failed stories.
-                  .toList()
-                  .doOnCompleted(() -> Util.logf(C.DL_STORIES_FROM_SITE, site.getName()))
-                  .observeOn(Schedulers.immediate())
-                  .toBlocking().single() // Put all of the stories into a List.
-                  // Download the stories. (Note that this is the JDK 8 Iterable.forEach() method, because we want
-                  // our RxJava flow to finish creating the story models before we download any of them.)
-                  .forEach(this::downloadStory);
+        ArrayList<Story> stories = (ArrayList<Story>) Observable
+                .from(storyUrls)
+                .subscribeOn(Schedulers.computation())
+                .compose(new RxMakeStories(storyClass))
+                .doOnNext(story -> {
+                    // If a story failed, we just add one completed work unit.
+                    if (story == null) ProgressHelper.storyFailed(0L);
+                        // Otherwise, update the total work count by adding the number of chapters that will be
+                        // downloaded for this story.
+                    else ProgressHelper.recalcUnitWorth(story.getChapterUrlCount());
+                })
+                .filter(story -> story != null) // Get rid of failed stories.
+                .toList()
+                .observeOn(Schedulers.immediate())
+                .toBlocking().single(); // Put all of the stories into a List.
+
+        // Download the stories. (Note that this is the JDK 8 Iterable.forEach() method, because we want our RxJava
+        // flow to finish creating the story models before we download any of them.)
+        if (!stories.isEmpty()) {
+            // In the case where we no longer have any stories because they all failed before now, we don't want to log.
+            Util.logf(C.DL_STORIES_FROM_SITE, site.getName());
+            stories.forEach(this::downloadStory);
+        }
 
         //Post-download logging.
         Util.logf(C.FINISHED_WITH_SITE, site.getName());
@@ -118,7 +117,7 @@ public abstract class Downloader {
             // Log in.
             Response resp = C.getHttpClient().newCall(new Request.Builder().post(formData).url(loginUrl).build())
                              .execute();
-            // Make sure we close the response body so that it doesn't leak.
+            // Make the ResponseBody is closed so that it doesn't leak.
             resp.body().close();
             // Make sure that login cookies were sent back.
             if (resp.headers().values("Set-Cookie").isEmpty())
@@ -137,7 +136,7 @@ public abstract class Downloader {
      * @param p Password.
      * @return RequestBody with form data, or null.
      */
-    protected RequestBody getSiteAuthForm(String u, String p) {
+    RequestBody getSiteAuthForm(String u, String p) {
         return null;
     }
 
@@ -145,7 +144,7 @@ public abstract class Downloader {
      * Individual site downloaders should override this to supply a login url.
      * @return Login url, or null.
      */
-    protected String getSiteLoginUrl() {
+    String getSiteLoginUrl() {
         return null;
     }
 }

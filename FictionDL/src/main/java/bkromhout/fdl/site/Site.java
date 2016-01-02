@@ -1,18 +1,21 @@
-package bkromhout.fdl;
+package bkromhout.fdl.site;
 
+import bkromhout.fdl.Main;
 import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.parsers.ConfigFileParser;
 import bkromhout.fdl.storys.Story;
-import org.apache.commons.lang3.reflect.ConstructorUtils;
+import bkromhout.fdl.util.IWorkProducer;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 
 /**
- * Represents a supported site.
- * @see bkromhout.fdl.util.Sites
+ * Represents a supported site, and is in charge of knowing what to call to initiate a site's download process.
+ * <p>
+ * All instances of this class should be created in the {@link Sites#init()} function to ensure that the methods in the
+ * {@link Sites} class will operate on every supported site's implementation.
+ * @see Sites
  */
-public class Site {
+public final class Site implements IWorkProducer {
     /**
      * Human-readable name for this site.
      */
@@ -36,7 +39,7 @@ public class Site {
     /**
      * List of story urls for this site.
      */
-    private HashSet<String> urls;
+    private final HashSet<String> urls;
 
     /**
      * Create a new {@link Site}.
@@ -69,22 +72,17 @@ public class Site {
 
     /**
      * Starts the download process for this site. This is a no-op if there are no urls in this site's url list.
-     * @param fictionDL Instance of {@link FictionDL} to use when creating this site's {@link Downloader} class.
-     * @param config    Options parsed from the config file, in case this site needs them.
+     * @param config Options parsed from the config file, in case this site needs them.
      */
-    public void download(FictionDL fictionDL, ConfigFileParser.Config config) {
+    public void process(ConfigFileParser.Config config) {
         if (urls.isEmpty()) return;
         try {
             // Create the downloader class.
-            Downloader downloader = ConstructorUtils.invokeConstructor(dlClass, fictionDL);
+            Downloader downloader = dlClass.getConstructor().newInstance();
             // Do site auth if it supports it and we have credentials for it.
             if (supportsAuth && config.hasCreds(this)) downloader.doFormAuth(config.getCreds(this));
             // Download stories from site.
             downloader.download();
-        } catch (InvocationTargetException e) {
-            // Not really sure why we'd ever hit this. TODO find out.
-            e.printStackTrace();
-            Main.exit(1);
         } catch (ReflectiveOperationException e) {
             // What a terrible failure.
             e.printStackTrace();
@@ -122,5 +120,10 @@ public class Site {
      */
     public HashSet<String> getUrls() {
         return urls;
+    }
+
+    @Override
+    public int getWorkCount() {
+        return urls.size();
     }
 }

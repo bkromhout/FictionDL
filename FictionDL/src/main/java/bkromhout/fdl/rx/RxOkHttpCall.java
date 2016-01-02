@@ -1,8 +1,8 @@
 package bkromhout.fdl.rx;
 
-import bkromhout.fdl.util.C;
 import bkromhout.fdl.ex.RequestException;
 import bkromhout.fdl.ex.ResponseException;
+import bkromhout.fdl.util.C;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
@@ -35,7 +35,7 @@ public class RxOkHttpCall implements Observable.Transformer<Request, Response> {
          * Create a new {@link ExecuteRequest} which uses the Executor from the OkHttpClient dispatcher.
          * @param request Request to enqueue.
          */
-        public ExecuteRequest(Request request) {
+        private ExecuteRequest(Request request) {
             this(request, C.getHttpClient().getDispatcher().getExecutorService());
         }
 
@@ -44,7 +44,7 @@ public class RxOkHttpCall implements Observable.Transformer<Request, Response> {
          * @param request              Request to enqueue.
          * @param cancellationExecutor Executor of the OkHttpClient.
          */
-        public ExecuteRequest(Request request, Executor cancellationExecutor) {
+        private ExecuteRequest(Request request, Executor cancellationExecutor) {
             this.request = request;
             this.cancellationExecutor = cancellationExecutor;
         }
@@ -68,8 +68,11 @@ public class RxOkHttpCall implements Observable.Transformer<Request, Response> {
                 public void onResponse(Response resp) throws IOException {
                     if (sub.isUnsubscribed()) return;
                     // Make sure the response is actually valid.
-                    if (!resp.isSuccessful()) sub.onError(
-                            new ResponseException(String.format(C.HTML_UNEXP_RESP, resp.request().urlString()), resp));
+                    if (!resp.isSuccessful()) {
+                        resp.body().close(); // Make sure the response body is closed so that it doesn't leak.
+                        sub.onError(new ResponseException(
+                                String.format(C.UNEXP_HTML_RESP, resp.request().urlString()), resp));
+                    }
                     // If we were successful, notify the subscriber and then indicate we're complete.
                     sub.onNext(resp);
                     sub.onCompleted();

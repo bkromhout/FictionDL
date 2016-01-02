@@ -5,8 +5,7 @@ import com.squareup.okhttp.Request;
 import java.io.IOException;
 
 /**
- * Similar to OkHttp's RequestException, but more useful for RxJava purposes, and provides the original OkHttp Request
- * too.
+ * Similar to OkHttp's RequestException, but more useful for RxJava purposes. Provides the original OkHttp Request.
  */
 public final class RequestException extends RuntimeException {
     private final Request request;
@@ -14,7 +13,7 @@ public final class RequestException extends RuntimeException {
     /**
      * Create a new {@link RequestException}.
      * @param request OkHttp Request which is involved.
-     * @param cause Underlying cause.
+     * @param cause   Underlying cause.
      */
     public RequestException(Request request, IOException cause) {
         super(cause);
@@ -26,7 +25,4 @@ public final class RequestException extends RuntimeException {
         return (IOException) super.getCause();
     }
 
-    public Request getRequest() {
-        return request;
-    }
 }

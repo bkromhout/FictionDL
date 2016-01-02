@@ -1,8 +1,8 @@
 package bkromhout.fdl.parsers;
 
-import bkromhout.fdl.Site;
+import bkromhout.fdl.site.Site;
+import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
-import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 import rx.Observable;
 
@@ -108,7 +108,7 @@ public class ConfigFileParser extends FileParser {
         /**
          * Config options storage. Keys for options are of the format "[Human-readable Site Name][Option prefix]".
          */
-        private HashMap<String, String> options = new HashMap<>();
+        private final HashMap<String, String> options = new HashMap<>();
 
         /**
          * Gets a String array like ["Username", "Password"], so long as both exist and are non-empty for the given

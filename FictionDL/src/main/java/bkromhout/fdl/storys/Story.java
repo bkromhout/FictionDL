@@ -1,9 +1,8 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.Chapter;
-import bkromhout.fdl.Site;
-import bkromhout.fdl.downloaders.Downloader;
+import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.site.Site;
 import bkromhout.fdl.util.C;
 
 import java.util.ArrayList;
@@ -14,67 +13,51 @@ import java.util.regex.Pattern;
  * Base Story class from which site-specific story classes should be extended.
  */
 public abstract class Story {
-    /**
-     * Indicates a url is malformed.
-     */
-    private static final String BAD_URL = "BAD_URL";
-    /**
-     * Indicates we couldn't find an ePUB file to download for a story.
-     */
-    static final String NO_EPUB = "NO_EPUB";
-    /**
-     * Indicated we failed to download a story from a site which doesn't use story IDs.
-     */
-    static final String NO_ID_DL_FAIL = "NO_ID_DL_FAIL";
 
-    // The downloader which owns this story.
-    protected Downloader ownerDl;
+    // Site that story is from (name will be used as "Publisher" metadata).
+    final Site site;
     // Story url.
-    protected String url;
-    // Site story is from (will be used as "Publisher" metadata).
-    protected Site site;
+    String url;
     // Story ID.
-    protected String storyId;
+    String storyId;
     // Story title.
-    protected String title;
+    String title;
     // Story author.
-    protected String author;
+    String author;
     // Story summary.
-    protected String summary;
+    String summary;
     // Story series.
-    protected String series;
+    String series;
     // Story type.
-    protected String ficType;
+    String ficType;
     // Story warnings.
-    protected String warnings;
+    String warnings;
     // Story rating.
-    protected String rating;
+    String rating;
     // Story genres (may be "None/Gen").
-    protected String genres;
-    // Story characters (and perhaps pairings, if they can be parsed.)
-    protected String characters;
+    String genres;
+    // Story characters (and perhaps pairings, if they can be parsed).
+    String characters;
     // Story word count.
-    protected int wordCount;
+    int wordCount;
     // Date story was published.
-    protected String datePublished;
+    String datePublished;
     // Date story was last updated (may be the same as the publish date).
-    protected String dateUpdated;
-    // Story status ("Complete", "Incomplete", "Abandoned", etc.).
-    protected String status;
+    String dateUpdated;
+    // Story status ("Complete", "Incomplete", etc.).
+    String status;
     // List of chapter urls.
-    protected ArrayList<String> chapterUrls = new ArrayList<>();
+    final ArrayList<String> chapterUrls = new ArrayList<>();
     // List of chapters.
-    protected ArrayList<Chapter> chapters = new ArrayList<>();
+    ArrayList<Chapter> chapters = new ArrayList<>();
 
     /**
      * Create a new {@link Story}.
-     * @param ownerDl The downloader which owns this story.
-     * @param url     Story url.
-     * @param site    Site that story is from.
+     * @param url  Story url.
+     * @param site Site that story is from.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    protected Story(Downloader ownerDl, String url, Site site) throws InitStoryException {
-        this.ownerDl = ownerDl;
+    Story(String url, Site site) throws InitStoryException {
         this.url = url;
         this.site = site;
         populateInfo();
@@ -96,55 +79,8 @@ public abstract class Story {
      */
     String parseStoryId(String url, String regex, int group) throws InitStoryException {
         Matcher matcher = Pattern.compile(regex).matcher(url);
-        if (!matcher.find()) throw initEx(BAD_URL, url);
+        if (!matcher.find()) throw new InitStoryException(C.INVALID_URL, url);
         return matcher.group(group);
-    }
-
-    /**
-     * Throw an {@link InitStoryException} with some message about why we couldn't create this {@link Story}.
-     * @return {@link InitStoryException} with the message we figure out.
-     */
-    InitStoryException initEx() {
-        return initEx(null, null);
-    }
-
-    /**
-     * Throw an {@link InitStoryException} with some message about why we couldn't create this {@link Story}.
-     * @param assist String to help us figure out why we couldn't create this story, and thus what message to put in the
-     *               exception.
-     * @return {@link InitStoryException} with the message we figure out.
-     */
-    InitStoryException initEx(String assist) {
-        return initEx(assist, null);
-    }
-
-    /**
-     * Throw an {@link InitStoryException} with some message about why we couldn't create this {@link Story}.
-     * @param assist String to help us figure out why we couldn't create this story, and thus what message to put in the
-     *               exception.
-     * @param str1   The first string to substitute into some message.
-     * @return {@link InitStoryException} with the message we figure out.
-     */
-    InitStoryException initEx(String assist, String str1) {
-        if (assist == null)
-            return new InitStoryException(String.format(C.STORY_DL_FAILED, site.getName(), storyId));
-        switch (assist) {
-            case BAD_URL:
-                // url was bad. str1 is the malformed url.
-                return new InitStoryException(String.format(C.INVALID_URL, str1));
-            case NO_EPUB:
-                // Couldn't find an ePUB file to download. str1 is the story title.
-                return new InitStoryException(String.format(C.NO_EPUB_ON_SITE, site.getName(), str1));
-            case NO_ID_DL_FAIL:
-                // Couldn't download a story from a site which doesn't use story IDs. str1 is the url.
-                return new InitStoryException(String.format(C.NO_ID_STORY_DL_FAILED, site.getName(), str1));
-            case MuggleNetStory.MN_REG_USERS_ONLY:
-                // Need to login to MuggleNet.
-                return new InitStoryException(String.format(C.MUST_LOGIN, site.getName(), storyId));
-            default:
-                // Default string.
-                return new InitStoryException(String.format(C.STORY_DL_FAILED, site.getName(), storyId));
-        }
     }
 
     /**
@@ -184,7 +120,7 @@ public abstract class Story {
      * @return Story site.
      */
     public String getHost() {
-        return site.getHost();
+        return site != null ? site.getHost() : null;
     }
 
     /**
@@ -254,11 +190,19 @@ public abstract class Story {
     }
 
     /**
-     * Get this story's chapter count based off of the number of chapter urls there are.
+     * Get the number of chapter urls for this story.
+     * @return Story chapter url count.
+     */
+    public int getChapterUrlCount() {
+        return chapterUrls.size();
+    }
+
+    /**
+     * Get this story's chapter count.
      * @return Story chapter count.
      */
     public int getChapterCount() {
-        return chapterUrls.size();
+        return chapters.size();
     }
 
     /**

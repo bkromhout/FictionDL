@@ -1,14 +1,16 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
-import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,12 +36,11 @@ public class FanFictionStory extends Story {
 
     /**
      * Create a new {@link FanFictionStory} based off of a url.
-     * @param ownerDl The parsing downloader which owns this story.
-     * @param url     url of the story this model represents.
+     * @param url url of the story this model represents.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    public FanFictionStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Sites.FFN());
+    public FanFictionStory(String url) throws InitStoryException {
+        super(url, Sites.FFN());
     }
 
     @Override
@@ -47,9 +48,10 @@ public class FanFictionStory extends Story {
         // Get story ID and use it to normalize the url, then download the url so that we can parse story info.
         storyId = parseStoryId(url, "/s/(\\d*)", 1);
         url = String.format(FFN_S_URL, storyId);
-        Document infoDoc = Util.downloadHtml(url);
+        Document infoDoc = Util.getHtml(url);
         // Make sure that we got a Document and that this is a valid story.
-        if (infoDoc == null || infoDoc.select("span.gui_warning").first() != null) throw initEx();
+        if (infoDoc == null || infoDoc.select("span.gui_warning").first() != null)
+            throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
 
         title = infoDoc.select("div#profile_top b").first().html().trim();
         author = infoDoc.select("div#profile_top a[href~=" + "/u/.*" + "]").first().html().trim();
@@ -97,8 +99,8 @@ public class FanFictionStory extends Story {
 
         // Get the dates.
         Elements dates = detailElem.select("span > span");
-        datePublished = Util.dateFromFfnTime(dates.last().attr("data-xutime"));
-        dateUpdated = dates.size() > 1 ? Util.dateFromFfnTime(dates.first().attr("data-xutime")) : datePublished;
+        datePublished = dateFromFfnTime(dates.last().attr("data-xutime"));
+        dateUpdated = dates.size() > 1 ? dateFromFfnTime(dates.first().attr("data-xutime")) : datePublished;
 
         status = findDetailsStringIdx(details, "Status: Complete") != -1 ? C.STAT_C : C.STAT_I;
 
@@ -135,5 +137,25 @@ public class FanFictionStory extends Story {
     private int findDetailsStringIdx(String[] details, String search) {
         for (int i = 0; i < details.length; i++) if (details[i].contains(search)) return i;
         return -1;
+    }
+
+
+    /**
+     * Takes a long time value that was parsed from FanFiction.net, multiplies it by 1000 to make it match the Java long
+     * time format, then returns a string with it printed in the format MMM dd, yyyy.
+     * @param ffnTime String long value from an FFN data-xutime attribute.
+     * @return Date string.
+     */
+    private String dateFromFfnTime(String ffnTime) {
+        // Add some zeros to make it like a Java long.
+        long longFfnTime = Long.parseLong(ffnTime);
+        longFfnTime *= 1000;
+        // Create a Date object.
+        Date date = new Date(longFfnTime);
+        // Create the formatter.
+        DateFormat df = DateFormat.getDateInstance();
+        df.setTimeZone(TimeZone.getTimeZone("US/Pacific"));
+        // Return string.
+        return df.format(date);
     }
 }

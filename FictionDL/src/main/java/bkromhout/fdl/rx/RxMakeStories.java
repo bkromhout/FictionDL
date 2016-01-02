@@ -1,10 +1,10 @@
 package bkromhout.fdl.rx;
 
 import bkromhout.fdl.Main;
-import bkromhout.fdl.util.Util;
-import bkromhout.fdl.downloaders.Downloader;
+import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.storys.Story;
-import org.apache.commons.lang3.reflect.ConstructorUtils;
+import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.Util;
 import rx.Observable;
 import rx.Subscriber;
 
@@ -15,16 +15,13 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class RxMakeStories implements Observable.Transformer<String, Story> {
     private final Class<? extends Story> storyClass;
-    private final Downloader downloader;
 
     /**
-     * Create instances of the given {@link Story} subclass that will be owned by the given {@link Downloader}.
+     * Create instances of the given {@link Story} subclass.
      * @param storyClass Concrete implementation of Story to make.
-     * @param downloader Downloader which will own the created stories.
      */
-    public RxMakeStories(Class<? extends Story> storyClass, Downloader downloader) {
+    public RxMakeStories(Class<? extends Story> storyClass) {
         this.storyClass = storyClass;
-        this.downloader = downloader;
     }
 
     @Override
@@ -50,14 +47,19 @@ public class RxMakeStories implements Observable.Transformer<String, Story> {
         public void call(Subscriber<? super Story> sub) {
             try {
                 // Doing a bit of reflection magic here to construct story classes ;)
-                // TODO see if we can do this using Guava so that we don't have to have both Guava and commons-lang3.
-                sub.onNext(ConstructorUtils.invokeConstructor(storyClass, downloader, url));
+                sub.onNext(storyClass.getConstructor(String.class).newInstance(url));
                 sub.onCompleted();
             } catch (InvocationTargetException e) {
-                // Now figure out what the heck to put in the log.
-                if (e.getCause() == null) e.printStackTrace();
-                else if (e.getCause().getMessage() == null) e.getCause().printStackTrace();
-                else Util.log(e.getCause().getMessage());
+                // Handle the exception.
+                if (e.getCause() == null || e.getCause().getMessage() == null)
+                    // Who knows what caused it, print the stacktrace.
+                    e.printStackTrace();
+                else if (e.getCause() instanceof InitStoryException)
+                    // If the cause is an InitStoryException, print its message.
+                    Util.log(e.getCause().getMessage());
+                else
+                    // Not an InitStoryException, but it has a message, so print it.
+                    Util.logf(C.UNEXP_STORY_ERR, url, e.getCause().getMessage());
                 // We just return null if a story fails.
                 sub.onNext(null);
                 sub.onCompleted();

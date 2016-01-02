@@ -1,9 +1,8 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
-import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -24,20 +23,19 @@ public class FictionHuntStory extends Story {
 
     /**
      * Create a new {@link FictionHuntStory} based off of a url.
-     * @param ownerDl The parsing downloader which owns this story.
-     * @param url     url of the story this model represents.
+     * @param url url of the story this model represents.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    public FictionHuntStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Sites.FH());
+    public FictionHuntStory(String url) throws InitStoryException {
+        super(url, Sites.FH());
     }
 
     @Override
     protected void populateInfo() throws InitStoryException {
         // Get story ID, then download the url so that we can parse story info.
         storyId = parseStoryId(url, "/read/(\\d*)", 1);
-        Document infoDoc = Util.downloadHtml(url);
-        if (infoDoc == null) throw initEx();
+        Document infoDoc = Util.getHtml(url);
+        if (infoDoc == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
 
         title = infoDoc.select("div.title").first().text();
 
@@ -74,7 +72,7 @@ public class FictionHuntStory extends Story {
         // FictionHunt has done a very handy thing with their urls, their story IDs correspond to the original FFN
         // story IDs, which makes generating an FFN link easy to do. First, create a FFN link and download the
         // resulting page.
-        Document ffnDoc = Util.downloadHtml(String.format(FanFictionStory.FFN_S_URL, storyId));
+        Document ffnDoc = Util.getHtml(String.format(FanFictionStory.FFN_S_URL, storyId));
         if (ffnDoc == null) {
             // It really doesn't matter if we can't get the page from FFN since we can still get it from FictionHunt.
             Util.log(C.FH_FFN_CHECK_FAILED);
@@ -97,7 +95,7 @@ public class FictionHuntStory extends Story {
         // Generate a FictionHunt search url using the title.
         String fhSearchUrl = String.format("http://fictionhunt.com/5/0/0/0/0/0/0/0/0/0/0/%s/1", title);
         // Download search page.
-        Document fhSearch = Util.downloadHtml(fhSearchUrl);
+        Document fhSearch = Util.getHtml(fhSearchUrl);
         if (fhSearch == null) return FH_NO_SUMMARY;
         // Get summary.
         Element summaryElement = fhSearch.select(

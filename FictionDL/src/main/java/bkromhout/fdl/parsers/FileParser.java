@@ -11,12 +11,12 @@ import java.io.IOException;
 /**
  * Base file parser.
  */
-public abstract class FileParser {
+abstract class FileParser {
     /**
      * Valid file types for parsing.
      */
-    public enum FileType {
-        URLS("URLs"), CONFIG("config");
+    enum FileType {
+        INPUT("input"), CONFIG("config");
 
         private final String ufName;
 
@@ -33,14 +33,14 @@ public abstract class FileParser {
     /**
      * What type of files this parser handles.
      */
-    protected FileType type;
+    final FileType type;
 
     /**
      * Create a new {@link FileParser}.
      * @param type Type of files this parser will handle.
      * @param file File to parse.
      */
-    protected FileParser(FileType type, File file) {
+    FileParser(FileType type, File file) {
         this.type = type;
         init();
         parse(file);

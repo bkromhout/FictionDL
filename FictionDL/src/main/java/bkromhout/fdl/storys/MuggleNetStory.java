@@ -1,9 +1,8 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
-import bkromhout.fdl.util.Sites;
 import bkromhout.fdl.util.Util;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -22,36 +21,31 @@ public class MuggleNetStory extends Story {
      */
     private static final String MN_S_URL = "http://fanfiction.mugglenet.com/viewstory.php?sid=%s%s";
     /**
-     * MuggleNet url fragment, adds a warning bypass for "6th-7th Year"-rated stories/chapters.
-     */
-    private static final String MN_PART_WARN_5 = "&warning=5";
-    /**
      * MuggleNet url fragment, adds a warning bypass for "Professors"-rated stories/chapters.
      */
     private static final String MN_PART_WARN_3 = "&warning=3";
     /**
-     * Error message displayed by MuggleNet when attempting to access a "Professors" rated story while not logged in.
+     * MuggleNet url fragment, adds a warning bypass for "6th-7th Year"-rated stories/chapters.
      */
-    static final String MN_REG_USERS_ONLY = "Registered Users Only";
-    /**
-     * Message displayed in place of a "6th-7th Years"-rated story/chapter if the warning integer isn't 3.
-     */
-    private static final String MN_NEEDS_WARN_5 = "This story may contain some sexuality, violence and or profanity " +
-            "not suitable for younger readers.";
+    private static final String MN_PART_WARN_5 = "&warning=5";
     /**
      * Message displayed in place of a Professors-rated story/chapter if logged in, but the warning integer isn't 3.
      */
     private static final String MN_NEEDS_WARN_3 = "This fic may contain language or imagery unsuitable for persons " +
             "under the age of 17. You must be logged in to read this fic.";
+    /**
+     * Message displayed in place of a "6th-7th Years"-rated story/chapter if the warning integer isn't 3.
+     */
+    private static final String MN_NEEDS_WARN_5 = "This story may contain some sexuality, violence and or profanity " +
+            "not suitable for younger readers.";
 
     /**
      * Create a new {@link MuggleNetStory} based off of a url.
-     * @param ownerDl The parsing downloader which owns this story.
-     * @param url     url of the story this model represents.
+     * @param url url of the story this model represents.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    public MuggleNetStory(ParsingDL ownerDl, String url) throws InitStoryException {
-        super(ownerDl, url, Sites.MN());
+    public MuggleNetStory(String url) throws InitStoryException {
+        super(url, Sites.MN());
     }
 
     @Override
@@ -61,35 +55,50 @@ public class MuggleNetStory extends Story {
         // Get story ID and use it to normalize the url, then download the url so that we can parse story info.
         storyId = parseStoryId(url, "sid=(\\d*)", 1);
         url = String.format(MN_S_URL, storyId, warnBypass);
-        Document infoDoc = Util.downloadHtml(url);
-        if (infoDoc == null) throw initEx();
+        Document infoDoc = Util.getHtml(url);
+        if (infoDoc == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
 
-        // Figure out if we need to change the warning bypass.
-        Element errorText = infoDoc.select("div.errorText").first();
-        if (errorText != null && errorText.ownText().trim().equals(MN_NEEDS_WARN_3)) {
-            // We're logged in, but need to change our warning bypass to 3 for this story and re-download the info page.
-            warnBypass = MN_PART_WARN_3;
-            url = String.format(MN_S_URL, storyId, warnBypass);
-            infoDoc = Util.downloadHtml(url);
-            if (infoDoc == null) throw initEx();
-        } else if (errorText != null && errorText.ownText().trim().equals(MN_NEEDS_WARN_5)) {
-            // We're logged in, but need to change our warning bypass to 5 for this story and re-download the info page.
-            warnBypass = MN_PART_WARN_5;
-            url = String.format(MN_S_URL, storyId, warnBypass);
-            infoDoc = Util.downloadHtml(url);
-            if (infoDoc == null) throw initEx();
-        } else if (errorText != null) throw initEx(errorText.ownText().trim()); // Just throw some exception
+        // Figure out if we need to change the warning bypass or possible just give up.
+        Element errorElem = infoDoc.select("div.errorText").first();
+        if (errorElem != null) {
+            String errorText = errorElem.ownText().trim();
+            switch (errorText) {
+                case "Access denied. This story has not been validated by the adminstrators of this site.":
+                    // Story is unavailable. ("adminstrators" is a typo on the actual site)
+                    throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
+                case MN_NEEDS_WARN_3:
+                    // We're logged in, but need to change our warning bypass to 3 for this story and retry.
+                    warnBypass = MN_PART_WARN_3;
+                    url = String.format(MN_S_URL, storyId, warnBypass);
+                    infoDoc = Util.getHtml(url);
+                    if (infoDoc == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
+                    break;
+                case MN_NEEDS_WARN_5:
+                    // We're logged in, but need to change our warning bypass to 5 for this story and retry.
+                    warnBypass = MN_PART_WARN_5;
+                    url = String.format(MN_S_URL, storyId, warnBypass);
+                    infoDoc = Util.getHtml(url);
+                    if (infoDoc == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
+                    break;
+                case "Registered Users Only":
+                    // We're not logged in in the first place, so we cannot download this story.
+                    throw new InitStoryException(C.MUST_LOGIN, site.getName(), storyId);
+                default:
+                    // Some site error we haven't accounted for, most likely.
+                    throw new InitStoryException(C.UNEXP_SITE_ERR, site.getName(), errorText);
+            }
+        }
 
         // Get the element that has the title and author of the story in it, then parse the title and author from it.
         Elements taElem = infoDoc.select("div#pagetitle a");
-        if (taElem == null) throw initEx();
+        if (taElem == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
         title = taElem.first().html().trim();
         author = taElem.last().html().trim();
 
         // Get the element that has the other details in it, and a list of the detail label elements to help parse
         // the details.
         Element details = infoDoc.select("div.content").first();
-        if (details == null) throw initEx();
+        if (details == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
         Elements labels = details.select("span.label");
 
         summary = Util.cleanHtmlString(makeDetailDivForLabel(details, labels, 0).html().trim());

@@ -1,6 +1,5 @@
-package bkromhout.fdl.util;
+package bkromhout.fdl.site;
 
-import bkromhout.fdl.Site;
 import bkromhout.fdl.downloaders.*;
 import bkromhout.fdl.storys.*;
 
@@ -9,8 +8,12 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Helper class which lets us create all {@link Site} classes in one go, allows explicit access to them, and provides
- * all of them as an immutable list so that they can be iterated over.
+ * {@link Site} utility class.
+ * <p>
+ * Provides access to the various supported sites' {@link Site} instances, as well as providing the ability to iterate
+ * over all of them at once.
+ * <p>
+ * All supported sites' {@link Site} instances should be initialized in this class' {@link #init()} function.
  */
 public class Sites {
     /**

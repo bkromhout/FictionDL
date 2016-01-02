@@ -1,6 +1,7 @@
 package bkromhout.fdl.ui;
 
 import bkromhout.fdl.util.C;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -14,6 +15,7 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller class for the GUI.
@@ -153,7 +155,7 @@ public class Controller {
      * Set the {@link Gui} which owns this controller.
      * @param gui Gui.
      */
-    protected void setGui(Gui gui) {
+    void setGui(Gui gui) {
         this.gui = gui;
         initGui();
     }
@@ -178,9 +180,30 @@ public class Controller {
     }
 
     /**
+     * Set the text fields based on the given parameters. Lets us make use of args passed if we start the GUI from the
+     * CLI.
+     * @param params Parameters.
+     */
+    void setFieldsFromParams(Application.Parameters params) {
+        Map<String, String> namedParams = params.getNamed();
+
+        // Input file path.
+        String param = namedParams.get(C.ARG_IN_PATH);
+        if (param != null && !param.isEmpty()) tfInFile.setText(param);
+
+        // Output dir path.
+        param = namedParams.get(C.ARG_OUT_PATH);
+        if (param != null && !param.isEmpty()) tfOutDir.setText(param);
+
+        // Config file path.
+        param = namedParams.get(C.ARG_CFG_PATH);
+        if (param != null && !param.isEmpty()) tfCfgFile.setText(param);
+    }
+
+    /**
      * Save the contents of text fields.
      */
-    protected void saveFields() {
+    void saveFields() {
         gui.putPref(PREF_IN_FILE_PATH, tfInFile.getText());
         gui.putPref(PREF_OUT_DIR_PATH, tfOutDir.getText());
         gui.putPref(PREF_CFG_FILE_PATH, tfCfgFile.getText());
@@ -198,7 +221,7 @@ public class Controller {
      * Set certain controls as disabled or enabled.
      * @param areEnabled True if controls should be enabled, otherwise false.
      */
-    protected void setControlsEnabled(boolean areEnabled) {
+    void setControlsEnabled(boolean areEnabled) {
         tfInFile.setEditable(areEnabled);
         tfOutDir.setEditable(areEnabled);
         tfCfgFile.setEditable(areEnabled);

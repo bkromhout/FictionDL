@@ -8,7 +8,7 @@ public class RecalcUnitWorthEvent {
     /**
      * Divisor value.
      */
-    private long divisorVal;
+    private final long divisorVal;
 
     /**
      * Create a new {@link RecalcUnitWorthEvent}.
