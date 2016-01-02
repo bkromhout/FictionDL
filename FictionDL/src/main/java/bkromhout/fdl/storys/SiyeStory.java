@@ -35,11 +35,11 @@ public class SiyeStory extends Story {
         // Get story ID and use it to normalize the url, then download the url so that we can parse story info.
         storyId = parseStoryId(url, "sid=(\\d*)", 1);
         Document infoDoc = Util.getHtml(String.format(SIYE_C_URL, storyId, 1));
-        if (infoDoc == null) throw initEx();
+        if (infoDoc == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
 
         // Get story info element from story page to get some of the details.
         Element storyInfoElem = infoDoc.select("td[align=\"left\"][valign=\"top\"]").last();
-        if (storyInfoElem == null) throw initEx();
+        if (storyInfoElem == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
 
         // Get summary.
         int summaryStartIdx = storyInfoElem.select("b:contains(Summary:)").first().siblingIndex() + 1;
@@ -54,7 +54,7 @@ public class SiyeStory extends Story {
         // the story entry on the author's page after downloading it.
         String authorIdLink = findAuthorIdLink(infoDoc);
         Document doc = Util.getHtml(String.format(SIYE_A_URL, authorIdLink));
-        if (doc == null) throw initEx();
+        if (doc == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
         // Get the story entry on the author's page.
         Element storyRow = doc.select(String.format("td tr td:has(a[href=\"viewstory.php?sid=%s\"])", storyId)).last();
 
@@ -100,7 +100,7 @@ public class SiyeStory extends Story {
         Element aIdElement = chDoc.select("h3 a").first();
         // Throw an exception if we couldn't find the link to the author's page, as it likely means that the url
         // format was valid but that it doesn't point to a real story/chapter on SIYE.
-        if (aIdElement == null) throw initEx();
+        if (aIdElement == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
         // Now return the author page url.
         return aIdElement.attr("href");
     }

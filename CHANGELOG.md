@@ -6,7 +6,9 @@
 * **Fixed:** Made ampersand escaping/unescaping/*re-escaping*/😑 smarter
 * **Fixed:** Some likely leaky code revolving around OkHttp Response objects
 * **Fixed:** When starting the GUI from the CLI, other arguments won't be ignored anymore
+* **Fixed:** Fail nicely when we try to download stories from The Broom Cupboard but aren't logged in
 * Consolidated various HTML cleaning functions, as they were becoming unwieldy in number
+* Cleaned up Story exception throwing a bit to be more explicit
 * Changes to `Chapter` creation, must be done using the newly created `ChapterSource` class, which enables cleaner, more standard RxJava code, and therefore better concurrency-related improvements
 * CLI logging with verbose mode on (`-v`) is now makes it more obvious what things are what (warnings, errors, etc.)
 * Prevented a potential bug for Windows users (since I use OS X) when it comes to logging
@@ -50,15 +52,15 @@
 
 ## Release 1.1.0
 * **New:** Save *all* stories as ePubs instead of folders of HTML files
-    * Currently will populate the title, author, and description metadata fields for all ePub files.
+* Currently will populate the title, author, and description metadata fields for all ePub files.
 * **New:** Ability to specify an output directory using the `-o` option (consequentially, the input file path now must be prefixed by `-i`)
 * **New:** Grab even more story details (not all sites/stories support/have all of them):
-    * Characters
-    * Dates published/last updated
-    * Genres
-    * Status
-    * Story "type" (i.e., FFN's fandoms/crossovers, SIYE's categories)
-    * Warnings
+* Characters
+* Dates published/last updated
+* Genres
+* Status
+* Story "type" (i.e., FFN's fandoms/crossovers, SIYE's categories)
+* Warnings
 * **Changed:** We now parse FanFiction.net stories ourselves instead of downloading ePubs through p0ody-files (because its ePubs didn't include as many details in their title pages as I wanted)
 * **Fixed:** Lots of different bugs in SIYE parsing (SIYE's HTML structure is very poor)
 * Made HTML sanitizing functions more robust to decrease the possibility of generating an invalid ePub
@@ -72,9 +74,9 @@
 * Supports scraping and saving HTML pages from [FictionHunt](http://fictionhunt.com) and [SIYE](http://siye.co.uk) to HTML files (along with a generated title page)
 * Supports saving [FanFiction.net](https://www.fanfiction.net) stories as ePubs using [p0ody-files](http://p0ody-files.com/ff_to_ebook/)
 * Scraped story details supported:
-    * Title
-    * Author
-    * Summary
-    * Rating
-    * Word Count
-    * Chapter Count
+* Title
+* Author
+* Summary
+* Rating
+* Word Count
+* Chapter Count

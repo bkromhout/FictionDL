@@ -8,7 +8,7 @@ import java.nio.file.Path;
  * Thrown by {@link bkromhout.fdl.storys.LocalStory LocalStory} if there is some issue with the JSON parsed from a
  * storyinfo.json file.
  */
-public class StoryinfoJsonException extends InitStoryException {
+public class StoryinfoJsonException extends Exception {
 
     /**
      * Create a new {@link StoryinfoJsonException}, and include a previous throwable as the {@code cause}.

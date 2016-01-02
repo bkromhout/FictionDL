@@ -6,19 +6,21 @@ package bkromhout.fdl.ex;
 public class InitStoryException extends Exception {
 
     /**
-     * Create a new {@link InitStoryException} with some {@code message}.
-     * @param message Message.
+     * Create a new {@link InitStoryException} using a format string and a prior cause.
+     * @param cause      Previous Cause.
+     * @param format     Format string to use.
+     * @param formatArgs Objects to use in format string.
      */
-    public InitStoryException(String message) {
-        this(message, null);
+    public InitStoryException(Throwable cause, String format, Object... formatArgs) {
+        super(String.format(format, formatArgs), cause);
     }
 
     /**
-     * Create a new {@link InitStoryException} with some {@code message} and {@code cause}.
-     * @param message Message.
-     * @param cause   Cause.
+     * Create a new {@link InitStoryException} using a format string.
+     * @param format     Format string to use.
+     * @param formatArgs Objects to use in format string.
      */
-    public InitStoryException(String message, Throwable cause) {
-        super(message, cause);
+    public InitStoryException(String format, Object... formatArgs) {
+        this(null, format, formatArgs);
     }
 }

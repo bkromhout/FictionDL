@@ -60,7 +60,7 @@ public class MuggleNetStory extends Story {
         storyId = parseStoryId(url, "sid=(\\d*)", 1);
         url = String.format(MN_S_URL, storyId, warnBypass);
         Document infoDoc = Util.getHtml(url);
-        if (infoDoc == null) throw initEx();
+        if (infoDoc == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
 
         // Figure out if we need to change the warning bypass.
         Element errorText = infoDoc.select("div.errorText").first();
@@ -69,25 +69,31 @@ public class MuggleNetStory extends Story {
             warnBypass = MN_PART_WARN_3;
             url = String.format(MN_S_URL, storyId, warnBypass);
             infoDoc = Util.getHtml(url);
-            if (infoDoc == null) throw initEx();
+            if (infoDoc == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
         } else if (errorText != null && errorText.ownText().trim().equals(MN_NEEDS_WARN_5)) {
             // We're logged in, but need to change our warning bypass to 5 for this story and re-download the info page.
             warnBypass = MN_PART_WARN_5;
             url = String.format(MN_S_URL, storyId, warnBypass);
             infoDoc = Util.getHtml(url);
-            if (infoDoc == null) throw initEx();
-        } else if (errorText != null) throw initEx(errorText.ownText().trim()); // Just throw some exception
+            if (infoDoc == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
+        } else if (errorText != null && errorText.ownText().trim().equals(MN_REG_USERS_ONLY)) {
+            // We're not logged in in the first place, so we cannot download this story.
+            throw new InitStoryException(C.MUST_LOGIN, site.getName(), storyId);
+        } else if (errorText != null) {
+            // Some site error we haven't accounted for, most likely.
+            throw new InitStoryException(C.UNEXP_SITE_ERR, site.getName(), errorText.ownText().trim());
+        }
 
         // Get the element that has the title and author of the story in it, then parse the title and author from it.
         Elements taElem = infoDoc.select("div#pagetitle a");
-        if (taElem == null) throw initEx();
+        if (taElem == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
         title = taElem.first().html().trim();
         author = taElem.last().html().trim();
 
         // Get the element that has the other details in it, and a list of the detail label elements to help parse
         // the details.
         Element details = infoDoc.select("div.content").first();
-        if (details == null) throw initEx();
+        if (details == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
         Elements labels = details.select("span.label");
 
         summary = Util.cleanHtmlString(makeDetailDivForLabel(details, labels, 0).html().trim());

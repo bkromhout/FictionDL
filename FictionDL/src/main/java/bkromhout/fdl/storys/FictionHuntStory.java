@@ -35,7 +35,7 @@ public class FictionHuntStory extends Story {
         // Get story ID, then download the url so that we can parse story info.
         storyId = parseStoryId(url, "/read/(\\d*)", 1);
         Document infoDoc = Util.getHtml(url);
-        if (infoDoc == null) throw initEx();
+        if (infoDoc == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
 
         title = infoDoc.select("div.title").first().text();
 

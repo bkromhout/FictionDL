@@ -41,7 +41,13 @@ public class TbcStory extends Story {
         // Since TBC URLs don't have true story IDs, we have to figure out chapter URLs ourselves. We'll do this
         // first so that we have a first (or only) chapter which we can scrape details from.
         Document infoDoc = Util.getHtml(url);
-        if (infoDoc == null || infoDoc.select("div#nav25").first() == null) throw initEx(NO_ID_DL_FAIL, url);
+        if (infoDoc != null && infoDoc.select("a[href=\"login.php\"]:contains(please login.)").first() != null)
+            // Check to see if we haven't logged in yet (sadly, even if the url points to an invalid story, we'll hit
+            // this before being able to figure that out).
+            throw new InitStoryException(C.MUST_LOGIN, site.getName(), url);
+        else if (infoDoc == null || infoDoc.select("div#nav25").first() == null)
+            // Or if we just failed to get the page altogether.
+            throw new InitStoryException(C.NO_ID_STORY_DL_FAILED, site.getName(), url);
 
         // Now check and see if we have a select box.
         Element selectElem = infoDoc.select("select").first();
@@ -54,7 +60,7 @@ public class TbcStory extends Story {
             if (!url.equals(chapterUrls.get(0))) {
                 url = chapterUrls.get(0);
                 infoDoc = Util.getHtml(url);
-                if (infoDoc == null) throw initEx();
+                if (infoDoc == null) throw new InitStoryException(C.NO_ID_STORY_DL_FAILED, site.getName(), url);
             }
         } else {
             // Otherwise, this is a oneshot.
@@ -71,7 +77,7 @@ public class TbcStory extends Story {
 
         // Download author page, we'll need it to get summary and total word count.
         Document authorPage = Util.getHtml(TBC_BASE_URL + detailDiv.select("a").first().attr("href"));
-        if (authorPage == null) throw initEx(NO_ID_DL_FAIL, url);
+        if (authorPage == null) throw new InitStoryException(C.NO_ID_STORY_DL_FAILED, site.getName(), url);
 
         // Create a relative story link in order to find only summary/word count elements that occur after an <a>
         // element that has this relative story link on the author page.
@@ -99,7 +105,7 @@ public class TbcStory extends Story {
         datePublished = detailDiv.text().replace("Updated:", "").trim();
 
         dateUpdated = chapterUrls.size() > 1 ? getDateUpdatedFromLastChap() : datePublished;
-        if (dateUpdated == null) throw initEx(NO_ID_DL_FAIL, url);
+        if (dateUpdated == null) throw new InitStoryException(C.NO_ID_STORY_DL_FAILED, site.getName(), url);
     }
 
     /**

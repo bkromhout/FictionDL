@@ -212,7 +212,7 @@ public class LocalStory extends Story {
      */
     public void setNumChapFiles(int numChapFiles) throws InitStoryException {
         if (numChapFilesAlreadySet) throw new IllegalStateException();
-        if (numChapFiles < 1) throw new InitStoryException(String.format(C.NO_CHAP_FILES, title));
+        if (numChapFiles < 1) throw new InitStoryException(C.NO_CHAP_FILES, title);
         this.numChapFiles = numChapFiles;
         this.numChapFilesAlreadySet = true;
     }

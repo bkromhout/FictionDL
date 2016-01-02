@@ -47,6 +47,8 @@ public class InputFileParser extends FileParser {
 
     @Override
     protected void processLine(String line) throws IllegalStateException {
+        // Ignore a line if it starts with a #.
+        if (line.startsWith("#")) return;
         // Check if this line specifies a local story.
         Matcher lsMatcher = localStoryRegex.matcher(line);
         if (lsMatcher.matches()) {

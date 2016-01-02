@@ -71,7 +71,7 @@ public class RxOkHttpCall implements Observable.Transformer<Request, Response> {
                     if (!resp.isSuccessful()) {
                         resp.body().close(); // Make sure the response body is closed so that it doesn't leak.
                         sub.onError(new ResponseException(
-                                String.format(C.HTML_UNEXP_RESP, resp.request().urlString()), resp));
+                                String.format(C.UNEXP_HTML_RESP, resp.request().urlString()), resp));
                     }
                     // If we were successful, notify the subscriber and then indicate we're complete.
                     sub.onNext(resp);

@@ -1,6 +1,7 @@
 package bkromhout.fdl.util;
 
 import bkromhout.fdl.Main;
+import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.ex.StoryinfoJsonException;
 import bkromhout.fdl.ui.Controller;
 import com.google.gson.JsonElement;

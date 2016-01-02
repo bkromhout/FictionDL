@@ -50,7 +50,8 @@ public class FanFictionStory extends Story {
         url = String.format(FFN_S_URL, storyId);
         Document infoDoc = Util.getHtml(url);
         // Make sure that we got a Document and that this is a valid story.
-        if (infoDoc == null || infoDoc.select("span.gui_warning").first() != null) throw initEx();
+        if (infoDoc == null || infoDoc.select("span.gui_warning").first() != null)
+            throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
 
         title = infoDoc.select("div#profile_top b").first().html().trim();
         author = infoDoc.select("div#profile_top a[href~=" + "/u/.*" + "]").first().html().trim();

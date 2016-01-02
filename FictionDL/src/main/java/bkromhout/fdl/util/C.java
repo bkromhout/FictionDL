@@ -109,6 +109,9 @@ public abstract class C {
 
     public static final String FINISHED_WITH_LOCAL_STORIES = "Finished with local stories." + N + LOG_BLUE;
 
+    // Ao3-specific.
+    public static final String AO3_PRE_DL = "Ao3 stories occasionally fail to download, just try them again.";
+
     // FictionHunt-specific.
     public static final String FH_ON_FFN =
             "\"%s\" is still available on FanFiction.net; will download from there." + NN;
@@ -119,9 +122,6 @@ public abstract class C {
     // SIYE-specific.
     public static final String SIYE_PRE_DL = "SIYE's process is *very slow* due to their horrid HTML structure, " +
             "please be patient ;)";
-
-    // Ao3-specific.
-    public static final String AO3_PRE_DL = "Ao3 stories occasionally fail to download, just try them again.";
 
     /*
     Warning and Error log strings. (Site-specific warnings and errors may be above)
@@ -134,7 +134,7 @@ public abstract class C {
     // General.
     public static final String INVALID_PATH = "Invalid path: \"%s\"." + N + LOG_ERR;
 
-    public static final String INVALID_URL = "Invalid URL: \"%s\"." + N + LOG_ERR;
+    public static final String INVALID_URL = "Invalid URL: \"%s\"." + LOG_ERR;
 
     // Parsing.
     public static final String PROCESS_LINE_FAILED = "Couldn't process this line from %s file: \"%s\"." + N + LOG_WARN;
@@ -147,8 +147,6 @@ public abstract class C {
     public static final String SAVE_FILE_FAILED = "Failed to save file: \"%s\"." + N + LOG_ERR;
 
     // Auth.
-    public static final String MUST_LOGIN = "You must provide %s login info to download \"%s\"." + LOG_WARN;
-
     public static final String LOGIN_FAILED = N + "Couldn't log in to %s. Check your login info." + N + LOG_ERR;
 
     // Site Story Process.
@@ -156,9 +154,16 @@ public abstract class C {
 
     public static final String NO_ID_STORY_DL_FAILED = "Couldn't get %s story from \"%s\"." + LOG_ERR_SKIP;
 
-    public static final String PARTIAL_DL_FAIL = "Skipping this story; some chapters failed to download!" + N + LOG_ERR;
-
     public static final String NO_EPUB_ON_SITE = "Couldn't find ePUB on %s for story \"%s\"." + LOG_ERR_SKIP;
+
+    public static final String MUST_LOGIN = "You must provide %s login info to download \"%s\"." + LOG_WARN;
+
+    public static final String UNEXP_SITE_ERR = "Unexpected %s site error: \"%s\", skipping this story." + LOG_ERR;
+
+    public static final String UNEXP_STORY_ERR = "Unexpected exception while trying to make a story model for \"%s\"." +
+            " Exception message:" + N + "%s" + LOG_ERR;
+
+    public static final String PARTIAL_DL_FAIL = "Skipping this story, some chapters failed to download!" + N + LOG_ERR;
 
     // Local Story Process.
     private static final String LS_PRE_DIR = "The local story in folder \"%s\" "; // Common local story error prefix.
@@ -178,13 +183,13 @@ public abstract class C {
     public static final String JSON_BAD_ELEM_TITLE = LS_PRE_TITLE + "has a malformed \"%s\" element, skipping the " +
             "element." + N + LOG_WARN;
 
-    public static final String NO_CHAP_FILES = LS_PRE_TITLE + "has no chapter files." + LOG_ERR_SKIPN;
+    public static final String NO_CHAP_FILES = LS_PRE_TITLE + "has no chapter files." + LOG_ERR_SKIP;
 
     public static final String MISSING_CHAP_FILE = LS_PRE_TITLE + "is missing \"%d.html\"." + N + LOG_ERR;
 
     public static final String MALFORMED_CHAP_FILE = LS_PRE_TITLE + "has a malformed \"%d.html\" file." + N + LOG_ERR;
 
-    public static final String PARTIAL_READ_FAIL = "Skipping this story; some chapter files couldn't be read." + N +
+    public static final String PARTIAL_READ_FAIL = "Skipping this story, some chapter files couldn't be read." +
             LOG_ERR;
 
     // EPub Creation Process.
@@ -198,7 +203,7 @@ public abstract class C {
 
     public static final String NO_INPUT_PATH = "You must supply an input file path!";
 
-    public static final String HTML_UNEXP_RESP = "Unexpected result when trying to download HTML from \"%s\"." + N;
+    public static final String UNEXP_HTML_RESP = "Unexpected result when trying to download HTML from \"%s\"." + N;
 
     public static final String CHAP_NUM_NOT_ASSIGNED = "Chapter number hasn't been assigned yet!";
 
