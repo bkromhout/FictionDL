@@ -25,7 +25,4 @@ public final class RequestException extends RuntimeException {
         return (IOException) super.getCause();
     }
 
-    public Request getRequest() {
-        return request;
-    }
 }

@@ -25,7 +25,7 @@ public class FictionDL {
      * If running from the {@link bkromhout.fdl.ui.Gui Gui}, a reference to the {@link FictionDLTask} hosting us. Null
      * if running from the CLI.
      */
-    private FictionDLTask task;
+    private final FictionDLTask task;
     /**
      * Represents the input (link) file which has a list of story urls
      */
@@ -114,7 +114,7 @@ public class FictionDL {
         ProgressHelper progressHelper = new ProgressHelper(totalWork);
 
         /* Download stories from all sites. */
-        for (Site site : Sites.all()) site.process(this, cfg);
+        for (Site site : Sites.all()) site.process(cfg);
 
         /* Create any local stories that we parsed from the input file. */
         localStoryProcessor.process();
@@ -143,7 +143,7 @@ public class FictionDL {
         /**
          * Arguments to pass to {@link FictionDL}.
          */
-        private HashMap<String, String> args;
+        private final HashMap<String, String> args;
 
         /**
          * Create a new {@link FictionDLTask}.

@@ -32,8 +32,8 @@ public abstract class Util {
      */
     public static void log(String str) {
         if (str == null) return;
-        if (Main.isGui) logGuiString(str + "%n");
-        else logCliString(str + "%n");
+        if (Main.isGui) logGuiString(str + C.N);
+        else logCliString(str + C.N);
     }
 
     /**
@@ -73,15 +73,15 @@ public abstract class Util {
      */
     private static void logCliString(String s) {
         // Print any leading new lines.
-        while (s.startsWith("%n") || s.startsWith(String.format("%n"))) {
+        while (s.startsWith(C.N)) {
             System.out.println();
             // Yes, IntelliJ is marking this as an error. It isn't, and it still compiles.
-            s = s.replaceFirst("\\R|\\Q%n\\E", "");
+            s = s.replaceFirst("\\R", "");
         }
         // Potentially prepend line type, strip tags, then print.
         s = prependLogLineType(s);
         s = stripLogStyleTags(s);
-        System.out.printf(s);
+        System.out.print(s);
     }
 
     /**

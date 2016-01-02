@@ -55,7 +55,7 @@ public class Gui extends Application {
      * Create a {@link FictionDL} object with the given strings.
      * @param args Arguments, mapped to keys.
      */
-    @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
+    @SuppressWarnings({"ThrowableResultOfMethodCallIgnored", "unchecked"})
     void runFictionDl(HashMap<String, String> args) {
         fictionDLTask = new FictionDL.FictionDLTask(args);
         // Set the task's handlers.

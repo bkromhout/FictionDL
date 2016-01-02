@@ -1,6 +1,5 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.rx.RxMakeStories;
 import bkromhout.fdl.site.Site;
 import bkromhout.fdl.storys.Story;
@@ -27,21 +26,17 @@ import java.util.HashSet;
  */
 public abstract class Downloader {
     /**
-     * The FictionDL instance which owns this Downloader.
-     */
-    protected FictionDL fictionDL;
-    /**
      * This is the specific {@link Story} subclass whose constructor will be called which creating stories.
      */
-    private Class<? extends Story> storyClass;
+    private final Class<? extends Story> storyClass;
     /**
      * {@link Site} that this downloader services.
      */
-    protected Site site;
+    private final Site site;
     /**
      * Story urls.
      */
-    private HashSet<String> storyUrls;
+    private final HashSet<String> storyUrls;
     /**
      * Any extra messages to print prior to starting the download process. Can be set by a subclass at some point after
      * initialization.
@@ -50,11 +45,9 @@ public abstract class Downloader {
 
     /**
      * Create a new {@link Downloader}.
-     * @param fictionDL FictionDL object which owns this downloader.
-     * @param site      Site that this downloader services.
+     * @param site Site that this downloader services.
      */
-    protected Downloader(FictionDL fictionDL, Site site) {
-        this.fictionDL = fictionDL;
+    Downloader(Site site) {
         this.site = site;
         this.storyClass = site.getStoryClass();
         this.storyUrls = site.getUrls();
@@ -73,7 +66,7 @@ public abstract class Downloader {
         ArrayList<Story> stories = (ArrayList<Story>) Observable
                 .from(storyUrls)
                 .subscribeOn(Schedulers.computation())
-                .compose(new RxMakeStories(storyClass, this))
+                .compose(new RxMakeStories(storyClass))
                 .doOnNext(story -> {
                     // If a story failed, we just add one completed work unit.
                     if (story == null) ProgressHelper.storyFailed(1L);
@@ -143,7 +136,7 @@ public abstract class Downloader {
      * @param p Password.
      * @return RequestBody with form data, or null.
      */
-    protected RequestBody getSiteAuthForm(String u, String p) {
+    RequestBody getSiteAuthForm(String u, String p) {
         return null;
     }
 
@@ -151,7 +144,7 @@ public abstract class Downloader {
      * Individual site downloaders should override this to supply a login url.
      * @return Login url, or null.
      */
-    protected String getSiteLoginUrl() {
+    String getSiteLoginUrl() {
         return null;
     }
 }

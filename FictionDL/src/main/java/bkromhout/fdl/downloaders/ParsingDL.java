@@ -22,22 +22,21 @@ import java.util.ArrayList;
  * Base class for downloaders which get stories by scraping their site HTML, and then generating story ePUB files by
  * parsing and cleaning the scraped HTML data.
  */
-public abstract class ParsingDL extends Downloader {
+abstract class ParsingDL extends Downloader {
     /**
      * CSS selector string to extract chapter content from {@link Chapter#rawHtml}.
      */
-    String chapTextSelector;
+    final String chapTextSelector;
 
     /**
      * Create a new {@link ParsingDL}.
-     * @param fictionDL        FictionDL object which owns this downloader.
      * @param site             Site that this downloader services.
      * @param chapTextSelector CSS selector used to extract chapter content from {@link Chapter#rawHtml}. (If all of the
      *                         chapter's text cannot be extracted with one CSS selector, the subclass should pass null
      *                         for this and override {@link #extractChapText(Chapter)}.)
      */
-    protected ParsingDL(FictionDL fictionDL, Site site, String chapTextSelector) {
-        super(fictionDL, site);
+    ParsingDL(Site site, String chapTextSelector) {
+        super(site);
         this.chapTextSelector = chapTextSelector;
     }
 
@@ -76,7 +75,7 @@ public abstract class ParsingDL extends Downloader {
             // Save the story as an ePUB file.
             Util.logf(C.SAVING_STORY);
             new EpubCreator(story).makeEpub(FictionDL.getOutPath());
-            Util.log(C.DONE + "%n");
+            Util.log(C.DONE + C.N);
         }
     }
 
@@ -118,7 +117,7 @@ public abstract class ParsingDL extends Downloader {
      * @param chapter Chapter object.
      * @see Chapter
      */
-    protected void generateChapTitle(Chapter chapter) {
+    void generateChapTitle(Chapter chapter) {
         // Make sure the chapter was assigned.
         if (chapter.number == -1) throw new IllegalStateException(C.CHAP_NUM_NOT_ASSIGNED);
         // Create a chapter title using the chapter number.
@@ -137,7 +136,7 @@ public abstract class ParsingDL extends Downloader {
      * @param chapter Chapter object.
      * @see Chapter
      */
-    protected void extractChapText(Chapter chapter) {
+    void extractChapText(Chapter chapter) {
         // Get the chapter's text, keeping all HTML formatting intact.
         String chapterText = chapter.rawHtml.select(chapTextSelector).first().html();
         // Put the chapter's text into a chapter HTML template.
@@ -152,7 +151,7 @@ public abstract class ParsingDL extends Downloader {
      * @param chapter Chapter object.
      * @see Chapter
      */
-    protected void sanitizeChap(Chapter chapter) {
+    void sanitizeChap(Chapter chapter) {
         // Does nothing by default.
     }
 }

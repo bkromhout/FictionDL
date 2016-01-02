@@ -17,15 +17,14 @@ import java.nio.file.StandardCopyOption;
 /**
  * Base class for downloaders which get stories by downloading ePUBs for them.
  */
-public abstract class EpubDL extends Downloader {
+abstract class EpubDL extends Downloader {
 
     /**
      * Create a new {@link EpubDL}.
-     * @param fictionDL FictionDL object which owns this downloader.
-     * @param site      Site that this downloader services.
+     * @param site Site that this downloader services.
      */
-    EpubDL(FictionDL fictionDL, Site site) {
-        super(fictionDL, site);
+    EpubDL(Site site) {
+        super(site);
     }
 
     /**
@@ -43,7 +42,7 @@ public abstract class EpubDL extends Downloader {
         try (final InputStream in = dlUrl.toURL().openStream()) {
             // Download the ePUB file.
             Files.copy(in, file, StandardCopyOption.REPLACE_EXISTING);
-            Util.log(C.DONE + "%n");
+            Util.log(C.DONE + C.N);
         } catch (IOException e) {
             Util.logf(C.SAVE_FILE_FAILED, file.toAbsolutePath().toString());
         }

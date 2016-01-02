@@ -5,10 +5,12 @@
 * **New:** Include a link to the story on the generated title page
 * **Fixed:** Made ampersand escaping/unescaping/*re-escaping*/😑 smarter
 * **Fixed:** Some likely leaky code revolving around OkHttp Response objects
+* **Fixed:** When starting the GUI from the CLI, other arguments won't be ignored anymore
 * Consolidated various HTML cleaning functions, as they were becoming unwieldy in number
 * Changes to `Chapter` creation, must be done using the newly created `ChapterSource` class, which enables cleaner, more standard RxJava code, and therefore better concurrency-related improvements
 * CLI logging with verbose mode on (`-v`) is now makes it more obvious what things are what (warnings, errors, etc.)
 * Prevented a potential bug for Windows users (since I use OS X) when it comes to logging
+* General cleanup and polishing
 
 ## Release 3.1.1
 * First public release!

@@ -26,42 +26,42 @@ public abstract class Story {
      */
     static final String NO_ID_DL_FAIL = "NO_ID_DL_FAIL";
 
-    // Story url.
-    protected String url;
     // Site story is from (will be used as "Publisher" metadata).
-    protected Site site;
+    final Site site;
+    // Story url.
+    String url;
     // Story ID.
-    protected String storyId;
+    String storyId;
     // Story title.
-    protected String title;
+    String title;
     // Story author.
-    protected String author;
+    String author;
     // Story summary.
-    protected String summary;
+    String summary;
     // Story series.
-    protected String series;
+    String series;
     // Story type.
-    protected String ficType;
+    String ficType;
     // Story warnings.
-    protected String warnings;
+    String warnings;
     // Story rating.
-    protected String rating;
+    String rating;
     // Story genres (may be "None/Gen").
-    protected String genres;
+    String genres;
     // Story characters (and perhaps pairings, if they can be parsed.)
-    protected String characters;
+    String characters;
     // Story word count.
-    protected int wordCount;
+    int wordCount;
     // Date story was published.
-    protected String datePublished;
+    String datePublished;
     // Date story was last updated (may be the same as the publish date).
-    protected String dateUpdated;
+    String dateUpdated;
     // Story status ("Complete", "Incomplete", "Abandoned", etc.).
-    protected String status;
+    String status;
     // List of chapter urls.
-    protected ArrayList<String> chapterUrls = new ArrayList<>();
+    final ArrayList<String> chapterUrls = new ArrayList<>();
     // List of chapters.
-    protected ArrayList<Chapter> chapters = new ArrayList<>();
+    ArrayList<Chapter> chapters = new ArrayList<>();
 
     /**
      * Create a new {@link Story}.
@@ -69,7 +69,7 @@ public abstract class Story {
      * @param site Site that story is from.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    protected Story(String url, Site site) throws InitStoryException {
+    Story(String url, Site site) throws InitStoryException {
         this.url = url;
         this.site = site;
         populateInfo();

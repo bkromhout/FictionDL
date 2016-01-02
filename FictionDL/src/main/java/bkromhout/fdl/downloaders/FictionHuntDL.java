@@ -1,6 +1,5 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.storys.FanFictionStory;
@@ -16,10 +15,9 @@ public class FictionHuntDL extends ParsingDL {
 
     /**
      * Create a new {@link FictionHuntDL}.
-     * @param fictionDL FictionDL object which owns this downloader.
      */
-    public FictionHuntDL(FictionDL fictionDL) {
-        super(fictionDL, Sites.FH(), "div.text");
+    public FictionHuntDL() {
+        super(Sites.FH(), "div.text");
     }
 
     /**

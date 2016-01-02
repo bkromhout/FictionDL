@@ -22,7 +22,7 @@ import java.util.ArrayList;
  */
 public final class EpubCreator {
     // The Story that this EpubCreator was created with.
-    private Story story;
+    private final Story story;
 
     /**
      * Create an ePUB generator for the given {@link Story}.
@@ -47,7 +47,7 @@ public final class EpubCreator {
      * @param fileName File name to save the ePUB with. It is assumed that this filename is legal!
      * @return True if ePUB generated successfully, otherwise false (and an error message will have been printed).
      */
-    public boolean makeEpub(Path saveDir, String fileName) {
+    private boolean makeEpub(Path saveDir, String fileName) {
         // Generate and save the ePUB, making sure that the file name is legal for any OS.
         File file = saveDir.resolve(fileName).toFile();
         try {

@@ -1,6 +1,5 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.Util;
@@ -19,10 +18,9 @@ public class TbcDL extends ParsingDL {
 
     /**
      * Create a new {@link TbcDL}.
-     * @param fictionDL FictionDL object which owns this downloader.
      */
-    public TbcDL(FictionDL fictionDL) {
-        super(fictionDL, Sites.TBC(), null);
+    public TbcDL() {
+        super(Sites.TBC(), null);
     }
 
     @Override

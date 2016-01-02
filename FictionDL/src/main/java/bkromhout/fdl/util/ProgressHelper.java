@@ -135,6 +135,6 @@ public class ProgressHelper {
      * #recalcUnitWorth(long)} so that the progress bar stays accurate.
      */
     public static void finishedWorkUnit() {
-        C.getEventBus().post(new IncWorkDoneEvent(1L));
+        C.getEventBus().post(new IncWorkDoneEvent());
     }
 }

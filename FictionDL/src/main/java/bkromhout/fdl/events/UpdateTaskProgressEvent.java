@@ -8,11 +8,11 @@ public class UpdateTaskProgressEvent {
     /**
      * Number of work units completed.
      */
-    private double workDone;
+    private final double workDone;
     /**
      * Total number of work units.
      */
-    private double totalWork;
+    private final double totalWork;
 
     /**
      * Create a new {@link UpdateTaskProgressEvent}.

@@ -17,7 +17,7 @@ public class InputFileParser extends FileParser {
     /**
      * Regex for extracting host name from a url.
      */
-    private static Pattern hostRegex = Pattern.compile("^(http[s]?://)?([^:/\\s]+)(/.*)?$");
+    private static final Pattern hostRegex = Pattern.compile("^(http[s]?://)?([^:/\\s]+)(/.*)?$");
     /**
      * Regex for matching lines which point to local story directories.
      * <p>
@@ -27,7 +27,7 @@ public class InputFileParser extends FileParser {
      * If a line matches, group 1 will contain the rest of the line following "=". This text is intended to be used as
      * the name of a directory that is relative to the folder that the input file in in.
      */
-    private static Pattern localStoryRegex = Pattern.compile("^\\s*@fdl:ls\\s*=(.*)$");
+    private static final Pattern localStoryRegex = Pattern.compile("^\\s*@fdl:ls\\s*=(.*)$");
 
     /**
      * Create a new {@link InputFileParser} to parse the given file.

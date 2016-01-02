@@ -1,6 +1,5 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
@@ -24,11 +23,10 @@ public class FictionHuntStory extends Story {
 
     /**
      * Create a new {@link FictionHuntStory} based off of a url.
-     * @param ownerDl The parsing downloader which owns this story.
-     * @param url     url of the story this model represents.
+     * @param url url of the story this model represents.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    public FictionHuntStory(ParsingDL ownerDl, String url) throws InitStoryException {
+    public FictionHuntStory(String url) throws InitStoryException {
         super(url, Sites.FH());
     }
 

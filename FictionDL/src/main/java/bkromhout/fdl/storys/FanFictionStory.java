@@ -1,6 +1,5 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.downloaders.ParsingDL;
 import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
@@ -37,11 +36,10 @@ public class FanFictionStory extends Story {
 
     /**
      * Create a new {@link FanFictionStory} based off of a url.
-     * @param ownerDl The parsing downloader which owns this story.
-     * @param url     url of the story this model represents.
+     * @param url url of the story this model represents.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    public FanFictionStory(ParsingDL ownerDl, String url) throws InitStoryException {
+    public FanFictionStory(String url) throws InitStoryException {
         super(url, Sites.FFN());
     }
 
@@ -147,7 +145,7 @@ public class FanFictionStory extends Story {
      * @param ffnTime String long value from an FFN data-xutime attribute.
      * @return Date string.
      */
-    public static String dateFromFfnTime(String ffnTime) {
+    private String dateFromFfnTime(String ffnTime) {
         // Add some zeros to make it like a Java long.
         long longFfnTime = Long.parseLong(ffnTime);
         longFfnTime *= 1000;

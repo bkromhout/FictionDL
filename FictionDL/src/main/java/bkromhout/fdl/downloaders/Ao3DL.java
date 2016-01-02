@@ -1,6 +1,5 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
 
@@ -11,11 +10,10 @@ public class Ao3DL extends EpubDL {
 
     /**
      * Create a new {@link Ao3DL}.
-     * @param fictionDL FictionDL object which owns this downloader.
      */
-    public Ao3DL(FictionDL fictionDL) {
+    public Ao3DL() {
         // Yes, for Ao3 this really is all that we have to do :)
-        super(fictionDL, Sites.AO3());
+        super(Sites.AO3());
         // We have extra messages that we'll want printed before the download process starts.
         this.extraPreDlMsgs = C.AO3_PRE_DL;
     }

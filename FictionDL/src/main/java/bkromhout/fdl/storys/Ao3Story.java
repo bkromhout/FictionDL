@@ -1,6 +1,5 @@
 package bkromhout.fdl.storys;
 
-import bkromhout.fdl.downloaders.EpubDL;
 import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.Util;
@@ -17,11 +16,10 @@ public class Ao3Story extends Story {
 
     /**
      * Create a new {@link Ao3Story} based off of a url.
-     * @param ownerDl The ePUB downloader which owns this story.
-     * @param url     Story url.
+     * @param url Story url.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    public Ao3Story(EpubDL ownerDl, String url) throws InitStoryException {
+    public Ao3Story(String url) throws InitStoryException {
         super(url, Sites.AO3());
     }
 

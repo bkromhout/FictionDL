@@ -1,6 +1,5 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.site.Sites;
 import com.squareup.okhttp.MultipartBuilder;
@@ -21,10 +20,9 @@ public class MuggleNetDL extends ParsingDL {
 
     /**
      * Create a new {@link MuggleNetDL}.
-     * @param fictionDL FictionDL object which owns this downloader.
      */
-    public MuggleNetDL(FictionDL fictionDL) {
-        super(fictionDL, Sites.MN(), "div.contentLeft");
+    public MuggleNetDL() {
+        super(Sites.MN(), "div.contentLeft");
     }
 
     @Override

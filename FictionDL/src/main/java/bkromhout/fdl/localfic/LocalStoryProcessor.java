@@ -44,12 +44,12 @@ public class LocalStoryProcessor implements IWorkProducer {
     /**
      * This is the directory which holds any local story directories.
      */
-    private Path baseDir;
+    private final Path baseDir;
     /**
      * List of story directory names. They are not guaranteed to be valid in any way (valid directory, valid local
      * story, etc.).
      */
-    private HashSet<String> storyDirNames;
+    private final HashSet<String> storyDirNames;
 
     /**
      * Create a new {@link LocalStoryProcessor}.
@@ -218,7 +218,7 @@ public class LocalStoryProcessor implements IWorkProducer {
         // Save the story as an ePUB file.
         Util.logf(C.SAVING_STORY);
         new EpubCreator(story).makeEpub(FictionDL.getOutPath());
-        Util.log(C.DONE + "%n");
+        Util.log(C.DONE + C.N);
     }
 
     @Override

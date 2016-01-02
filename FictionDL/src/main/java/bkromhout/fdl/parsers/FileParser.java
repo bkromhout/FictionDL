@@ -33,7 +33,7 @@ abstract class FileParser {
     /**
      * What type of files this parser handles.
      */
-    protected FileType type;
+    final FileType type;
 
     /**
      * Create a new {@link FileParser}.

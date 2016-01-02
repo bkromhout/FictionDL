@@ -20,13 +20,4 @@ public final class ResponseException extends RuntimeException {
         this.response = response;
     }
 
-    /**
-     * Get the Response associated with this exception.
-     * <p>
-     * Callers should assume that the Response's ResponseBody is closed, and should not try to access it.
-     * @return Response.
-     */
-    public Response getResponse() {
-        return response;
-    }
 }

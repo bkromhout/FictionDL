@@ -1,6 +1,5 @@
 package bkromhout.fdl.downloaders;
 
-import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
@@ -16,10 +15,9 @@ public class SiyeDL extends ParsingDL {
 
     /**
      * Create a new {@link SiyeDL}.
-     * @param fictionDL FictionDL object which owns this downloader.
      */
-    public SiyeDL(FictionDL fictionDL) {
-        super(fictionDL, Sites.SIYE(), null);
+    public SiyeDL() {
+        super(Sites.SIYE(), null);
         extraPreDlMsgs = C.SIYE_PRE_DL;
     }
 

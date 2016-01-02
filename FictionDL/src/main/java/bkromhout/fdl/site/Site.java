@@ -1,14 +1,11 @@
 package bkromhout.fdl.site;
 
-import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.Main;
 import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.parsers.ConfigFileParser;
 import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.IWorkProducer;
-import org.apache.commons.lang3.reflect.ConstructorUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 
 /**
@@ -42,7 +39,7 @@ public final class Site implements IWorkProducer {
     /**
      * List of story urls for this site.
      */
-    private HashSet<String> urls;
+    private final HashSet<String> urls;
 
     /**
      * Create a new {@link Site}.
@@ -75,22 +72,17 @@ public final class Site implements IWorkProducer {
 
     /**
      * Starts the download process for this site. This is a no-op if there are no urls in this site's url list.
-     * @param fictionDL Instance of {@link FictionDL} to use when creating this site's {@link Downloader} class.
-     * @param config    Options parsed from the config file, in case this site needs them.
+     * @param config Options parsed from the config file, in case this site needs them.
      */
-    public void process(FictionDL fictionDL, ConfigFileParser.Config config) {
+    public void process(ConfigFileParser.Config config) {
         if (urls.isEmpty()) return;
         try {
             // Create the downloader class.
-            Downloader downloader = ConstructorUtils.invokeConstructor(dlClass, fictionDL);
+            Downloader downloader = dlClass.getConstructor().newInstance();
             // Do site auth if it supports it and we have credentials for it.
             if (supportsAuth && config.hasCreds(this)) downloader.doFormAuth(config.getCreds(this));
             // Download stories from site.
             downloader.download();
-        } catch (InvocationTargetException e) {
-            // Not really sure why we'd ever hit this. TODO find out.
-            e.printStackTrace();
-            Main.exit(1);
         } catch (ReflectiveOperationException e) {
             // What a terrible failure.
             e.printStackTrace();

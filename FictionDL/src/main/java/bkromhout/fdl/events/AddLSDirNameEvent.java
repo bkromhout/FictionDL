@@ -8,7 +8,7 @@ public class AddLSDirNameEvent {
     /**
      * Name of the local story directory.
      */
-    private String dirName;
+    private final String dirName;
 
     /**
      * Create a new {@link AddLSDirNameEvent}
