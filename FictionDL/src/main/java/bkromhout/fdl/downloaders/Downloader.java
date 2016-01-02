@@ -69,7 +69,7 @@ public abstract class Downloader {
                 .compose(new RxMakeStories(storyClass))
                 .doOnNext(story -> {
                     // If a story failed, we just add one completed work unit.
-                    if (story == null) ProgressHelper.storyFailed(1L);
+                    if (story == null) ProgressHelper.storyFailed(0L);
                         // Otherwise, update the total work count by adding the number of chapters that will be
                         // downloaded for this story.
                     else ProgressHelper.recalcUnitWorth(story.getChapterUrlCount());

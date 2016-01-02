@@ -120,6 +120,9 @@ public class ProgressHelper {
     /**
      * Call if a {@link Story} has failed to be successfully saved.
      * <p>
+     * Passing a value of {@code 0L} or less indicates that a whole story failed, and that we should add a story's worth
+     * of work to the progress bar.
+     * <p>
      * If {@code workUnitsLeft} > 0, {@link #recalcUnitWorth(long)} <i>must</i> be called again prior to calling either
      * this method again with a {@code workUnitsLeft} value > 0L, or {@link #finishedWorkUnit()}.
      * @param workUnitsLeft Number of work units that are still left at this point.
