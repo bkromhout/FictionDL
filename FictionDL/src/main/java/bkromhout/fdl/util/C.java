@@ -160,8 +160,8 @@ public abstract class C {
 
     public static final String UNEXP_SITE_ERR = "Unexpected %s site error: \"%s\", skipping this story." + LOG_ERR;
 
-    public static final String UNEXP_STORY_ERR = "Unexpected exception while trying to make a story model for \"%s\"." +
-            " Exception message:" + N + "%s" + LOG_ERR;
+    public static final String UNEXP_STORY_ERR = "Unexpected exception while trying to make a story model for \"%s\":" +
+            N + "%s" + LOG_ERR;
 
     public static final String PARTIAL_DL_FAIL = "Skipping this story, some chapters failed to download!" + N + LOG_ERR;
 
