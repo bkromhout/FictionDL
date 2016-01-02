@@ -1,7 +1,6 @@
 package bkromhout.fdl.util;
 
 import bkromhout.fdl.Main;
-import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.ex.StoryinfoJsonException;
 import bkromhout.fdl.ui.Controller;
 import com.google.gson.JsonElement;
@@ -97,7 +96,7 @@ public abstract class Util {
 
         // Process any log color style tags, in order of priority.
         if (s.contains(C.LOG_ERR)) text.setFill(Color.ORANGERED); // Errors.
-        else if (s.contains(C.LOG_WARN)) text.setFill(Color.GOLD); // Warnings.
+        else if (s.contains(C.LOG_WARN)) text.setFill(Color.GOLDENROD); // Warnings.
         else if (s.contains(C.LOG_LOUD)) text.setFill(Color.rgb(152, 118, 170)); // Verbose; Purple.
         else if (s.contains(C.LOG_BLUE)) text.setFill(Color.ROYALBLUE); // Info.
         else if (s.contains(C.LOG_GREEN)) text.setFill(Color.FORESTGREEN); // Info.
