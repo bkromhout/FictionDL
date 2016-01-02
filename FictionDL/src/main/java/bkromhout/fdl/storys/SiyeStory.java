@@ -35,7 +35,12 @@ public class SiyeStory extends Story {
         // Get story ID and use it to normalize the url, then download the url so that we can parse story info.
         storyId = parseStoryId(url, "sid=(\\d*)", 1);
         Document infoDoc = Util.getHtml(String.format(SIYE_C_URL, storyId, 1));
-        if (infoDoc == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
+        // By some magic unbeknown to me, SIYE will give us what "looks like" a valid story page even if it's an
+        // invalid story link. That is, it doesn't contain the div.warning element like it does if you were to visit
+        // the same link in a web browser. Due to this, we have to check the title to see if it's empty in order to
+        // determine if the story link is invalid or not... Just another day in the life of an SIYE site parser...
+        if (infoDoc == null || infoDoc.title().isEmpty())
+            throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
 
         // Get story info element from story page to get some of the details.
         Element storyInfoElem = infoDoc.select("td[align=\"left\"][valign=\"top\"]").last();
