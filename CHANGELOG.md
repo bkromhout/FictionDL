@@ -1,22 +1,22 @@
 # FictionDL Changelog
 
-## Release 4.0.0 [Upcoming]
-* **New:** Local stories feature (CLI ONLY!), see [this wiki page](../../wiki/Supported-Sites) for more details
+## Release 4.0.0
+* **New:** Local stories feature (CLI ONLY!), see [this wiki page](../../wiki/Local-Stories) for more details
 * **New:** Include a link to the story on the generated title page
-* **Fixed:** Made ampersand escaping/unescaping/*re-escaping*/😑 smarter
-* **Fixed:** Some likely leaky code revolving around OkHttp Response objects
+* **Fixed:** Ampersand escaping/unescaping/*re-escaping*/😑 logic is now smarter and less likely to break chapter files in ePubs
+* **Fixed:** Leaky code revolving around OkHttp Response objects
 * **Fixed:** When starting the GUI from the CLI, other arguments won't be ignored anymore
-* **Fixed:** Fail nicely when we try to download stories from The Broom Cupboard but aren't logged in
+* **Fixed:** Fail gracefully when we try to download stories from The Broom Cupboard but aren't logged in
 * **Fixed:** The latest SIYE parsing bug, this time to do with not properly detecting and reporting invalid story links
 * Consolidated various HTML cleaning functions, as they were becoming unwieldy in number
-* Cleaned up Story exception throwing a bit to be more explicit
-* Changes to `Chapter` creation, must be done using the newly created `ChapterSource` class, which enables cleaner, more standard RxJava code, and therefore better concurrency-related improvements
+* Cleaned up Story exception throwing a bit to be less obtuse and more explicit
+* Changes to `Chapter` creation, must be done using the newly created `ChapterSource` class, which enables cleaner, more generalized RxJava code, and therefore better concurrency-related improvements
 * CLI logging with verbose mode on (`-v`) is now makes it more obvious what things are what (warnings, errors, etc.)
-* Prevented a potential bug for Windows users (since I use OS X) when it comes to logging
+* Lots of refactoring for logging code to make it more helpful
 * General cleanup and polishing
 
 ## Release 3.1.1
-* First public release!
+* First public release! See [the wiki](../../wiki) for more details.
 * **Fixed** A few small bugs, since having the first public release contain bugs is just silly
 
 ## Release 3.1.0

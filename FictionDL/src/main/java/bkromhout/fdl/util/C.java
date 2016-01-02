@@ -15,7 +15,7 @@ public abstract class C {
     /**
      * Program version string.
      */
-    public static final String VER_STRING = "FictionDL, Version 3.1.1";
+    public static final String VER_STRING = "FictionDL, Version 4.0.0";
 
     /**
      * System-specific line separator.
