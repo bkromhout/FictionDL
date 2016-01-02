@@ -64,6 +64,7 @@ public class LocalStoryProcessor implements IWorkProducer {
      * Try to process and create stories for all of the directories in {@link #storyDirNames}.
      */
     public void process() {
+        if (storyDirNames.size() == 0) return;
         Util.log(C.STARTING_LOCAL_STORY_PROCESS);
 
         // Check directory.
