@@ -76,7 +76,8 @@ public abstract class C {
 
     public static final String ALL_FINISHED = N + "All Finished! :)" + LOG_GREEN;
 
-    public static final String RUN_RESULTS = "This run generated %f total units of work." + N + LOG_LOUD;
+    // TODO change this to make it more user friendly
+    public static final String RUN_RESULTS = "This run generated %f total units of work." + N + LOG_BLUE;
 
     // Site Story Process
     public static final String STARTING_SITE_DL_PROCESS = N + "Starting %s download process..." + N + LOG_BLUE;

@@ -8,6 +8,8 @@ import com.google.common.eventbus.Subscribe;
 
 /**
  * This class is responsible for keeping track of the progress of the whole download process.
+ *
+ * TODO keep track of completed vs. failed stories.
  */
 public class ProgressHelper {
     /**
