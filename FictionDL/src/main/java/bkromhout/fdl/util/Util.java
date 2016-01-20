@@ -277,6 +277,7 @@ public abstract class Util {
 
     /**
      * Closes any of the given tags in the given html string.
+     * @param in String with tags to close.
      * @param tag The type of tag, such as hr, or br.
      * @return A string with all of the given tags closed.
      */
