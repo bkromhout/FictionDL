@@ -171,6 +171,8 @@ public abstract class C {
 
     public static final String INVALID_STORY_DIR = "\"%s\" is not a valid story folder." + N + LOG_ERR;
 
+    public static final String INVALID_STORIES_DIR = "\"%s\" is not a valid stories parent folder." + N + LOG_ERR;
+
     public static final String NO_STORYINFO_JSON = LS_PRE_DIR + "doesn't have a storyinfo.json file." + LOG_ERR_SKIPN;
 
     public static final String MALFORMED_STORYINFO_JSON = LS_PRE_DIR + "has a malformed storyinfo.json file." +

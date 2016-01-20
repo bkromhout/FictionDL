@@ -16,6 +16,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -228,11 +229,36 @@ public class LocalStoryProcessor implements IWorkProducer {
     }
 
     /**
-     * When received, adds {@link AddLSDirNameEvent#getDirName()} to {@link #storyDirNames}.
+     * When received, adds {@link AddLSDirNameEvent#getDirName()} to {@link #storyDirNames}. If the event indicates that
+     * the folder is a parent folder (its subfolders are local story folders), then will instead add the names of its
+     * subfolders to the list.
      * @param event Event instance.
      */
     @Subscribe
     public void onAddLSDirNameEvent(AddLSDirNameEvent event) {
-        if (event.getDirName() != null) storyDirNames.add(event.getDirName());
+        if (event.getDirName() != null) {
+            if (event.isFolderOfLocalStories()) {
+                // This folder's subfolders should be treated as local story folders, so we need to get a list of its
+                // subfolders and add /those/ to the list.
+                try {
+                    // Get the folder and make sure that it /is/ a folder.
+                    Path parentPath = baseDir.resolve(event.getDirName());
+                    File parentFolder = parentPath.toFile();
+                    if (!parentFolder.isDirectory()) throw new IllegalArgumentException();
+
+                    // Get an array of subfolders.
+                    File[] subfolders = parentFolder.listFiles(File::isDirectory);
+
+                    // Add the subfolder names (with the parent's name and the path separator prepended) to the list.
+                    for (File subfolder : subfolders)
+                        storyDirNames.add(event.getDirName() + File.separator + subfolder.getName());
+                } catch (IllegalArgumentException e) {
+                    Util.logf(C.INVALID_STORIES_DIR, event.getDirName());
+                }
+            } else {
+                // This is just one single story folder.
+                storyDirNames.add(event.getDirName());
+            }
+        }
     }
 }

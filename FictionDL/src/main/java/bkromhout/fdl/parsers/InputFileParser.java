@@ -27,7 +27,17 @@ public class InputFileParser extends FileParser {
      * If a line matches, group 1 will contain the rest of the line following "=". This text is intended to be used as
      * the name of a directory that is relative to the folder that the input file in in.
      */
-    private static final Pattern localStoryRegex = Pattern.compile("^\\s*@fdl:ls\\s*=(.*)$");
+    private static final Pattern localStoryRegex = Pattern.compile("^\\s*\\Q@fdl:ls\\E\\s*=(.*)$");
+    /**
+     * Regex for matching lines which point to a directory that only contains local story directories.
+     * <p>
+     * Will match a line if, ignoring leading whitespace, it starts with "@fdl:ls_folder=". (There can be whitespace
+     * before the "=", but anything after it will be part of group 1).
+     * <p>
+     * If a line matches, group 1 will contain the rest of the line following "=". This text is intended to be used as
+     * the name of a directory that is relative to the folder that the input file in in.
+     */
+    private static final Pattern localStoriesFolderRegex = Pattern.compile("^\\s*\\Q@fdl:ls_folder\\E\\s*=(.*)$");
 
     /**
      * Create a new {@link InputFileParser} to parse the given file.
@@ -49,20 +59,32 @@ public class InputFileParser extends FileParser {
     protected void processLine(String line) throws IllegalStateException {
         // Ignore a line if it starts with a #.
         if (line.startsWith("#")) return;
-        // Check if this line specifies a local story.
-        Matcher lsMatcher = localStoryRegex.matcher(line);
-        if (lsMatcher.matches()) {
+
+        // Check if this line specifies a single local story folder.
+        Matcher matcher = localStoryRegex.matcher(line);
+        if (matcher.matches()) {
             // Get the directory name from the line, stripping any leading/trailing whitespace.
-            String dirName = lsMatcher.group(1).trim();
+            String dirName = matcher.group(1).trim();
             // Add the directory name to the list of local story directories in the local story processor if non-empty.
             if (!dirName.isEmpty()) C.getEventBus().post(new AddLSDirNameEvent(dirName));
             return;
         }
 
+        // Check if this line specifies a folder whose subfolders should all be treated as local story folders.
+        matcher = localStoriesFolderRegex.matcher(line);
+        if (matcher.matches()) {
+            // Get the directory name from the line, stripping any leading/trailing whitespace.
+            String dirName = matcher.group(1).trim();
+            // Add the directory name to the list of local story directories in the local story processor if
+            // non-empty, but be sure to tell it that it needs to check for subfolders!
+            if (!dirName.isEmpty()) C.getEventBus().post(new AddLSDirNameEvent(dirName, true));
+            return;
+        }
+
         // Try to match this line as an http(s) url so that we can extract the host.
-        Matcher hostMatcher = hostRegex.matcher(line);
-        if (hostMatcher.matches()) {
-            String hostString = hostMatcher.group(2).toLowerCase();
+        matcher = hostRegex.matcher(line);
+        if (matcher.matches()) {
+            String hostString = matcher.group(2).toLowerCase();
             // Try to add the line (which we now know is a url) to a Site's list, and return immediately if there is
             // a site which can handle it.
             if (tryAddUrlToSomeSite(hostString, line)) return;
