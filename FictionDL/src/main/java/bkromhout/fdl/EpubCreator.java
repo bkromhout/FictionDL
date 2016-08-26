@@ -1,7 +1,7 @@
 package bkromhout.fdl;
 
 import bkromhout.fdl.chapter.Chapter;
-import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.stories.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
 import nl.siegmann.epublib.domain.*;

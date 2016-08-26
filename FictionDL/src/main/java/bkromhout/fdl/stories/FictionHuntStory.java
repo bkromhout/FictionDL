@@ -1,4 +1,4 @@
-package bkromhout.fdl.storys;
+package bkromhout.fdl.stories;
 
 import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.parsing.StoryEntry;

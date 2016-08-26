@@ -1,6 +1,6 @@
 package bkromhout.fdl.chapter;
 
-import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.stories.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
 import com.google.common.io.Files;

@@ -5,7 +5,7 @@ import bkromhout.fdl.util.C;
 import java.nio.file.Path;
 
 /**
- * Thrown by {@link bkromhout.fdl.storys.LocalStory LocalStory} if there is some issue with the JSON parsed from a
+ * Thrown by {@link bkromhout.fdl.stories.LocalStory LocalStory} if there is some issue with the JSON parsed from a
  * storyinfo.json file.
  */
 public class StoryinfoJsonException extends Exception {

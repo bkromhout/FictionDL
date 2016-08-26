@@ -3,7 +3,7 @@ package bkromhout.fdl.rx;
 import bkromhout.fdl.Main;
 import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.parsing.StoryEntry;
-import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.stories.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
 import rx.Observable;

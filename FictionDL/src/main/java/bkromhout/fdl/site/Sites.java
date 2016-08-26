@@ -1,7 +1,7 @@
 package bkromhout.fdl.site;
 
 import bkromhout.fdl.downloaders.*;
-import bkromhout.fdl.storys.*;
+import bkromhout.fdl.stories.*;
 
 import java.util.ArrayList;
 import java.util.Collections;

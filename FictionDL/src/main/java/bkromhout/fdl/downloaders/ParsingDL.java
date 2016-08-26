@@ -8,7 +8,7 @@ import bkromhout.fdl.rx.RxChapAction;
 import bkromhout.fdl.rx.RxMakeChapters;
 import bkromhout.fdl.rx.RxOkHttpCall;
 import bkromhout.fdl.site.Site;
-import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.stories.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
 import bkromhout.fdl.util.Util;

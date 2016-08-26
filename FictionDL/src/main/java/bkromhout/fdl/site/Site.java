@@ -4,7 +4,7 @@ import bkromhout.fdl.Main;
 import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.parsing.ConfigFileParser;
 import bkromhout.fdl.parsing.StoryEntry;
-import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.stories.Story;
 import bkromhout.fdl.util.IWorkProducer;
 
 import java.util.HashSet;

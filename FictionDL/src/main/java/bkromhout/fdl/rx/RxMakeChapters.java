@@ -2,7 +2,7 @@ package bkromhout.fdl.rx;
 
 import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.chapter.ChapterSource;
-import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.stories.Story;
 import rx.Observable;
 
 /**

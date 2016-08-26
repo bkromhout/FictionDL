@@ -3,7 +3,7 @@ package bkromhout.fdl.util;
 import bkromhout.fdl.events.IncWorkDoneEvent;
 import bkromhout.fdl.events.RecalcUnitWorthEvent;
 import bkromhout.fdl.events.UpdateTaskProgressEvent;
-import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.stories.Story;
 import com.google.common.eventbus.Subscribe;
 
 /**

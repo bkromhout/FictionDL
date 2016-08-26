@@ -6,7 +6,7 @@ import bkromhout.fdl.events.AddLSDirNameEvent;
 import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.ex.LocalStoryException;
 import bkromhout.fdl.ex.StoryinfoJsonException;
-import bkromhout.fdl.storys.LocalStory;
+import bkromhout.fdl.stories.LocalStory;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.IWorkProducer;
 import bkromhout.fdl.util.ProgressHelper;
