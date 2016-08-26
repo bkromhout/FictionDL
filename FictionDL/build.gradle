@@ -28,8 +28,8 @@ dependencies {
     compile 'com.google.guava:guava:19.0' // Guava.
     compile 'org.apache.commons:commons-lang3:3.4' // Useful for many things.
     // OkHttp stuff.
-    compile 'com.squareup.okhttp:okhttp:2.7.5'
-    compile 'com.squareup.okhttp:logging-interceptor:2.7.5'
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
     // RxJava stuff.
     compile 'io.reactivex:rxjava:1.1.9'
 }
