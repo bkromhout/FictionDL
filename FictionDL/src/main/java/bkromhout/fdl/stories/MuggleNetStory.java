@@ -93,8 +93,10 @@ public class MuggleNetStory extends Story {
         // Get the element that has the title and author of the story in it, then parse the title and author from it.
         Elements taElem = infoDoc.select("h1>a");
         if (taElem == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
-        title = taElem.first().html().trim();
-        author = taElem.last().html().trim();
+        title = hasDetailTag(C.J_TITLE) ? detailTags.get(C.J_TITLE)
+                : taElem.first().html().trim();
+        author = hasDetailTag(C.J_AUTHOR) ? detailTags.get(C.J_AUTHOR)
+                : taElem.last().html().trim();
 
         // Get the element that has the other details in it, and a list of the detail label elements to help parse
         // the details.
@@ -102,27 +104,51 @@ public class MuggleNetStory extends Story {
         if (details == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
         Elements labels = details.select("b,span.label");
 
-        summary = Util.cleanHtmlString(makeDetailDivForLabel(details, labels, "Summary", "Rating").html().trim());
-        rating = makeDetailDivForLabel(details, labels, "Rating", "Category").text().trim();
-        rating = rating.substring(0, rating.indexOf('[')).trim(); // Strip the reviews count from the rating text.
-        ficType = makeDetailDivForLabel(details, labels, "Category", "Characters").text().trim(); // MN category.
+        summary = hasDetailTag(C.J_SUMMARY) ? detailTags.get(C.J_SUMMARY)
+                : Util.cleanHtmlString(makeDetailDivForLabel(details, labels, "Summary", "Rating").html().trim());
 
-        String temp = makeDetailDivForLabel(details, labels, "Characters", "Warnings").text().trim();
-        characters = temp.equals("None") ? null : temp;
+        if (hasDetailTag(C.J_RATING))
+            rating = detailTags.get(C.J_RATING);
+        else {
+            rating = makeDetailDivForLabel(details, labels, "Rating", "Category").text().trim();
+            rating = rating.substring(0, rating.indexOf('[')).trim(); // Strip the reviews count from the rating text.
+        }
 
-        temp = makeDetailDivForLabel(details, labels, "Warnings", "Challenge").text().trim();
-        warnings = temp.equals("None") ? null : temp;
+        ficType = hasDetailTag(C.J_FIC_TYPE) ? detailTags.get(C.J_FIC_TYPE)
+                : makeDetailDivForLabel(details, labels, "Category", "Characters").text().trim(); // MN category.
 
-        temp = makeDetailDivForLabel(details, labels, "Serie", "Chapters").text().trim(); // Yes, "Serie". GG MuggleNet.
-        series = temp.equals("None") ? null : temp;
+        if (hasDetailTag(C.J_CHARACTERS))
+            characters = detailTags.get(C.J_CHARACTERS);
+        else {
+            String temp = makeDetailDivForLabel(details, labels, "Characters", "Warnings").text().trim();
+            characters = temp.equals("None") ? null : temp;
+        }
 
-        temp = makeDetailDivForLabel(details, labels, "Completed", "Wordcount").text().trim();
+        if (hasDetailTag(C.J_WARNINGS))
+            warnings = detailTags.get(C.J_WARNINGS);
+        else {
+            String temp = makeDetailDivForLabel(details, labels, "Warnings", "Challenge").text().trim();
+            warnings = temp.equals("None") ? null : temp;
+        }
+
+        if (hasDetailTag(C.J_SERIES))
+            series = detailTags.get(C.J_SERIES);
+        else {
+            String temp = makeDetailDivForLabel(details, labels, "Serie", "Chapters").text().trim(); // Yes, "Serie".
+            series = temp.equals("None") ? null : temp;
+        }
+
+        String temp = makeDetailDivForLabel(details, labels, "Completed", "Wordcount").text().trim();
         status = temp.equals("Yes") ? C.STAT_C : C.STAT_I;
 
-        int chapCount = Integer.parseInt(makeDetailDivForLabel(details, labels, "Chapters", "Completed?").text().trim());
+        int chapCount = Integer.parseInt(
+                makeDetailDivForLabel(details, labels, "Chapters", "Completed?").text().trim());
         wordCount = Integer.parseInt(makeDetailDivForLabel(details, labels, "Wordcount", "Viewcount").text().trim());
         datePublished = makeDetailDivForLabel(details, labels, "Published", "Updated").text().trim();
         dateUpdated = makeDetailDivForLabel(details, labels, "Updated", null).text().trim();
+
+        // Detail tags which the site doesn't support.
+        if (hasDetailTag(C.J_GENRES)) genres = detailTags.get(C.J_GENRES);
 
         // Generate chapter urls.
         for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(MN_C_URL, storyId, i + 1, warnBypass));

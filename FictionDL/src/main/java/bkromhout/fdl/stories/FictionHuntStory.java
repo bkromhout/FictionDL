@@ -46,6 +46,7 @@ public class FictionHuntStory extends Story {
 
         author = hasDetailTag(C.J_AUTHOR) ? detailTags.get(C.J_AUTHOR)
                 : infoDoc.select("div.details > a").first().text();
+
         summary = hasDetailTag(C.J_SUMMARY) ? detailTags.get(C.J_SUMMARY)
                 : findSummary();
 
@@ -54,11 +55,15 @@ public class FictionHuntStory extends Story {
 
         characters = hasDetailTag(C.J_CHARACTERS) ? detailTags.get(C.J_CHARACTERS)
                 : details[0].trim();
+
         wordCount = Integer.parseInt(details[1].trim().replace("Words: ", "").replace(",", ""));
+
         rating = hasDetailTag(C.J_RATING) ? detailTags.get(C.J_RATING)
                 : details[2].replace("Rated: ", "").trim();
+
         genres = hasDetailTag(C.J_GENRES) ? detailTags.get(C.J_GENRES)
                 : details[4].trim();
+
         int chapCount = Integer.parseInt(details[5].trim().replace("Chapters: ", ""));
         dateUpdated = details[7].trim().replace("Updated: ", "");
         datePublished = details[8].trim().replace("Published: ", "");

@@ -56,10 +56,13 @@ public class FanFictionStory extends Story {
 
         title = hasDetailTag(C.J_TITLE) ? detailTags.get(C.J_TITLE)
                 : infoDoc.select("div#profile_top b").first().html().trim();
+
         author = hasDetailTag(C.J_AUTHOR) ? detailTags.get(C.J_AUTHOR)
                 : infoDoc.select("div#profile_top a[href~=" + "/u/.*" + "]").first().html().trim();
+
         summary = hasDetailTag(C.J_SUMMARY) ? detailTags.get(C.J_SUMMARY)
                 : infoDoc.select("div#profile_top > div").first().html().trim();
+
         ficType = hasDetailTag(C.J_FIC_TYPE) ? detailTags.get(C.J_FIC_TYPE)
                 : parseFicType(infoDoc); // FFN fandom/crossover fandom
 
