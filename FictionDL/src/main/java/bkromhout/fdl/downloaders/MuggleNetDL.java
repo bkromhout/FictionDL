@@ -16,6 +16,10 @@ import java.util.regex.Pattern;
  */
 public class MuggleNetDL extends ParsingDL {
     /**
+     * Regex to help get chapter title.
+     */
+    private static final Pattern CHAPTER_TITLE_PATTERN = Pattern.compile("(\\d+.\\s)(.*)");
+    /**
      * MuggleNet login page url.
      */
     private static final String MN_L_URL = "http://fanfiction.mugglenet.com/user.php?action=login";
@@ -56,7 +60,7 @@ public class MuggleNetDL extends ParsingDL {
         // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
         // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
         if (titleElement != null) {
-            Matcher matcher = Pattern.compile("(\\d+.\\s)(.*)").matcher(titleElement.html().trim());
+            Matcher matcher = CHAPTER_TITLE_PATTERN.matcher(titleElement.html().trim());
             matcher.matches();
             try {
                 chapter.title = matcher.group(2);

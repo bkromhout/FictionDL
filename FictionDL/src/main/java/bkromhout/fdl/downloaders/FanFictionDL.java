@@ -11,6 +11,10 @@ import java.util.regex.Pattern;
  * Downloader for <a href="https://www.fanfiction.net">FanFiction.net</a> stories.
  */
 public class FanFictionDL extends ParsingDL {
+    /**
+     * Regex to help get chapter title.
+     */
+    private static final Pattern CHAPTER_TITLE_PATTERN = Pattern.compile("(\\d+.\\s)(.*)");
 
     /**
      * Create a new {@link FanFictionDL}.
@@ -31,7 +35,7 @@ public class FanFictionDL extends ParsingDL {
         // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
         // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
         if (titleElement != null) {
-            Matcher matcher = Pattern.compile("(\\d+.\\s)(.*)").matcher(titleElement.html().trim());
+            Matcher matcher = CHAPTER_TITLE_PATTERN.matcher(titleElement.html().trim());
             matcher.matches();
             try {
                 chapter.title = matcher.group(2);
