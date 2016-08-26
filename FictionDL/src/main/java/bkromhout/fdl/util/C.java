@@ -140,6 +140,9 @@ public abstract class C {
     // Parsing.
     public static final String PROCESS_LINE_FAILED = "Couldn't process this line from %s file: \"%s\"." + N + LOG_WARN;
 
+    public static final String DETAIL_TAG_IGNORED = "Ignoring the detail tag \"%s\" because there's no story link to" +
+            " associate it with." + N + LOG_WARN;
+
     public static final String PARSE_HTML_FAILED = "Couldn't parse HTML for \"%s\"." + LOG_WARN;
 
     // General Network.

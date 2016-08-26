@@ -2,7 +2,7 @@ package bkromhout.fdl.site;
 
 import bkromhout.fdl.Main;
 import bkromhout.fdl.downloaders.Downloader;
-import bkromhout.fdl.parsers.ConfigFileParser;
+import bkromhout.fdl.parsing.ConfigFileParser;
 import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.IWorkProducer;
 

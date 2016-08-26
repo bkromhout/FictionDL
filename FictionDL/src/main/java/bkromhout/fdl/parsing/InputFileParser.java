@@ -1,4 +1,4 @@
-package bkromhout.fdl.parsers;
+package bkromhout.fdl.parsing;
 
 import bkromhout.fdl.events.AddLSDirNameEvent;
 import bkromhout.fdl.site.Site;

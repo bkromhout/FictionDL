@@ -1,4 +1,4 @@
-package bkromhout.fdl.parsers;
+package bkromhout.fdl.parsing;
 
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;

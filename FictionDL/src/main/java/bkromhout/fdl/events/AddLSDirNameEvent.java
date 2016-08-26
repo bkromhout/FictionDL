@@ -1,7 +1,7 @@
 package bkromhout.fdl.events;
 
 /**
- * Used by {@link bkromhout.fdl.parsers.InputFileParser InputFileParser} to inform {@link
+ * Used by {@link bkromhout.fdl.parsing.InputFileParser InputFileParser} to inform {@link
  * bkromhout.fdl.localfic.LocalStoryProcessor LocalStoryProcessor} of a new local story directory name.
  */
 public class AddLSDirNameEvent {
