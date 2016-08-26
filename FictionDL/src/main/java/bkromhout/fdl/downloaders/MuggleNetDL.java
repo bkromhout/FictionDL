@@ -22,7 +22,7 @@ public class MuggleNetDL extends ParsingDL {
      * Create a new {@link MuggleNetDL}.
      */
     public MuggleNetDL() {
-        super(Sites.MN(), "div.contentLeft");
+        super(Sites.MN(), "div#story");
     }
 
     @Override
@@ -80,12 +80,14 @@ public class MuggleNetDL extends ParsingDL {
     @Override
     protected void extractChapText(Chapter chapter) {
         StringBuilder chapterText = new StringBuilder();
-        // First off, we need to drill down to just the div.contentLeft element.
+        // First off, go down to the element containing the actual chapter text, which is div#story.
+        // Then get its immediate parent.
         Element content = chapter.rawHtml.select(chapTextSelector).first();
 
-        // Now, we want to strip out any children of div.contentLeft which are not div.notes or div#story, so select
-        // all of those and remove them.
-        content.select("div.contentLeft > *:not(div.notes, div#story)").remove();
+        // Now, we want to strip out any children which aren't either a <blockquote> or div#story.
+        content.select("div.contentLeft > *:not(blockquote, div#story)").remove();
+        // Now, we want to change <blockquote>s to <div>s
+        content.select("blockquote").tagName("div");
 
         // Now, we want to insert <hr /> tags between any remaining divs.
         content.children().after("<hr />");
