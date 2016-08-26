@@ -5,7 +5,9 @@ import bkromhout.fdl.site.Sites;
 import com.squareup.okhttp.MultipartBuilder;
 import com.squareup.okhttp.RequestBody;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,7 +24,7 @@ public class MuggleNetDL extends ParsingDL {
      * Create a new {@link MuggleNetDL}.
      */
     public MuggleNetDL() {
-        super(Sites.MN(), "div#story");
+        super(Sites.MN(), "div.gb-full blockquote, div#story");
     }
 
     @Override
@@ -80,21 +82,13 @@ public class MuggleNetDL extends ParsingDL {
     @Override
     protected void extractChapText(Chapter chapter) {
         StringBuilder chapterText = new StringBuilder();
-        // First off, go down to the element containing the actual chapter text, which is div#story.
-        // Then get its immediate parent.
-        Element content = chapter.rawHtml.select(chapTextSelector).first();
 
-        // Now, we want to strip out any children which aren't either a <blockquote> or div#story.
-        content.select("div.contentLeft > *:not(blockquote, div#story)").remove();
-        // Now, we want to change <blockquote>s to <div>s
-        content.select("blockquote").tagName("div");
-
-        // Now, we want to insert <hr /> tags between any remaining divs.
-        content.children().after("<hr />");
-        content.select("hr").last().remove();
-
-        // Now we can finally output the html.
-        chapterText.append(content.html());
-        chapter.contentFromString(chapterText.toString());
+        Elements content = chapter.rawHtml.select(chapTextSelector);
+        Iterator<Element> iterator = content.iterator();
+        while (iterator.hasNext()) {
+            chapterText.append(iterator.next().html());
+            if (iterator.hasNext()) chapterText.append("<hr />");
+        }
+        chapter.contentFromString(chapterText.toString().replace("blockquote", "div"));
     }
 }
