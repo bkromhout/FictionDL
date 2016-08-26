@@ -48,13 +48,22 @@ public class SiyeStory extends Story {
         if (storyInfoElem == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
 
         // Get summary.
-        int summaryStartIdx = storyInfoElem.select("b:contains(Summary:)").first().siblingIndex() + 1;
-        int summaryEndIdx = storyInfoElem.select("b:contains(Hitcount:)").first().siblingIndex();
-        summary = Util.cleanHtmlString(
-                Util.divFromChildCopies(storyInfoElem, summaryStartIdx, summaryEndIdx).html().trim());
+        if (hasDetailTag(C.J_SUMMARY))
+            summary = detailTags.get(C.J_SUMMARY);
+        else {
+            int summaryStartIdx = storyInfoElem.select("b:contains(Summary:)").first().siblingIndex() + 1;
+            int summaryEndIdx = storyInfoElem.select("b:contains(Hitcount:)").first().siblingIndex();
+            summary = Util.cleanHtmlString(
+                    Util.divFromChildCopies(storyInfoElem, summaryStartIdx, summaryEndIdx).html().trim());
+        }
+
         // Get characters.
-        Element charsLabel = storyInfoElem.select("b:contains(Characters:)").first();
-        characters = ((TextNode) storyInfoElem.childNodes().get(charsLabel.siblingIndex() + 1)).text().trim();
+        if (hasDetailTag(C.J_CHARACTERS))
+            characters = detailTags.get(C.J_CHARACTERS);
+        else {
+            Element charsLabel = storyInfoElem.select("b:contains(Characters:)").first();
+            characters = ((TextNode) storyInfoElem.childNodes().get(charsLabel.siblingIndex() + 1)).text().trim();
+        }
 
         // Figure out the SIYE story ID and author ID link, because we'll get the rest of the general details from
         // the story entry on the author's page after downloading it.
@@ -64,8 +73,11 @@ public class SiyeStory extends Story {
         // Get the story entry on the author's page.
         Element storyRow = doc.select(String.format("td tr td:has(a[href=\"viewstory.php?sid=%s\"])", storyId)).last();
 
-        title = storyRow.select(String.format("a[href=\"viewstory.php?sid=%s\"]", storyId)).first().html();
-        author = storyRow.select(String.format("a[href=\"%s\"]", authorIdLink)).first().text();
+        title = hasDetailTag(C.J_TITLE) ? detailTags.get(C.J_TITLE)
+                : storyRow.select(String.format("a[href=\"viewstory.php?sid=%s\"]", storyId)).first().html();
+
+        author = hasDetailTag(C.J_AUTHOR) ? detailTags.get(C.J_AUTHOR)
+                : storyRow.select(String.format("a[href=\"%s\"]", authorIdLink)).first().text();
 
         /* Due to SIYE's *incredibly* crappy HTML, we need to check to see if the story Element we currently have
         actually has the rest of the parts we need or not. If the story is part of a series, the "row" on SIYE's
@@ -82,15 +94,19 @@ public class SiyeStory extends Story {
         // Get details strings to parse the other details from.
         String[] details = storyRow.select("div").first().text().replace("Completed:", "- Completed:").split(" - ");
 
-        rating = details[0].trim();
-        ficType = details[1].trim(); // SIYE category.
-        genres = details[2].trim();
-        warnings = details[3].replace("Warnings: ", "").trim();
+        rating = hasDetailTag(C.J_RATING) ? detailTags.get(C.J_RATING) : details[0].trim();
+        ficType = hasDetailTag(C.J_FIC_TYPE) ? detailTags.get(C.J_FIC_TYPE) : details[1].trim(); // SIYE category.
+        genres = hasDetailTag(C.J_GENRES) ? detailTags.get(C.J_GENRES) : details[2].trim();
+        warnings = hasDetailTag(C.J_WARNINGS) ? detailTags.get(C.J_WARNINGS) 
+                : details[3].replace("Warnings: ", "").trim();
         wordCount = Integer.parseInt(details[4].replace("Words: ", "").trim());
         status = details[5].replace("Completed: ", "").trim().equals("Yes") ? C.STAT_C : C.STAT_I;
         int chapCount = Integer.parseInt(details[6].replace("Chapters: ", "").trim());
         datePublished = details[7].replace("Published: ", "").trim();
         dateUpdated = details[8].replace("Updated: ", "").trim();
+
+        // Detail tags which the site doesn't support.
+        if (hasDetailTag(C.J_SERIES)) series = detailTags.get(C.J_SERIES);
 
         // Generate chapter urls.
         for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(SIYE_C_URL, storyId, i + 1));
