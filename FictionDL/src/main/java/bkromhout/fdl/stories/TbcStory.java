@@ -71,10 +71,11 @@ public class TbcStory extends Story {
         Element detailDiv = infoDoc.select("div#nav25 > div:has(b:contains(Story))").first();
         // Make sure to remove extra series info from title element before parsing title.
         if (detailDiv.select("ul").first() != null) detailDiv.select("ul").first().remove();
-        title = detailDiv.text().replace("Story:", "").trim();
+        title = hasDetailTag(C.J_TITLE) ? detailTags.get(C.J_TITLE) : detailDiv.text().replace("Story:", "").trim();
 
         detailDiv = infoDoc.select("div#nav25 > div:has(b:contains(Author))").first();
-        author = detailDiv.text().replace("Author:", "").replace("- Add Author To Your Email Update List", "").trim();
+        author = hasDetailTag(C.J_AUTHOR) ? detailTags.get(C.J_AUTHOR)
+                : detailDiv.text().replace("Author:", "").replace("- Add Author To Your Email Update List", "").trim();
 
         // Download author page, we'll need it to get summary and total word count.
         Document authorPage = Util.getHtml(TBC_BASE_URL + detailDiv.select("a").first().attr("href"));
@@ -87,17 +88,29 @@ public class TbcStory extends Story {
         String summaryCssSel = String.format("div:has(a[href=\"%s\"]) ~ div:has(b:contains(Summary))", relStoryLink);
         String wordCountCssSel = String.format("div:has(a[href=\"%s\"]) ~ div:has(b:contains(Words))", relStoryLink);
 
-        detailDiv = authorPage.select(summaryCssSel).first();
-        summary = Util.cleanHtmlString(detailDiv.text().replace("Summary:", "").trim());
+        if (hasDetailTag(C.J_SUMMARY))
+            summary = detailTags.get(C.J_SUMMARY);
+        else {
+            detailDiv = authorPage.select(summaryCssSel).first();
+            summary = Util.cleanHtmlString(detailDiv.text().replace("Summary:", "").trim());
+        }
 
         detailDiv = authorPage.select(wordCountCssSel).first();
         wordCount = Integer.parseInt(detailDiv.text().replace("Words:", "").replace(",", "").trim());
 
-        detailDiv = infoDoc.select("div#nav25 > div:has(b:contains(Rating))").first();
-        rating = detailDiv.text().replace("Rating:", "").trim();
+        if (hasDetailTag(C.J_RATING))
+            rating = detailTags.get(C.J_RATING);
+        else {
+            detailDiv = infoDoc.select("div#nav25 > div:has(b:contains(Rating))").first();
+            rating = detailDiv.text().replace("Rating:", "").trim();
+        }
 
-        detailDiv = infoDoc.select("div#nav25 > div:has(b:contains(Setting))").first();
-        ficType = detailDiv.text().replace("Setting:", "").trim();
+        if (hasDetailTag(C.J_FIC_TYPE))
+            ficType = detailTags.get(C.J_FIC_TYPE);
+        else {
+            detailDiv = infoDoc.select("div#nav25 > div:has(b:contains(Setting))").first();
+            ficType = detailDiv.text().replace("Setting:", "").trim();
+        }
 
         detailDiv = infoDoc.select("div#nav25 > div:has(b:contains(Status))").first();
         status = detailDiv.text().contains("Completed") ? C.STAT_C : C.STAT_I;
@@ -107,6 +120,12 @@ public class TbcStory extends Story {
 
         dateUpdated = chapterUrls.size() > 1 ? getDateUpdatedFromLastChap() : datePublished;
         if (dateUpdated == null) throw new InitStoryException(C.NO_ID_STORY_DL_FAILED, site.getName(), url);
+
+        // Detail tags which the site doesn't support.
+        if (hasDetailTag(C.J_SERIES)) series = detailTags.get(C.J_SERIES);
+        if (hasDetailTag(C.J_WARNINGS)) warnings = detailTags.get(C.J_WARNINGS);
+        if (hasDetailTag(C.J_GENRES)) genres = detailTags.get(C.J_GENRES);
+        if (hasDetailTag(C.J_CHARACTERS)) characters = detailTags.get(C.J_CHARACTERS);
     }
 
     /**
