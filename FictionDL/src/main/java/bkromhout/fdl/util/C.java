@@ -68,7 +68,7 @@ public abstract class C {
     // General.
     public static final String DONE = "Done!" + LOG_GREEN;
 
-    public static final String PARSING_FILE = "Parsing %s file...";
+    public static final String PARSING_FILE = "Parsing %s file..." + N;
 
     public static final String SANITIZING_CHAPS = "Sanitizing chapters...";
 
