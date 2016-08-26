@@ -36,8 +36,10 @@ public class Ao3Story extends Story {
             throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
 
         // Get the title and author so that we can name the ePUB file we will download.
-        title = infoDoc.select("h2[class=\"title heading\"]").first().text().trim();
-        author = infoDoc.select("a[rel=\"author\"]").first().text().trim();
+        title = hasDetailTag(C.J_TITLE) ? detailTags.get(C.J_TITLE)
+                : infoDoc.select("h2[class=\"title heading\"]").first().text().trim();
+        author = hasDetailTag(C.J_AUTHOR) ? detailTags.get(C.J_AUTHOR)
+                : infoDoc.select("a[rel=\"author\"]").first().text().trim();
 
         // Now set the url to be a link to download the ePUB file with. Find the link to the ePUB file from the page.
         url = infoDoc.select("a:contains(EPUB)").first().absUrl("href");
