@@ -2,7 +2,7 @@ package bkromhout.fdl.util;
 
 import bkromhout.fdl.Main;
 import com.google.common.eventbus.EventBus;
-import com.squareup.okhttp.OkHttpClient;
+import okhttp3.OkHttpClient;
 
 /**
  * Constants.

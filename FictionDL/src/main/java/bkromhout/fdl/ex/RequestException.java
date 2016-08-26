@@ -1,6 +1,7 @@
 package bkromhout.fdl.ex;
 
-import com.squareup.okhttp.Request;
+
+import okhttp3.Request;
 
 import java.io.IOException;
 

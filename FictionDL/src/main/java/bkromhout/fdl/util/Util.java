@@ -5,10 +5,10 @@ import bkromhout.fdl.ex.StoryinfoJsonException;
 import bkromhout.fdl.ui.Controller;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -199,15 +199,7 @@ public abstract class Util {
     private static InputStream getRawHtmlStream(String url) {
         Response response = getRawHtml(url);
         if (response == null) return null;
-
-        try {
-            return response.body().byteStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-            // We're just ignoring the exception really.
-            logf(C.HTML_DL_FAILED, url);
-            return null;
-        }
+        return response.body().byteStream();
     }
 
     /**
@@ -277,7 +269,7 @@ public abstract class Util {
 
     /**
      * Closes any of the given tags in the given html string.
-     * @param in String with tags to close.
+     * @param in  String with tags to close.
      * @param tag The type of tag, such as hr, or br.
      * @return A string with all of the given tags closed.
      */

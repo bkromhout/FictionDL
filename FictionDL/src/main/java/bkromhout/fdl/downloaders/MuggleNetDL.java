@@ -2,8 +2,8 @@ package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.site.Sites;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.RequestBody;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -30,12 +30,13 @@ public class MuggleNetDL extends ParsingDL {
     @Override
     protected RequestBody getSiteAuthForm(String u, String p) {
         if (u == null || u.isEmpty() || p == null || p.isEmpty()) return null;
-        return new MultipartBuilder().type(MultipartBuilder.FORM)
-                                     .addFormDataPart("penname", u)
-                                     .addFormDataPart("password", p)
-                                     .addFormDataPart("cookiecheck", "1")
-                                     .addFormDataPart("submit", "Submit")
-                                     .build();
+        return new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("penname", u)
+                .addFormDataPart("password", p)
+                .addFormDataPart("cookiecheck", "1")
+                .addFormDataPart("submit", "Submit")
+                .build();
     }
 
     @Override

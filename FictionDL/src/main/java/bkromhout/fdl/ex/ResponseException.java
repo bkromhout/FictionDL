@@ -1,6 +1,7 @@
 package bkromhout.fdl.ex;
 
-import com.squareup.okhttp.Response;
+
+import okhttp3.Response;
 
 /**
  * Exception to throw when an OkHttp Response doesn't have what we expect it to.

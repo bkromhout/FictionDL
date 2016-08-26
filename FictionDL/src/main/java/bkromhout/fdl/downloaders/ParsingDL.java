@@ -12,7 +12,7 @@ import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
 import bkromhout.fdl.util.Util;
-import com.squareup.okhttp.Request;
+import okhttp3.Request;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 

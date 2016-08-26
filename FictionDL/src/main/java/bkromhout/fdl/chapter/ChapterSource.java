@@ -4,7 +4,7 @@ import bkromhout.fdl.storys.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
 import com.google.common.io.Files;
-import com.squareup.okhttp.Response;
+import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -106,7 +106,7 @@ public class ChapterSource {
             response.body().close();
             return new Chapter(doc, number);
         } catch (IOException e) {
-            Util.loudf(C.PARSE_HTML_FAILED, response.request().urlString());
+            Util.loudf(C.PARSE_HTML_FAILED, response.request().url());
             return null;
         }
     }
