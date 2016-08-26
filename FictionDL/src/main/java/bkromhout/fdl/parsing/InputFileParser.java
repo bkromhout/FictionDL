@@ -17,7 +17,7 @@ public class InputFileParser extends FileParser {
     /**
      * Regex for extracting host name from a url.
      */
-    private static final Pattern hostRegex = Pattern.compile("^(http[s]?://)?([^:/\\s]+)(/.*)?$");
+    private static final Pattern HOST_REGEX = Pattern.compile("^(http[s]?://)?([^:/\\s]+)(/.*)?$");
     /**
      * Regex for matching lines which point to local story directories.
      * <p>
@@ -27,7 +27,7 @@ public class InputFileParser extends FileParser {
      * If a line matches, group 1 will contain the rest of the line following "=". This text is intended to be used as
      * the name of a directory that is relative to the folder that the input file in in.
      */
-    private static final Pattern localStoryRegex = Pattern.compile("^\\s*\\Q@fdl:ls\\E\\s*=(.*)$");
+    private static final Pattern LOCAL_STORY_REGEX = Pattern.compile("^\\s*\\Q@fdl:ls\\E\\s*=(.*)$");
     /**
      * Regex for matching lines which point to a directory that only contains local story directories.
      * <p>
@@ -37,7 +37,29 @@ public class InputFileParser extends FileParser {
      * If a line matches, group 1 will contain the rest of the line following "=". This text is intended to be used as
      * the name of a directory that is relative to the folder that the input file in in.
      */
-    private static final Pattern localStoriesFolderRegex = Pattern.compile("^\\s*\\Q@fdl:ls_folder\\E\\s*=(.*)$");
+    private static final Pattern LOCAL_STORIES_FOLDER_REGEX = Pattern.compile("^\\s*\\Q@fdl:ls_folder\\E\\s*=(.*)$");
+    /**
+     * The names of the allowed detail tags.
+     */
+    private static final String[] ALLOWED_DETAIL_TAGS = {C.J_TITLE, C.J_AUTHOR, C.J_SUMMARY, C.J_SERIES, C.J_FIC_TYPE,
+                                                         C.J_WARNINGS, C.J_RATING, C.J_GENRES, C.J_CHARACTERS};
+    /**
+     * Regex for matching detail tag lines. Only the detail tags in {@link #ALLOWED_DETAIL_TAGS} will be matched.
+     * <p>
+     * Will match a line if, ignoring leading whitespace, it starts with "@fdl:{Allowed Detail Tag}=", where {Allowed
+     * Detail Tag} is one of {@link #ALLOWED_DETAIL_TAGS}. (There can be whitespace before the "=", but anything after
+     * it will be part of group 1).
+     * <p>
+     * If a line matches, group 1 will contain the detail tag name, and group 2 will contain the rest of the line
+     * following "=".
+     */
+    private static final Pattern DETAIL_TAG_REGEX =
+            Pattern.compile("^\\s*\\Q@fdl:\\E(" + Util.buildOrRegex(ALLOWED_DETAIL_TAGS) + ")\\s*=(.*)$");
+
+    /**
+     * The last story entry created. Will be {@code null} if we haven't seen any story links yet.
+     */
+    private StoryEntry lastStoryEntry = null;
 
     /**
      * Create a new {@link InputFileParser} to parse the given file.
@@ -61,7 +83,7 @@ public class InputFileParser extends FileParser {
         if (line.startsWith("#")) return;
 
         // Check if this line specifies a single local story folder.
-        Matcher matcher = localStoryRegex.matcher(line);
+        Matcher matcher = LOCAL_STORY_REGEX.matcher(line);
         if (matcher.matches()) {
             // Get the directory name from the line, stripping any leading/trailing whitespace.
             String dirName = matcher.group(1).trim();
@@ -71,7 +93,7 @@ public class InputFileParser extends FileParser {
         }
 
         // Check if this line specifies a folder whose subfolders should all be treated as local story folders.
-        matcher = localStoriesFolderRegex.matcher(line);
+        matcher = LOCAL_STORIES_FOLDER_REGEX.matcher(line);
         if (matcher.matches()) {
             // Get the directory name from the line, stripping any leading/trailing whitespace.
             String dirName = matcher.group(1).trim();
@@ -82,12 +104,29 @@ public class InputFileParser extends FileParser {
         }
 
         // Try to match this line as an http(s) url so that we can extract the host.
-        matcher = hostRegex.matcher(line);
+        matcher = HOST_REGEX.matcher(line);
         if (matcher.matches()) {
             String hostString = matcher.group(2).toLowerCase();
             // Try to add the line (which we now know is a url) to a Site's list, and return immediately if there is
             // a site which can handle it.
-            if (tryAddUrlToSomeSite(hostString, line)) return;
+            if (tryAddUrlToSomeSite(hostString, line))
+                return;
+        }
+
+        // Try to match this line as a detail tag.
+        matcher = DETAIL_TAG_REGEX.matcher(line);
+        if (matcher.matches()) {
+            // If we haven't seen a story link yet, then we can't use this detail tag, so we log and ignore it.
+            if (lastStoryEntry == null) {
+                Util.loudf(C.DETAIL_TAG_IGNORED, line.trim());
+                return;
+            }
+            // Get the detail tag name to use as the tag name.
+            String tagName = matcher.group(1).trim();
+            String detail = matcher.group(2).trim();
+            // Add this detail to the last story entry we made.
+            lastStoryEntry.addDetailTag(tagName, detail);
+            return;
         }
 
         // Verbose log this line if we got here and it's non-empty, we couldn't process it.
@@ -95,10 +134,12 @@ public class InputFileParser extends FileParser {
     }
 
     /**
-     * Using the given host string, figure out which site we can add the given url string to and add it.
+     * Using the given host string, figure out which site the given {@code url} belongs to, then create a new {@link
+     * StoryEntry} and assigns it to that site.
      * @param hostString String parsed from the line that should contain a substring which is equal to some {@link
      *                   Site#host} value.
-     * @param url        The url to add to some {@link Site Site}'s {@link Site#urls url list}.
+     * @param url        The url to use to create a new {@link StoryEntry} to add to some {@link Site Site}'s {@link
+     *                   Site#storyEntries story entry list}.
      * @return True if a {@link Site} was found to add the url to, otherwise false. Returns false immediately if either
      * parameter is null or empty.
      */
@@ -108,7 +149,8 @@ public class InputFileParser extends FileParser {
         for (Site site : Sites.all()) {
             if (hostString.contains(site.getHost())) {
                 // Found a site which we can add this URL to.
-                site.getUrls().add(url);
+                lastStoryEntry = new StoryEntry(url);
+                site.getStoryEntries().add(lastStoryEntry);
                 return true;
             }
         }

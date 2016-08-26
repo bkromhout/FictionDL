@@ -2,10 +2,12 @@ package bkromhout.fdl.storys;
 
 import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.parsing.StoryEntry;
 import bkromhout.fdl.site.Site;
 import bkromhout.fdl.util.C;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +18,9 @@ public abstract class Story {
 
     // Site that story is from (name will be used as "Publisher" metadata).
     final Site site;
+    // Detail tags from the input file. These will override corresponding details for stories obtained using a
+    // parsing downloader.
+    final HashMap<String, String> detailTags = new HashMap<>();
     // Story url.
     String url;
     // Story ID.
@@ -53,12 +58,15 @@ public abstract class Story {
 
     /**
      * Create a new {@link Story}.
-     * @param url  Story url.
-     * @param site Site that story is from.
+     * @param storyEntry Story entry with details from the input file.
+     * @param site       Site that story is from.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    Story(String url, Site site) throws InitStoryException {
-        this.url = url;
+    Story(StoryEntry storyEntry, Site site) throws InitStoryException {
+        if (storyEntry != null) {
+            this.url = storyEntry.getUrl();
+            this.detailTags.putAll(storyEntry.getDetailTags());
+        }
         this.site = site;
         populateInfo();
     }
@@ -84,11 +92,30 @@ public abstract class Story {
     }
 
     /**
+     * Check to see if this story has a detail tag for the given tag name with a non-{@code null}, non-empty value.
+     * @param tagName Detail tag name to check.
+     * @return True if the given tag name is mapped to a non-{@code null}, non-empty value; otherwise false.
+     */
+    public boolean hasDetailTag(String tagName) {
+        if (!detailTags.containsKey(tagName)) return false;
+        String detail = detailTags.get(tagName);
+        return detail != null && !detail.isEmpty();
+    }
+
+    /**
      * Get story's url.
      * @return Story url.
      */
     public String getUrl() {
         return url;
+    }
+
+    /**
+     * Get detail tags for this story which came from the input file.
+     * @return Story's detail tags.
+     */
+    public HashMap<String, String> getDetailTags() {
+        return detailTags;
     }
 
     /**

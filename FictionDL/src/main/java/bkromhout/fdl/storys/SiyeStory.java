@@ -1,6 +1,7 @@
 package bkromhout.fdl.storys;
 
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.parsing.StoryEntry;
 import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
@@ -23,11 +24,11 @@ public class SiyeStory extends Story {
 
     /**
      * Create a new {@link SiyeStory} based off of a url.
-     * @param url url of the story this model represents.
+     * @param storyEntry Story entry with details from the input file.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    public SiyeStory(String url) throws InitStoryException {
-        super(url, Sites.SIYE());
+    public SiyeStory(StoryEntry storyEntry) throws InitStoryException {
+        super(storyEntry, Sites.SIYE());
     }
 
     @Override

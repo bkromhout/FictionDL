@@ -11,7 +11,6 @@ import java.util.List;
 
 /**
  * An implementation of OkHttp's {@code CookieJar}. Only keeps cookies per-run.
- * @author Brenden Kromhout
  */
 public class CookieMonster implements CookieJar {
     /**
