@@ -121,8 +121,7 @@ public class FictionDL {
 
         /* Do post-run tasks. */
         Util.log(C.ALL_FINISHED);
-        // TODO make this more user friendly, then make it a normal log line instead of a verbose one.
-        Util.loudf(C.RUN_RESULTS, progressHelper.getTotalWork());
+        Util.logf(C.RUN_RESULTS, progressHelper.getStoriesDownloaded(), progressHelper.getTotalNumberOfStories());
     }
 
     /**

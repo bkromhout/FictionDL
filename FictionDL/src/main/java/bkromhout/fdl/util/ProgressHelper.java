@@ -8,14 +8,16 @@ import com.google.common.eventbus.Subscribe;
 
 /**
  * This class is responsible for keeping track of the progress of the whole download process.
- *
- * TODO keep track of completed vs. failed stories.
  */
 public class ProgressHelper {
     /**
      * Amount of work so far, regardless of success.
      */
     private double workDone;
+    /**
+     * Number of stories which failed to download.
+     */
+    private double storiesFailed;
     /**
      * Total amount of work.
      */
@@ -47,6 +49,8 @@ public class ProgressHelper {
         C.getEventBus().register(this);
         // Set work done to 0.
         this.workDone = 0.0;
+        // Set stories failed to 0.
+        this.storiesFailed = 0.0;
         // Set total work to the number of stories.
         this.totalWork = totalWork;
         // Set the current work unit worth to be equal to one story's worth of work. For now.
@@ -64,11 +68,19 @@ public class ProgressHelper {
     }
 
     /**
-     * Get the total amount of work.
-     * @return Total work.
+     * Get the total number of stories.
+     * @return Total number of stories.
      */
-    public double getTotalWork() {
-        return totalWork;
+    public int getTotalNumberOfStories() {
+        return (int) totalWork;
+    }
+
+    /**
+     * Get the number of stories which have successfully been downloaded.
+     * @return Number of downloaded stories.
+     */
+    public long getStoriesDownloaded() {
+        return Math.round(workDone - storiesFailed);
     }
 
     /**
@@ -97,7 +109,10 @@ public class ProgressHelper {
             if (needsRecalc) throw new IllegalStateException(C.STALE_UNIT_WORTH);
             workDone += currUnitWorth * (double) event.getUnitsToAdd();
         }
-        if (event.didFail() && currUnitWorth != oneStoryWorth) needsRecalc = true;
+        if (event.didFail()) {
+            storiesFailed += oneStoryWorth;
+            if (currUnitWorth != oneStoryWorth) needsRecalc = true;
+        }
         // Update progress bar.
         updateTaskProgress();
     }
