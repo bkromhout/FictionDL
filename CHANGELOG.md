@@ -2,7 +2,7 @@
 
 ## Release 4.1.0
 * **New:** Added the ability to put multiple local story folders in a single parent folder, which can then be pointed to by adding a line to the input file prefixed with `@fdl:ls_folder=`
-* **New:** Added a bit of log text which tells you how many stories were completed and how many failed at the end of the process
+* **New:** Added the ability to specify (or override) certain story details in the input file using "Detail Tags". See [this wiki page](../../wiki/Detail-Tags) for more details
 * **Fixed:** Downloading stories from MuggleNew was broken due to the new site layout. This is now fixed! (Tested with the default Blue layout)
 
 ## Release 4.0.0
