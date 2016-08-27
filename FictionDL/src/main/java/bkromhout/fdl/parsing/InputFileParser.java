@@ -118,7 +118,7 @@ public class InputFileParser extends FileParser {
         if (matcher.matches()) {
             // If we haven't seen a story link yet, then we can't use this detail tag, so we log and ignore it.
             if (lastStoryEntry == null) {
-                Util.loudf(C.DETAIL_TAG_IGNORED, line.trim());
+                Util.logf(C.DETAIL_TAG_IGNORED, line.trim());
                 return;
             }
             // Get the detail tag name to use as the tag name.
