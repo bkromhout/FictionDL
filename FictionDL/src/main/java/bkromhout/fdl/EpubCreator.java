@@ -6,6 +6,7 @@ import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
 import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubWriter;
+import nl.siegmann.epublib.service.MediatypeService;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,6 +67,12 @@ public final class EpubCreator {
     private Book generateEpub() {
         // Create Book.
         Book book = new Book();
+        // Set cover image (if present).
+        if (story.hasCover()) {
+            Resource coverImage = new Resource(story.getCoverImage(),
+                    MediatypeService.determineMediaType(story.getCoverImageFileName()));
+            book.setCoverImage(coverImage);
+        }
         // Set title, author, description (summary), identifier (story url), and publisher (story site).
         book.getMetadata().addTitle(Util.unEscapeAmps(story.getTitle()));
         book.getMetadata().addAuthor(new Author(story.getAuthor()));

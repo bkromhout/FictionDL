@@ -3,6 +3,7 @@ package bkromhout.fdl.util;
 import bkromhout.fdl.Main;
 import bkromhout.fdl.ex.StoryinfoJsonException;
 import bkromhout.fdl.ui.Controller;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import javafx.scene.paint.Color;
@@ -197,9 +198,40 @@ public abstract class Util {
      * wasn't in the range of [200..300).
      */
     private static InputStream getRawHtmlStream(String url) {
-        Response response = getRawHtml(url);
+        Response response = getRaw(url);
         if (response == null) return null;
         return response.body().byteStream();
+    }
+
+    /**
+     * Get a model object by using Gson to parse a JSON response.
+     * @param url        url to download.
+     * @param modelClass Model class.
+     * @param <T>        Model type.
+     * @return Model object.
+     */
+    public static <T> T getModel(String url, Class<T> modelClass) {
+        try (Response response = getRaw(url)) {
+            if (response == null) return null;
+            return new Gson().fromJson(response.body().charStream(), modelClass);
+        }
+    }
+
+    /**
+     * Get a byte array.
+     * @param url url to download.
+     * @return Byte array.
+     */
+    public static byte[] getBinary(String url) {
+        try (Response response = getRaw(url)) {
+            if (response == null) return null;
+            return response.body().bytes();
+        } catch (IOException e) {
+            e.printStackTrace();
+            // We're just ignoring the exception really.
+            logf(C.FILE_DL_FAILED, url);
+            return null;
+        }
     }
 
     /**
@@ -211,7 +243,7 @@ public abstract class Util {
      * @return OkHttp Response, or null if we failed to download the page or the status code wasn't in the range of
      * [200..300).
      */
-    private static Response getRawHtml(String url) {
+    private static Response getRaw(String url) {
         try {
             Request request = new Request.Builder().url(url).build();
             Response response = C.getHttpClient().newCall(request).execute();

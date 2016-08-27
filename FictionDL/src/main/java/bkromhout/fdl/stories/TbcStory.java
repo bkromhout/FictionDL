@@ -27,7 +27,7 @@ public class TbcStory extends Story {
     private static final String CHAP_ID_REGEX = "/story/(\\d*)";
 
     /**
-     * Create a new {@link TbcStory} based off of a url.
+     * Create a new {@link TbcStory}.
      * @param storyEntry Story entry with details from the input file.
      * @throws InitStoryException if we can't create this story object for some reason.
      */

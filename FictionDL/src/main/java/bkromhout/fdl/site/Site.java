@@ -5,6 +5,7 @@ import bkromhout.fdl.downloaders.Downloader;
 import bkromhout.fdl.parsing.ConfigFileParser;
 import bkromhout.fdl.parsing.StoryEntry;
 import bkromhout.fdl.stories.Story;
+import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.IWorkProducer;
 
 import java.util.HashSet;
@@ -41,6 +42,10 @@ public final class Site implements IWorkProducer {
      * List of story entries to download for this site.
      */
     private final HashSet<StoryEntry> storyEntries;
+    /**
+     * Maximum number of connections for this site.
+     */
+    private int maxConnections = 10;
 
     /**
      * Create a new {@link Site}.
@@ -71,12 +76,17 @@ public final class Site implements IWorkProducer {
         this.storyEntries = new HashSet<>();
     }
 
+    void setMaxConnections(int maxConnections) {
+        this.maxConnections = maxConnections;
+    }
+
     /**
      * Starts the download process for this site. This is a no-op if there are no urls in this site's url list.
      * @param config Options parsed from the config file, in case this site needs them.
      */
     public void process(ConfigFileParser.Config config) {
         if (storyEntries.isEmpty()) return;
+        C.getHttpClient().dispatcher().setMaxRequestsPerHost(maxConnections);
         try {
             // Create the downloader class.
             Downloader downloader = dlClass.getConstructor().newInstance();

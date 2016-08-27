@@ -36,7 +36,7 @@ public class FanFictionStory extends Story {
             "|\\QTragedy\\E|\\QWestern\\E";
 
     /**
-     * Create a new {@link FanFictionStory} based off of a url.
+     * Create a new {@link FanFictionStory}.
      * @param storyEntry Story entry with details from the input file.
      * @throws InitStoryException if we can't create this story object for some reason.
      */

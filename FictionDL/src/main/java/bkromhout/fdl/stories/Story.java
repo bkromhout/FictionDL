@@ -51,6 +51,10 @@ public abstract class Story {
     String dateUpdated;
     // Story status ("Complete", "Incomplete", etc.).
     String status;
+    // Cover image file name, used to determine media type.
+    String coverImageFileName;
+    // Cover image data.
+    byte[] coverImage;
     // List of chapter urls.
     final ArrayList<String> chapterUrls = new ArrayList<>();
     // List of chapters.
@@ -254,6 +258,30 @@ public abstract class Story {
      */
     public String getStatus() {
         return status;
+    }
+
+    /**
+     * Whether or not this story has a cover image set.
+     * @return True if {@link #coverImage} isn't {@code null}.
+     */
+    public boolean hasCover() {
+        return coverImageFileName != null && coverImage != null;
+    }
+
+    /**
+     * Get cover image file name.
+     * @return Cover image file name.
+     */
+    public String getCoverImageFileName() {
+        return coverImageFileName;
+    }
+
+    /**
+     * Get cover image data as byte array.
+     * @return Cover image byte array.
+     */
+    public byte[] getCoverImage() {
+        return coverImage;
     }
 
     /**

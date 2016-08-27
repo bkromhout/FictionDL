@@ -23,7 +23,7 @@ public class SiyeStory extends Story {
     private static final String SIYE_A_URL = "http://siye.co.uk/%s";
 
     /**
-     * Create a new {@link SiyeStory} based off of a url.
+     * Create a new {@link SiyeStory}.
      * @param storyEntry Story entry with details from the input file.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
@@ -97,7 +97,7 @@ public class SiyeStory extends Story {
         rating = hasDetailTag(C.J_RATING) ? detailTags.get(C.J_RATING) : details[0].trim();
         ficType = hasDetailTag(C.J_FIC_TYPE) ? detailTags.get(C.J_FIC_TYPE) : details[1].trim(); // SIYE category.
         genres = hasDetailTag(C.J_GENRES) ? detailTags.get(C.J_GENRES) : details[2].trim();
-        warnings = hasDetailTag(C.J_WARNINGS) ? detailTags.get(C.J_WARNINGS) 
+        warnings = hasDetailTag(C.J_WARNINGS) ? detailTags.get(C.J_WARNINGS)
                 : details[3].replace("Warnings: ", "").trim();
         wordCount = Integer.parseInt(details[4].replace("Words: ", "").trim());
         status = details[5].replace("Completed: ", "").trim().equals("Yes") ? C.STAT_C : C.STAT_I;

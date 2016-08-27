@@ -147,6 +147,10 @@ public abstract class C {
     // General Network.
     static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"." + N + LOG_WARN;
 
+    static final String JSON_DL_FAILED = "Failed to download JSON from: \"%s\"." + N + LOG_WARN;
+
+    static final String FILE_DL_FAILED = "Failed to download FILE from: \"%s\"." + N + LOG_WARN;
+
     public static final String SAVE_FILE_FAILED = "Failed to save file: \"%s\"." + N + LOG_ERR;
 
     // Auth.

@@ -17,7 +17,7 @@ public class Ao3Story extends Story {
     private static final String AO3_S_URL = "http://archiveofourown.org/works/%s?view_adult=true";
 
     /**
-     * Create a new {@link Ao3Story} based off of a url.
+     * Create a new {@link Ao3Story}.
      * @param storyEntry Story entry with details from the input file.
      * @throws InitStoryException if we can't create this story object for some reason.
      */

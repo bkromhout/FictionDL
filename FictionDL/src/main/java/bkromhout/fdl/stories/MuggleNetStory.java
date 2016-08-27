@@ -41,7 +41,7 @@ public class MuggleNetStory extends Story {
             "not suitable for younger readers.";
 
     /**
-     * Create a new {@link MuggleNetStory} based off of a url.
+     * Create a new {@link MuggleNetStory}.
      * @param storyEntry Story entry with details from the input file.
      * @throws InitStoryException if we can't create this story object for some reason.
      */

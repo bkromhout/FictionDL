@@ -91,7 +91,7 @@ public class ChapterSource {
         // Create a Chapter.
         if (response != null) return fromResponse();
         if (file != null) return fromFile();
-        return !string.isEmpty() ? new Chapter(string, number) : null;
+        return !string.isEmpty() ? new Chapter(story, string, number) : null;
     }
 
     /**
@@ -104,7 +104,7 @@ public class ChapterSource {
             Document doc = Jsoup.parse(response.body().byteStream(), null, response.request().url().toString());
             // Make sure the ResponseBody is closed so that it doesn't leak.
             response.body().close();
-            return new Chapter(doc, number);
+            return new Chapter(story, doc, number);
         } catch (IOException e) {
             Util.loudf(C.PARSE_HTML_FAILED, response.request().url());
             return null;
@@ -147,7 +147,7 @@ public class ChapterSource {
         }
 
         // Create a Chapter object using the contents of the file.
-        return new Chapter(contents, number);
+        return new Chapter(story, contents, number);
     }
 
     /**
