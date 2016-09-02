@@ -268,8 +268,10 @@ public abstract class Util {
     public static String cleanHtmlString(String htmlStr) {
         if (htmlStr == null) return null;
         // Make sure <br> and <hr> tags are closed.
-        htmlStr = closeTags(htmlStr, "br");
-        htmlStr = closeTags(htmlStr, "hr");
+        htmlStr = closeTagsSelf(htmlStr, "br");
+        htmlStr = closeTagsSelf(htmlStr, "hr");
+        // Make sure <img> tags are closed.
+        htmlStr = closeTags(htmlStr, "img");
         // Replace unicode replacement/null characters with non breaking spaces.
         htmlStr = htmlStr.replace('\uFFFD', '\u00A0');
         // Escape ampersands that aren't part of entities.
@@ -300,14 +302,28 @@ public abstract class Util {
     }
 
     /**
-     * Closes any of the given tags in the given html string.
+     * Closes any instances of the given tag in the given html string by adding a forward slash (/) before its trailing
+     * angle bracket (>).
      * @param in  String with tags to close.
      * @param tag The type of tag, such as hr, or br.
-     * @return A string with all of the given tags closed.
+     * @return A string with all instances of the given tag closed.
+     */
+    private static String closeTagsSelf(String in, String tag) {
+        if (in == null) return null;
+        return in.replaceAll(String.format("(\\<%s[^>]*?(?<!/))(\\>)", tag), "$1/>");
+    }
+
+    /**
+     * Closes any instances of the given tag in the given html string by adding an explicit closing tag after it. For
+     * example, an unclosed {@code <img>} tag would have {@code </img>} appended.
+     * @param in  String with tags to close.
+     * @param tag The type of tag, such as img.
+     * @return A string with all instances of the given tag closed.
      */
     private static String closeTags(String in, String tag) {
         if (in == null) return null;
-        return in.replaceAll(String.format("(\\<%s[^>]*?(?<!/))(\\>)", tag), "$1/>");
+        return in.replaceAll(String.format("(\\<%s[^>]*?(?<!/))(\\>)(?!\\Q</%s>\\E)", tag, tag),
+                String.format("$0</%s>", tag));
     }
 
     /**
