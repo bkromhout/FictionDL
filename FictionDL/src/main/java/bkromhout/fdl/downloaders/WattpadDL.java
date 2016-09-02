@@ -2,7 +2,7 @@ package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.site.Sites;
-import bkromhout.fdl.stories.WattpadStory;
+import bkromhout.fdl.util.C;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -25,7 +25,7 @@ public class WattpadDL extends ParsingDL {
     void generateChapTitle(Chapter chapter) {
         // Get chapter title stored earlier in story detail tags map.
         chapter.title = chapter.story.getDetailTags().get(
-                String.format(WattpadStory.CHAP_TITLE_KEY_TEMPLATE, chapter.number));
+                String.format(C.CHAP_TITLE_KEY_TEMPLATE, chapter.number));
     }
 
     @Override

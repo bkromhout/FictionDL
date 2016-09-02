@@ -23,6 +23,11 @@ public abstract class C {
     public static final String N = System.lineSeparator();
     private static final String NN = N + N;
 
+    /**
+     * Key string template for storing chapter titles which were parsed from the story info to be used when generating
+     * chapter titles.
+     */
+    public static final String CHAP_TITLE_KEY_TEMPLATE = "__chapter %d title__";
 
     /* Global accessors. These are here purely for the convenience of typing "C" rather than a longer class name. */
 

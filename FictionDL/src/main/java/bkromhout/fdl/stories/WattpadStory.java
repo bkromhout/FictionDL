@@ -4,7 +4,6 @@ import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.models.WattpadChapterInfo;
 import bkromhout.fdl.models.WattpadStoryInfo;
 import bkromhout.fdl.parsing.StoryEntry;
-import bkromhout.fdl.site.Site;
 import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
@@ -16,11 +15,6 @@ import org.jsoup.nodes.Document;
  * @author Brenden Kromhout
  */
 public class WattpadStory extends Story {
-    /**
-     * Key string template for storing chapter titles which were parsed from the story info to be used when generating
-     * chapter titles.
-     */
-    public static final String CHAP_TITLE_KEY_TEMPLATE = "__chapter %d title__";
     /**
      * Wattpad story URL, needs story ID substituted into it. Will return a JSON object with story and chapter info,
      * which we parse into a {@link bkromhout.fdl.models.WattpadStoryInfo} object.
@@ -77,7 +71,7 @@ public class WattpadStory extends Story {
             // Increment word count by chapter word count.
             wordCount += chapterInfo.getWordCount();
             // Story chapter title for later on.
-            detailTags.put(String.format(CHAP_TITLE_KEY_TEMPLATE, i + 1), chapterInfo.getTitle());
+            detailTags.put(String.format(C.CHAP_TITLE_KEY_TEMPLATE, i + 1), chapterInfo.getTitle());
         }
     }
 
