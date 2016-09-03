@@ -10,13 +10,18 @@ import bkromhout.fdl.rx.RxOkHttpCall;
 import bkromhout.fdl.site.Site;
 import bkromhout.fdl.stories.Story;
 import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.ImageHelper;
 import bkromhout.fdl.util.ProgressHelper;
 import bkromhout.fdl.util.Util;
+import nl.siegmann.epublib.domain.Resource;
 import okhttp3.Request;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class for downloaders which get stories by scraping their site HTML, and then generating story ePUB files by
@@ -54,6 +59,7 @@ abstract class ParsingDL extends Downloader {
                 .compose(new RxChapAction(this::generateChapTitle))
                 .compose(new RxChapAction(this::extractChapText))
                 .compose(new RxChapAction(this::sanitizeChap))
+                .compose(new RxChapAction(this::inlineImages))
                 .compose(new RxChapAction(chapter -> ProgressHelper.finishedWorkUnit()))
                 .doOnCompleted(() -> Util.log(C.SANITIZING_CHAPS))
                 .observeOn(Schedulers.immediate())
@@ -153,5 +159,22 @@ abstract class ParsingDL extends Downloader {
      */
     void sanitizeChap(Chapter chapter) {
         // Does nothing by default.
+    }
+
+    /**
+     * Scans the chapter content for {@code <img>} tags and attempts to download and inline them.
+     * @param chapter Chapter object.
+     */
+    private void inlineImages(Chapter chapter) {
+        // Create resource base name using chapter number.
+        String baseResourceName = "chap_" + chapter.number + "_img_";
+        // Parse chapter string into Document.
+        Document content = Jsoup.parse(chapter.content, chapter.story.getChapterUrls().get(chapter.number - 1));
+        // Inline images. This will modify the content document and return the downloaded images.
+        List<Resource> chapImageResources = new ImageHelper(content, baseResourceName).getImageResources();
+        // Set new content with replaced <img> tags, then add all image resources.
+        content.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
+        chapter.content = content.toString();
+        chapter.story.getImageResources().addAll(chapImageResources);
     }
 }

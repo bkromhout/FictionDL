@@ -4,12 +4,16 @@ import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.parsing.StoryEntry;
 import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.ImageHelper;
 import bkromhout.fdl.util.Util;
+import nl.siegmann.epublib.domain.Resource;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.jsoup.select.Elements;
+
+import java.util.List;
 
 /**
  * Model object for a <a href="http://www.harrypotterfanfiction.com">Harry Potter FanFiction</a> story.
@@ -84,8 +88,15 @@ public class HpffStory extends Story {
         dateUpdated = getDetailContentFromLabel(detailsTable, "Last Updated");
 
         // Get summary.
-        summary = hasDetailTag(C.J_SUMMARY) ? detailTags.get(C.J_SUMMARY)
-                : Util.cleanHtmlString(infoDoc.select("table.storysummary td").first().html().trim());
+        if (hasDetailTag(C.J_SUMMARY))
+            summary = detailTags.get(C.J_SUMMARY);
+        else {
+            // Make sure that we take care of any banner images in the summary.
+            Element summaryElem = infoDoc.select("table.storysummary td").first();
+            String baseResourceName = "summary_img_";
+            imageResources.addAll(new ImageHelper(summaryElem, baseResourceName).getImageResources());
+            summary = Util.cleanHtmlString(summaryElem.html().trim());
+        }
 
         // Detail tags which the site doesn't support.
         if (hasDetailTag(C.J_SERIES)) series = detailTags.get(C.J_SERIES);

@@ -327,6 +327,15 @@ public abstract class Util {
     }
 
     /**
+     * Remove {@code <img>} tags from an html string.
+     * @param in String to remove {@code <img>} tags from.
+     * @return A string with all {@code <img>} tags removed.
+     */
+    public static String removeImgTags(String in) {
+        return in.replaceAll("(<img[^>]*?)/?>(\\Q</img>\\E)?", "");
+    }
+
+    /**
      * Un-Escape ampersands, because epublib is completely idiotic and doesn't check to see if an ampersand is part of a
      * character code, it just escapes it again.
      * @param in String to un-escape.

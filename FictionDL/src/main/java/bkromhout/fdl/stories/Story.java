@@ -5,6 +5,8 @@ import bkromhout.fdl.ex.InitStoryException;
 import bkromhout.fdl.parsing.StoryEntry;
 import bkromhout.fdl.site.Site;
 import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.ImageHelper;
+import nl.siegmann.epublib.domain.Resource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,6 +57,8 @@ public abstract class Story {
     String coverImageFileName;
     // Cover image data.
     byte[] coverImage;
+    // List of image resources to include in the ePub file (other than the cover image).
+    final ArrayList<Resource> imageResources = new ArrayList<>();
     // List of chapter urls.
     final ArrayList<String> chapterUrls = new ArrayList<>();
     // List of chapters.
@@ -282,6 +286,14 @@ public abstract class Story {
      */
     public byte[] getCoverImage() {
         return coverImage;
+    }
+
+    /**
+     * Get image resources.
+     * @return Image resources.
+     */
+    public ArrayList<Resource> getImageResources() {
+        return imageResources;
     }
 
     /**
