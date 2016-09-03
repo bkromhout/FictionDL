@@ -2,7 +2,7 @@ package bkromhout.fdl.util;
 
 import bkromhout.fdl.Main;
 import com.google.common.eventbus.EventBus;
-import com.squareup.okhttp.OkHttpClient;
+import okhttp3.OkHttpClient;
 
 /**
  * Constants.
@@ -15,7 +15,7 @@ public abstract class C {
     /**
      * Program version string.
      */
-    public static final String VER_STRING = "FictionDL, Version 4.0.0";
+    public static final String VER_STRING = "FictionDL, Version 4.1.0";
 
     /**
      * System-specific line separator.
@@ -23,6 +23,11 @@ public abstract class C {
     public static final String N = System.lineSeparator();
     private static final String NN = N + N;
 
+    /**
+     * Key string template for storing chapter titles which were parsed from the story info to be used when generating
+     * chapter titles.
+     */
+    public static final String CHAP_TITLE_KEY_TEMPLATE = "__chapter %d title__";
 
     /* Global accessors. These are here purely for the convenience of typing "C" rather than a longer class name. */
 
@@ -68,7 +73,7 @@ public abstract class C {
     // General.
     public static final String DONE = "Done!" + LOG_GREEN;
 
-    public static final String PARSING_FILE = "Parsing %s file...";
+    public static final String PARSING_FILE = "Parsing %s file..." + N;
 
     public static final String SANITIZING_CHAPS = "Sanitizing chapters...";
 
@@ -76,7 +81,7 @@ public abstract class C {
 
     public static final String ALL_FINISHED = N + "All Finished! :)" + LOG_GREEN;
 
-    public static final String RUN_RESULTS = "This run generated %f total units of work." + N + LOG_LOUD;
+    public static final String RUN_RESULTS = "This run successfully downloaded %d of %d stories." + N + LOG_BLUE;
 
     // Site Story Process
     public static final String STARTING_SITE_DL_PROCESS = N + "Starting %s download process..." + N + LOG_BLUE;
@@ -139,10 +144,17 @@ public abstract class C {
     // Parsing.
     public static final String PROCESS_LINE_FAILED = "Couldn't process this line from %s file: \"%s\"." + N + LOG_WARN;
 
+    public static final String DETAIL_TAG_IGNORED = "Ignoring the detail tag \"%s\" because there's no story link to" +
+            " associate it with." + N + LOG_WARN;
+
     public static final String PARSE_HTML_FAILED = "Couldn't parse HTML for \"%s\"." + LOG_WARN;
 
     // General Network.
     static final String HTML_DL_FAILED = "Failed to download HTML from: \"%s\"." + N + LOG_WARN;
+
+    static final String JSON_DL_FAILED = "Failed to download JSON from: \"%s\"." + N + LOG_WARN;
+
+    static final String FILE_DL_FAILED = "Failed to download FILE from: \"%s\"." + N + LOG_WARN;
 
     public static final String SAVE_FILE_FAILED = "Failed to save file: \"%s\"." + N + LOG_ERR;
 
@@ -170,6 +182,8 @@ public abstract class C {
     private static final String LS_PRE_TITLE = "The local story \"%s\" "; // Common local story error prefix.
 
     public static final String INVALID_STORY_DIR = "\"%s\" is not a valid story folder." + N + LOG_ERR;
+
+    public static final String INVALID_STORIES_DIR = "\"%s\" is not a valid stories parent folder." + N + LOG_ERR;
 
     public static final String NO_STORYINFO_JSON = LS_PRE_DIR + "doesn't have a storyinfo.json file." + LOG_ERR_SKIPN;
 

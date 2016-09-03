@@ -2,7 +2,8 @@ package bkromhout.fdl.rx;
 
 import bkromhout.fdl.Main;
 import bkromhout.fdl.ex.InitStoryException;
-import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.parsing.StoryEntry;
+import bkromhout.fdl.stories.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
 import rx.Observable;
@@ -11,9 +12,9 @@ import rx.Subscriber;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Creates {@link Story}s from story urls asynchronously.
+ * Creates {@link Story}s from {@link StoryEntry}s asynchronously.
  */
-public class RxMakeStories implements Observable.Transformer<String, Story> {
+public class RxMakeStories implements Observable.Transformer<StoryEntry, Story> {
     private final Class<? extends Story> storyClass;
 
     /**
@@ -25,29 +26,29 @@ public class RxMakeStories implements Observable.Transformer<String, Story> {
     }
 
     @Override
-    public Observable<Story> call(Observable<String> storyUrls) {
-        return storyUrls.flatMap(url -> Observable.create(new CreateStory(url)));
+    public Observable<Story> call(Observable<StoryEntry> storyEntries) {
+        return storyEntries.flatMap(entry -> Observable.create(new CreateStory(entry)));
     }
 
     /**
-     * Creates {@link Story}s from story urls.
+     * Creates {@link Story}s from {@link StoryEntry}s.
      */
     private final class CreateStory implements Observable.OnSubscribe<Story> {
-        private final String url;
+        private final StoryEntry entry;
 
         /**
-         * Create a new {@link Story} from the given story url.
-         * @param url Story url.
+         * Create a new {@link Story} from the given {@link StoryEntry}.
+         * @param entry Story entry.
          */
-        private CreateStory(String url) {
-            this.url = url;
+        private CreateStory(StoryEntry entry) {
+            this.entry = entry;
         }
 
         @Override
         public void call(Subscriber<? super Story> sub) {
             try {
                 // Doing a bit of reflection magic here to construct story classes ;)
-                sub.onNext(storyClass.getConstructor(String.class).newInstance(url));
+                sub.onNext(storyClass.getConstructor(StoryEntry.class).newInstance(entry));
                 sub.onCompleted();
             } catch (InvocationTargetException e) {
                 // Handle the exception.
@@ -59,7 +60,7 @@ public class RxMakeStories implements Observable.Transformer<String, Story> {
                     Util.log(e.getCause().getMessage());
                 else
                     // Not an InitStoryException, but it has a message, so print it.
-                    Util.logf(C.UNEXP_STORY_ERR, url, e.getCause().getMessage());
+                    Util.logf(C.UNEXP_STORY_ERR, entry.getUrl(), e.getCause().getMessage());
                 // We just return null if a story fails.
                 sub.onNext(null);
                 sub.onCompleted();

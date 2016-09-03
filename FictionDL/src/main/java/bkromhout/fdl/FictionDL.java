@@ -2,8 +2,8 @@ package bkromhout.fdl;
 
 import bkromhout.fdl.events.UpdateTaskProgressEvent;
 import bkromhout.fdl.localfic.LocalStoryProcessor;
-import bkromhout.fdl.parsers.ConfigFileParser;
-import bkromhout.fdl.parsers.InputFileParser;
+import bkromhout.fdl.parsing.ConfigFileParser;
+import bkromhout.fdl.parsing.InputFileParser;
 import bkromhout.fdl.site.Site;
 import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
@@ -121,7 +121,7 @@ public class FictionDL {
 
         /* Do post-run tasks. */
         Util.log(C.ALL_FINISHED);
-        Util.loudf(C.RUN_RESULTS, progressHelper.getTotalWork());
+        Util.logf(C.RUN_RESULTS, progressHelper.getStoriesDownloaded(), progressHelper.getTotalNumberOfStories());
     }
 
     /**

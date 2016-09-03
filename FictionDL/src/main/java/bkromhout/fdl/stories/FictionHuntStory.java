@@ -1,6 +1,7 @@
-package bkromhout.fdl.storys;
+package bkromhout.fdl.stories;
 
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.parsing.StoryEntry;
 import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
@@ -22,12 +23,12 @@ public class FictionHuntStory extends Story {
     private boolean isOnFfn;
 
     /**
-     * Create a new {@link FictionHuntStory} based off of a url.
-     * @param url url of the story this model represents.
+     * Create a new {@link FictionHuntStory}.
+     * @param storyEntry Story entry with details from the input file.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    public FictionHuntStory(String url) throws InitStoryException {
-        super(url, Sites.FH());
+    public FictionHuntStory(StoryEntry storyEntry) throws InitStoryException {
+        super(storyEntry, Sites.FH());
     }
 
     @Override
@@ -37,26 +38,42 @@ public class FictionHuntStory extends Story {
         Document infoDoc = Util.getHtml(url);
         if (infoDoc == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
 
-        title = infoDoc.select("div.title").first().text();
+        title = hasDetailTag(C.J_TITLE) ? detailTags.get(C.J_TITLE)
+                : infoDoc.select("div.title").first().text();
 
         // Check if story is on FanFiction.net. If so, we'll download it from there, so we're done here.
         if (isOnFfn = checkIfOnFfn()) return;
 
-        author = infoDoc.select("div.details > a").first().text();
-        summary = findSummary();
+        author = hasDetailTag(C.J_AUTHOR) ? detailTags.get(C.J_AUTHOR)
+                : infoDoc.select("div.details > a").first().text();
+
+        summary = hasDetailTag(C.J_SUMMARY) ? detailTags.get(C.J_SUMMARY)
+                : findSummary();
 
         // Get details string to extract other bits of information from that.
         String[] details = infoDoc.select("div.details").first().ownText().split(" - ");
 
-        characters = details[0].trim();
+        characters = hasDetailTag(C.J_CHARACTERS) ? detailTags.get(C.J_CHARACTERS)
+                : details[0].trim();
+
         wordCount = Integer.parseInt(details[1].trim().replace("Words: ", "").replace(",", ""));
-        rating = details[2].replace("Rated: ", "").trim();
-        genres = details[4].trim();
+
+        rating = hasDetailTag(C.J_RATING) ? detailTags.get(C.J_RATING)
+                : details[2].replace("Rated: ", "").trim();
+
+        genres = hasDetailTag(C.J_GENRES) ? detailTags.get(C.J_GENRES)
+                : details[4].trim();
+
         int chapCount = Integer.parseInt(details[5].trim().replace("Chapters: ", ""));
         dateUpdated = details[7].trim().replace("Updated: ", "");
         datePublished = details[8].trim().replace("Published: ", "");
         // Get status (it isn't listed if it's incomplete, so just check the length of the details array).
         status = details.length > 9 ? C.STAT_C : C.STAT_I;
+
+        // Detail tags which the site doesn't support.
+        if (hasDetailTag(C.J_FIC_TYPE)) ficType = detailTags.get(C.J_FIC_TYPE);
+        if (hasDetailTag(C.J_SERIES)) series = detailTags.get(C.J_SERIES);
+        if (hasDetailTag(C.J_WARNINGS)) warnings = detailTags.get(C.J_WARNINGS);
 
         // Generate chapter urls.
         for (int i = 0; i < chapCount; i++)

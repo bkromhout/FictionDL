@@ -1,7 +1,7 @@
 package bkromhout.fdl.ex;
 
 /**
- * Exception thrown when a {@link bkromhout.fdl.storys.Story Story} cannot be created for some reason.
+ * Exception thrown when a {@link bkromhout.fdl.stories.Story Story} cannot be created for some reason.
  */
 public class InitStoryException extends Exception {
 

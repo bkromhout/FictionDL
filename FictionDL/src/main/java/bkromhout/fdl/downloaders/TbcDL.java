@@ -3,8 +3,8 @@ package bkromhout.fdl.downloaders;
 import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.Util;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.RequestBody;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import org.jsoup.nodes.Element;
 
 /**
@@ -26,12 +26,13 @@ public class TbcDL extends ParsingDL {
     @Override
     protected RequestBody getSiteAuthForm(String u, String p) {
         if (u == null || u.isEmpty() || p == null || p.isEmpty()) return null;
-        return new MultipartBuilder().type(MultipartBuilder.FORM)
-                                     .addFormDataPart("txtusername", u)
-                                     .addFormDataPart("txtpassword", p)
-                                     .addFormDataPart("remember", "yes")
-                                     .addFormDataPart("login", "Login")
-                                     .build();
+        return new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("txtusername", u)
+                .addFormDataPart("txtpassword", p)
+                .addFormDataPart("remember", "yes")
+                .addFormDataPart("login", "Login")
+                .build();
     }
 
     @Override

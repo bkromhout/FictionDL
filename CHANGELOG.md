@@ -1,5 +1,14 @@
 # FictionDL Changelog
 
+## Release 4.1.0
+* **New:** Added support for [Wattpad](https://www.wattpad.com)
+* **New:** Added support for [Harry Potter FanFiction](http://www.harrypotterfanfiction.com)
+* **New:** Added support for images which are within chapter text (currently this only occurs for HPFF stories).
+* **New:** Added the ability to put multiple local story folders in a single parent folder, which can then be pointed to by adding a line to the input file prefixed with `@fdl:ls_folder=`
+* **New:** Added the ability to specify (or override) certain story details in the input file using "Detail Tags". See [this wiki page](../../wiki/Detail-Tags) for more details
+* **New:** Added a bit of log text which tells you how many stories were successfully downloaded (out of the total) at the end of the process
+* **Fixed:** Downloading stories from MuggleNew was broken due to the new site layout. This is now fixed! (Tested with the default Blue layout)
+
 ## Release 4.0.0
 * **New:** Local stories feature (CLI ONLY!), see [this wiki page](../../wiki/Local-Stories) for more details
 * **New:** Include a link to the story on the generated title page

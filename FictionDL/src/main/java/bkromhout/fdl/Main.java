@@ -2,19 +2,18 @@ package bkromhout.fdl;
 
 import bkromhout.fdl.ui.Gui;
 import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.CookieMonster;
 import bkromhout.fdl.util.Util;
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.squareup.okhttp.ConnectionPool;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 import javafx.application.Application;
 import javafx.application.Platform;
+import okhttp3.ConnectionPool;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import org.apache.commons.cli.*;
 
-import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
@@ -25,6 +24,10 @@ import java.util.concurrent.TimeUnit;
  * Just a simple entry point class for the command line app.
  */
 public class Main {
+    /**
+     * The maximum number of connections which can be made per host.
+     */
+    private static final int MAX_CONNECTIONS_PER_HOST = 10;
     /**
      * Are we running with a GUI?
      */
@@ -104,25 +107,27 @@ public class Main {
         //eventBus = new EventBus("fdl-event-bus");
 
         // Set up the OkHttpClient.
-        httpClient = new OkHttpClient();
-        httpClient.setCookieHandler(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
-        httpClient.setConnectionPool(ConnectionPool.getDefault());
-        httpClient.getDispatcher().setMaxRequestsPerHost(10); // Bump this up from 5.
-        httpClient.setReadTimeout(0, TimeUnit.MILLISECONDS);
-        addOkHttpLogging();
+        httpClient = new OkHttpClient.Builder()
+                .cookieJar(CookieMonster.get())
+                .connectionPool(new ConnectionPool())
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(0, TimeUnit.MILLISECONDS)
+                .addInterceptor(makeOkHttpLoggingInterceptor())
+                .build();
+        httpClient.dispatcher().setMaxRequestsPerHost(MAX_CONNECTIONS_PER_HOST);
     }
 
     /**
-     * Adds a logger to the OkHttpClient.
+     * Creates a logging interceptor for OkHttp3's OkHttpClient.
      * <p>
      * All log messages will be logged using {@link Util#loud(String)}, so none of them will be printed if verbose mode
      * isn't enabled. Also, they will be purple :)
      */
-    private static void addOkHttpLogging() {
+    private static HttpLoggingInterceptor makeOkHttpLoggingInterceptor() {
         // Pass the Util.loud() function to the logger so that it uses our logging methods.
         HttpLoggingInterceptor logger = new HttpLoggingInterceptor(str -> Util.loud(str + C.LOG_LOUD));
         logger.setLevel(HttpLoggingInterceptor.Level.BASIC);
-        Main.httpClient.interceptors().add(logger);
+        return logger;
     }
 
     /**

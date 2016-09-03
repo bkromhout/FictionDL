@@ -2,8 +2,10 @@ package bkromhout.fdl.site;
 
 import bkromhout.fdl.Main;
 import bkromhout.fdl.downloaders.Downloader;
-import bkromhout.fdl.parsers.ConfigFileParser;
-import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.parsing.ConfigFileParser;
+import bkromhout.fdl.parsing.StoryEntry;
+import bkromhout.fdl.stories.Story;
+import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.IWorkProducer;
 
 import java.util.HashSet;
@@ -37,9 +39,13 @@ public final class Site implements IWorkProducer {
      */
     private final boolean supportsAuth;
     /**
-     * List of story urls for this site.
+     * List of story entries to download for this site.
      */
-    private final HashSet<String> urls;
+    private final HashSet<StoryEntry> storyEntries;
+    /**
+     * Maximum number of connections for this site.
+     */
+    private int maxConnections = 10;
 
     /**
      * Create a new {@link Site}.
@@ -67,7 +73,11 @@ public final class Site implements IWorkProducer {
         this.dlClass = dlClass;
         this.storyClass = storyClass;
         this.supportsAuth = supportsAuth;
-        this.urls = new HashSet<>();
+        this.storyEntries = new HashSet<>();
+    }
+
+    void setMaxConnections(int maxConnections) {
+        this.maxConnections = maxConnections;
     }
 
     /**
@@ -75,7 +85,8 @@ public final class Site implements IWorkProducer {
      * @param config Options parsed from the config file, in case this site needs them.
      */
     public void process(ConfigFileParser.Config config) {
-        if (urls.isEmpty()) return;
+        if (storyEntries.isEmpty()) return;
+        C.getHttpClient().dispatcher().setMaxRequestsPerHost(maxConnections);
         try {
             // Create the downloader class.
             Downloader downloader = dlClass.getConstructor().newInstance();
@@ -115,15 +126,15 @@ public final class Site implements IWorkProducer {
     }
 
     /**
-     * Get this site's list of story urls.
-     * @return Story url list.
+     * Get this site's list of story entries.
+     * @return Story entry list.
      */
-    public HashSet<String> getUrls() {
-        return urls;
+    public HashSet<StoryEntry> getStoryEntries() {
+        return storyEntries;
     }
 
     @Override
     public int getWorkCount() {
-        return urls.size();
+        return storyEntries.size();
     }
 }

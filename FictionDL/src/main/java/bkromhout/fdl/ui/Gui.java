@@ -44,7 +44,7 @@ public class Gui extends Application {
         primaryStage.setOnHiding(handler -> {
             controller.saveFields(); // Save text fields' contents when closing stage.
             cancelFictionDLTask(); // Cancel the task.
-            C.getHttpClient().getDispatcher().getExecutorService().shutdownNow(); // Shut down OkHttp's dispatcher.
+            C.getHttpClient().dispatcher().executorService().shutdownNow(); // Shut down OkHttp's dispatcher.
         });
 
         // Show the stage.

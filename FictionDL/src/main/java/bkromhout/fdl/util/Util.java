@@ -3,12 +3,13 @@ package bkromhout.fdl.util;
 import bkromhout.fdl.Main;
 import bkromhout.fdl.ex.StoryinfoJsonException;
 import bkromhout.fdl.ui.Controller;
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -197,15 +198,38 @@ public abstract class Util {
      * wasn't in the range of [200..300).
      */
     private static InputStream getRawHtmlStream(String url) {
-        Response response = getRawHtml(url);
+        Response response = getRaw(url);
         if (response == null) return null;
+        return response.body().byteStream();
+    }
 
-        try {
-            return response.body().byteStream();
+    /**
+     * Get a model object by using Gson to parse a JSON response.
+     * @param url        url to download.
+     * @param modelClass Model class.
+     * @param <T>        Model type.
+     * @return Model object.
+     */
+    public static <T> T getModel(String url, Class<T> modelClass) {
+        try (Response response = getRaw(url)) {
+            if (response == null) return null;
+            return new Gson().fromJson(response.body().charStream(), modelClass);
+        }
+    }
+
+    /**
+     * Get a byte array.
+     * @param url url to download.
+     * @return Byte array.
+     */
+    public static byte[] getBinary(String url) {
+        try (Response response = getRaw(url)) {
+            if (response == null) return null;
+            return response.body().bytes();
         } catch (IOException e) {
             e.printStackTrace();
             // We're just ignoring the exception really.
-            logf(C.HTML_DL_FAILED, url);
+            logf(C.FILE_DL_FAILED, url);
             return null;
         }
     }
@@ -219,7 +243,7 @@ public abstract class Util {
      * @return OkHttp Response, or null if we failed to download the page or the status code wasn't in the range of
      * [200..300).
      */
-    private static Response getRawHtml(String url) {
+    private static Response getRaw(String url) {
         try {
             Request request = new Request.Builder().url(url).build();
             Response response = C.getHttpClient().newCall(request).execute();
@@ -244,8 +268,10 @@ public abstract class Util {
     public static String cleanHtmlString(String htmlStr) {
         if (htmlStr == null) return null;
         // Make sure <br> and <hr> tags are closed.
-        htmlStr = closeTags(htmlStr, "br");
-        htmlStr = closeTags(htmlStr, "hr");
+        htmlStr = closeTagsSelf(htmlStr, "br");
+        htmlStr = closeTagsSelf(htmlStr, "hr");
+        // Make sure <img> tags are closed.
+        htmlStr = closeTags(htmlStr, "img");
         // Replace unicode replacement/null characters with non breaking spaces.
         htmlStr = htmlStr.replace('\uFFFD', '\u00A0');
         // Escape ampersands that aren't part of entities.
@@ -276,13 +302,37 @@ public abstract class Util {
     }
 
     /**
-     * Closes any of the given tags in the given html string.
+     * Closes any instances of the given tag in the given html string by adding a forward slash (/) before its trailing
+     * angle bracket (>).
+     * @param in  String with tags to close.
      * @param tag The type of tag, such as hr, or br.
-     * @return A string with all of the given tags closed.
+     * @return A string with all instances of the given tag closed.
+     */
+    private static String closeTagsSelf(String in, String tag) {
+        if (in == null) return null;
+        return in.replaceAll(String.format("(\\<%s[^>]*?(?<!/))(\\>)", tag), "$1/>");
+    }
+
+    /**
+     * Closes any instances of the given tag in the given html string by adding an explicit closing tag after it. For
+     * example, an unclosed {@code <img>} tag would have {@code </img>} appended.
+     * @param in  String with tags to close.
+     * @param tag The type of tag, such as img.
+     * @return A string with all instances of the given tag closed.
      */
     private static String closeTags(String in, String tag) {
         if (in == null) return null;
-        return in.replaceAll(String.format("(\\<%s[^>]*?(?<!/))(\\>)", tag), "$1/>");
+        return in.replaceAll(String.format("(\\<%s[^>]*?(?<!/))(\\>)(?!\\Q</%s>\\E)", tag, tag),
+                String.format("$0</%s>", tag));
+    }
+
+    /**
+     * Remove {@code <img>} tags from an html string.
+     * @param in String to remove {@code <img>} tags from.
+     * @return A string with all {@code <img>} tags removed.
+     */
+    public static String removeImgTags(String in) {
+        return in.replaceAll("(<img[^>]*?)/?>(\\Q</img>\\E)?", "");
     }
 
     /**

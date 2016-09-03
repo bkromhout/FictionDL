@@ -2,10 +2,12 @@ package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.site.Sites;
-import com.squareup.okhttp.MultipartBuilder;
-import com.squareup.okhttp.RequestBody;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -13,6 +15,10 @@ import java.util.regex.Pattern;
  * Downloader for <a href="http://fanfiction.mugglenet.com">MuggleNet</a> stories.
  */
 public class MuggleNetDL extends ParsingDL {
+    /**
+     * Regex to help get chapter title.
+     */
+    private static final Pattern CHAPTER_TITLE_PATTERN = Pattern.compile("(\\d+.\\s)(.*)");
     /**
      * MuggleNet login page url.
      */
@@ -22,18 +28,19 @@ public class MuggleNetDL extends ParsingDL {
      * Create a new {@link MuggleNetDL}.
      */
     public MuggleNetDL() {
-        super(Sites.MN(), "div.contentLeft");
+        super(Sites.MN(), "div.gb-full blockquote, div#story");
     }
 
     @Override
     protected RequestBody getSiteAuthForm(String u, String p) {
         if (u == null || u.isEmpty() || p == null || p.isEmpty()) return null;
-        return new MultipartBuilder().type(MultipartBuilder.FORM)
-                                     .addFormDataPart("penname", u)
-                                     .addFormDataPart("password", p)
-                                     .addFormDataPart("cookiecheck", "1")
-                                     .addFormDataPart("submit", "Submit")
-                                     .build();
+        return new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("penname", u)
+                .addFormDataPart("password", p)
+                .addFormDataPart("cookiecheck", "1")
+                .addFormDataPart("submit", "Submit")
+                .build();
     }
 
     @Override
@@ -53,7 +60,7 @@ public class MuggleNetDL extends ParsingDL {
         // If the story is chaptered, we'll find the <select> element and can get the chapter title from that (we
         // strip off the leading "#. " part of it). If the story is only one chapter, we just call it "Chapter 1".
         if (titleElement != null) {
-            Matcher matcher = Pattern.compile("(\\d+.\\s)(.*)").matcher(titleElement.html().trim());
+            Matcher matcher = CHAPTER_TITLE_PATTERN.matcher(titleElement.html().trim());
             matcher.matches();
             try {
                 chapter.title = matcher.group(2);
@@ -80,19 +87,13 @@ public class MuggleNetDL extends ParsingDL {
     @Override
     protected void extractChapText(Chapter chapter) {
         StringBuilder chapterText = new StringBuilder();
-        // First off, we need to drill down to just the div.contentLeft element.
-        Element content = chapter.rawHtml.select(chapTextSelector).first();
 
-        // Now, we want to strip out any children of div.contentLeft which are not div.notes or div#story, so select
-        // all of those and remove them.
-        content.select("div.contentLeft > *:not(div.notes, div#story)").remove();
-
-        // Now, we want to insert <hr /> tags between any remaining divs.
-        content.children().after("<hr />");
-        content.select("hr").last().remove();
-
-        // Now we can finally output the html.
-        chapterText.append(content.html());
-        chapter.contentFromString(chapterText.toString());
+        Elements content = chapter.rawHtml.select(chapTextSelector);
+        Iterator<Element> iterator = content.iterator();
+        while (iterator.hasNext()) {
+            chapterText.append(iterator.next().html());
+            if (iterator.hasNext()) chapterText.append("<hr />");
+        }
+        chapter.contentFromString(chapterText.toString().replace("blockquote", "div"));
     }
 }

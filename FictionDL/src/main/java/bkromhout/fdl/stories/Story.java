@@ -1,11 +1,15 @@
-package bkromhout.fdl.storys;
+package bkromhout.fdl.stories;
 
 import bkromhout.fdl.chapter.Chapter;
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.parsing.StoryEntry;
 import bkromhout.fdl.site.Site;
 import bkromhout.fdl.util.C;
+import bkromhout.fdl.util.ImageHelper;
+import nl.siegmann.epublib.domain.Resource;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +20,9 @@ public abstract class Story {
 
     // Site that story is from (name will be used as "Publisher" metadata).
     final Site site;
+    // Detail tags from the input file. These will override corresponding details for stories obtained using a
+    // parsing downloader.
+    final HashMap<String, String> detailTags = new HashMap<>();
     // Story url.
     String url;
     // Story ID.
@@ -46,6 +53,12 @@ public abstract class Story {
     String dateUpdated;
     // Story status ("Complete", "Incomplete", etc.).
     String status;
+    // Cover image file name, used to determine media type.
+    String coverImageFileName;
+    // Cover image data.
+    byte[] coverImage;
+    // List of image resources to include in the ePub file (other than the cover image).
+    final ArrayList<Resource> imageResources = new ArrayList<>();
     // List of chapter urls.
     final ArrayList<String> chapterUrls = new ArrayList<>();
     // List of chapters.
@@ -53,12 +66,15 @@ public abstract class Story {
 
     /**
      * Create a new {@link Story}.
-     * @param url  Story url.
-     * @param site Site that story is from.
+     * @param storyEntry Story entry with details from the input file.
+     * @param site       Site that story is from.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    Story(String url, Site site) throws InitStoryException {
-        this.url = url;
+    Story(StoryEntry storyEntry, Site site) throws InitStoryException {
+        if (storyEntry != null) {
+            this.url = storyEntry.getUrl();
+            this.detailTags.putAll(storyEntry.getDetailTags());
+        }
         this.site = site;
         populateInfo();
     }
@@ -84,11 +100,30 @@ public abstract class Story {
     }
 
     /**
+     * Check to see if this story has a detail tag for the given tag name with a non-{@code null}, non-empty value.
+     * @param tagName Detail tag name to check.
+     * @return True if the given tag name is mapped to a non-{@code null}, non-empty value; otherwise false.
+     */
+    public boolean hasDetailTag(String tagName) {
+        if (!detailTags.containsKey(tagName)) return false;
+        String detail = detailTags.get(tagName);
+        return detail != null && !detail.isEmpty();
+    }
+
+    /**
      * Get story's url.
      * @return Story url.
      */
     public String getUrl() {
         return url;
+    }
+
+    /**
+     * Get detail tags for this story which came from the input file.
+     * @return Story's detail tags.
+     */
+    public HashMap<String, String> getDetailTags() {
+        return detailTags;
     }
 
     /**
@@ -227,6 +262,38 @@ public abstract class Story {
      */
     public String getStatus() {
         return status;
+    }
+
+    /**
+     * Whether or not this story has a cover image set.
+     * @return True if {@link #coverImage} isn't {@code null}.
+     */
+    public boolean hasCover() {
+        return coverImageFileName != null && coverImage != null;
+    }
+
+    /**
+     * Get cover image file name.
+     * @return Cover image file name.
+     */
+    public String getCoverImageFileName() {
+        return coverImageFileName;
+    }
+
+    /**
+     * Get cover image data as byte array.
+     * @return Cover image byte array.
+     */
+    public byte[] getCoverImage() {
+        return coverImage;
+    }
+
+    /**
+     * Get image resources.
+     * @return Image resources.
+     */
+    public ArrayList<Resource> getImageResources() {
+        return imageResources;
     }
 
     /**

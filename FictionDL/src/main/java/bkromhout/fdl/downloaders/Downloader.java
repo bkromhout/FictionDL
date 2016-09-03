@@ -1,14 +1,15 @@
 package bkromhout.fdl.downloaders;
 
+import bkromhout.fdl.parsing.StoryEntry;
 import bkromhout.fdl.rx.RxMakeStories;
 import bkromhout.fdl.site.Site;
-import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.stories.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
 import bkromhout.fdl.util.Util;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
@@ -36,7 +37,7 @@ public abstract class Downloader {
     /**
      * Story urls.
      */
-    private final HashSet<String> storyUrls;
+    private final HashSet<StoryEntry> storyEntries;
     /**
      * Any extra messages to print prior to starting the download process. Can be set by a subclass at some point after
      * initialization.
@@ -50,7 +51,7 @@ public abstract class Downloader {
     Downloader(Site site) {
         this.site = site;
         this.storyClass = site.getStoryClass();
-        this.storyUrls = site.getUrls();
+        this.storyEntries = site.getStoryEntries();
     }
 
     /**
@@ -64,7 +65,7 @@ public abstract class Downloader {
 
         // Use RxJava to handle the logic.
         ArrayList<Story> stories = (ArrayList<Story>) Observable
-                .from(storyUrls)
+                .from(storyEntries)
                 .subscribeOn(Schedulers.computation())
                 .compose(new RxMakeStories(storyClass))
                 .doOnNext(story -> {

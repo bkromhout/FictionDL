@@ -1,7 +1,7 @@
 package bkromhout.fdl.ex;
 
 /**
- * Thrown by {@link bkromhout.fdl.storys.LocalStory LocalStory} if there is an issue while processing it.
+ * Thrown by {@link bkromhout.fdl.stories.LocalStory LocalStory} if there is an issue while processing it.
  */
 public class LocalStoryException extends Exception {
 

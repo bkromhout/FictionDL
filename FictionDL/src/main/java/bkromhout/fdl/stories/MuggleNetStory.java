@@ -1,6 +1,7 @@
-package bkromhout.fdl.storys;
+package bkromhout.fdl.stories;
 
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.parsing.StoryEntry;
 import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
@@ -40,12 +41,12 @@ public class MuggleNetStory extends Story {
             "not suitable for younger readers.";
 
     /**
-     * Create a new {@link MuggleNetStory} based off of a url.
-     * @param url url of the story this model represents.
+     * Create a new {@link MuggleNetStory}.
+     * @param storyEntry Story entry with details from the input file.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    public MuggleNetStory(String url) throws InitStoryException {
-        super(url, Sites.MN());
+    public MuggleNetStory(StoryEntry storyEntry) throws InitStoryException {
+        super(storyEntry, Sites.MN());
     }
 
     @Override
@@ -90,66 +91,114 @@ public class MuggleNetStory extends Story {
         }
 
         // Get the element that has the title and author of the story in it, then parse the title and author from it.
-        Elements taElem = infoDoc.select("div#pagetitle a");
+        Elements taElem = infoDoc.select("h1>a");
         if (taElem == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
-        title = taElem.first().html().trim();
-        author = taElem.last().html().trim();
+        title = hasDetailTag(C.J_TITLE) ? detailTags.get(C.J_TITLE)
+                : taElem.first().html().trim();
+        author = hasDetailTag(C.J_AUTHOR) ? detailTags.get(C.J_AUTHOR)
+                : taElem.last().html().trim();
 
         // Get the element that has the other details in it, and a list of the detail label elements to help parse
         // the details.
-        Element details = infoDoc.select("div.content").first();
+        Element details = infoDoc.select("div.listbox").first();
         if (details == null) throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
-        Elements labels = details.select("span.label");
+        Elements labels = details.select("b,span.label");
 
-        summary = Util.cleanHtmlString(makeDetailDivForLabel(details, labels, 0).html().trim());
-        rating = makeDetailDivForLabel(details, labels, 1).text().trim();
-        ficType = makeDetailDivForLabel(details, labels, 2).text().trim(); // MN category.
+        summary = hasDetailTag(C.J_SUMMARY) ? detailTags.get(C.J_SUMMARY)
+                : Util.cleanHtmlString(makeDetailDivForLabel(details, labels, "Summary", "Rating").html().trim());
 
-        String temp = makeDetailDivForLabel(details, labels, 3).text().trim();
-        characters = temp.equals("None") ? null : temp;
+        if (hasDetailTag(C.J_RATING))
+            rating = detailTags.get(C.J_RATING);
+        else {
+            rating = makeDetailDivForLabel(details, labels, "Rating", "Category").text().trim();
+            rating = rating.substring(0, rating.indexOf('[')).trim(); // Strip the reviews count from the rating text.
+        }
 
-        temp = makeDetailDivForLabel(details, labels, 4).text().trim();
-        warnings = temp.equals("None") ? null : temp;
+        ficType = hasDetailTag(C.J_FIC_TYPE) ? detailTags.get(C.J_FIC_TYPE)
+                : makeDetailDivForLabel(details, labels, "Category", "Characters").text().trim(); // MN category.
 
-        temp = makeDetailDivForLabel(details, labels, 6).text().trim();
-        series = temp.equals("None") ? null : temp;
+        if (hasDetailTag(C.J_CHARACTERS))
+            characters = detailTags.get(C.J_CHARACTERS);
+        else {
+            String temp = makeDetailDivForLabel(details, labels, "Characters", "Warnings").text().trim();
+            characters = temp.equals("None") ? null : temp;
+        }
 
-        temp = makeDetailDivForLabel(details, labels, 8).text().trim();
+        if (hasDetailTag(C.J_WARNINGS))
+            warnings = detailTags.get(C.J_WARNINGS);
+        else {
+            String temp = makeDetailDivForLabel(details, labels, "Warnings", "Challenge").text().trim();
+            warnings = temp.equals("None") ? null : temp;
+        }
+
+        if (hasDetailTag(C.J_SERIES))
+            series = detailTags.get(C.J_SERIES);
+        else {
+            String temp = makeDetailDivForLabel(details, labels, "Serie", "Chapters").text().trim(); // Yes, "Serie".
+            series = temp.equals("None") ? null : temp;
+        }
+
+        String temp = makeDetailDivForLabel(details, labels, "Completed", "Wordcount").text().trim();
         status = temp.equals("Yes") ? C.STAT_C : C.STAT_I;
 
-        int chapCount = Integer.parseInt(makeDetailDivForLabel(details, labels, 7).text().trim());
-        wordCount = Integer.parseInt(makeDetailDivForLabel(details, labels, 9).text().trim());
-        datePublished = makeDetailDivForLabel(details, labels, 11).text().trim();
-        dateUpdated = makeDetailDivForLabel(details, labels, 12).text().trim();
+        int chapCount = Integer.parseInt(
+                makeDetailDivForLabel(details, labels, "Chapters", "Completed?").text().trim());
+        wordCount = Integer.parseInt(makeDetailDivForLabel(details, labels, "Wordcount", "Viewcount").text().trim());
+        datePublished = makeDetailDivForLabel(details, labels, "Published", "Updated").text().trim();
+        dateUpdated = makeDetailDivForLabel(details, labels, "Updated", null).text().trim();
+
+        // Detail tags which the site doesn't support.
+        if (hasDetailTag(C.J_GENRES)) genres = detailTags.get(C.J_GENRES);
 
         // Generate chapter urls.
         for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(MN_C_URL, storyId, i + 1, warnBypass));
     }
 
     /**
-     * Return a new div element which contains the child nodes from the parent element that corresponds to a particular
-     * label element.
-     * @param parent   Element to copy nodes from.
-     * @param labels   List of label elements from the parent.
-     * @param labelIdx Index of label (in labels parameter, not parent!!) which we want to make a div for.
+     * Return a new div element which contains the child nodes from the parent element which are between two label
+     * elements.
+     * @param parent             Element to copy nodes from.
+     * @param labels             List of label elements from the parent.
+     * @param startLabelContains Substring of label which precedes the elements we're interested in.
+     * @param endLabelContains   Substring of label which follows the elements we're interested in (can be null).
      * @return A new div element, or null if the parameters passed aren't valid.
      */
-    private Element makeDetailDivForLabel(Element parent, Elements labels, int labelIdx) {
+    private Element makeDetailDivForLabel(Element parent, Elements labels, String startLabelContains,
+                                          String endLabelContains) {
         // Parameter checks.
-        if (parent == null || labelIdx < 0 || labelIdx >= labels.size()) return null;
+        if (parent == null || startLabelContains == null || startLabelContains.isEmpty()) return null;
         // Sometimes MuggleNet wraps the details in a <p> tag, which we don't really want, so be sure to handle that.
-        Element realParent = parent.childNodes().size() != 2 ? parent : parent.child(1);
+        if (parent.childNodes().size() < 15) parent.children().last().unwrap();
         // Figure out start and end indices for copying nodes from parent based on the index of labels[labelIdx] in
         // the parent.
         // Start index should be one higher than the index of the label in the parent (we don't need the actual label).
-        int startIdx = realParent.childNodes().indexOf(labels.get(labelIdx)) + 1;
-        int endIdx = labelIdx != labels.size() - 1
-                // If labelIdx *doesn't* point to the last label in the labels list, the end index should be the
-                // index (in the parent's list of child nodes) of the next label after the one pointed to by labelIdx.
-                ? realParent.childNodes().indexOf(labels.get(labelIdx + 1))
-                // Otherwise, the end index should be equal to the capacity of the parent's list of child nodes.
-                : realParent.childNodes().size();
+        int startLabelIdx = findLabelIdx(labels, startLabelContains);
+        int endLabelIdx = endLabelContains != null ? findLabelIdx(labels, endLabelContains) : -1;
+        if (startLabelIdx == -1) return null;
+        int startIdx = parent.childNodes().indexOf(labels.get(startLabelIdx)) + 1;
+        int endIdx = endLabelIdx != -1
+                // If we have an endLabelIdx, then this should be the index of that element in the parent.
+                ? parent.childNodes().indexOf(labels.get(endLabelIdx))
+                // If we don't, and startLabelIdx isn't the last one, use the next one.
+                : (startLabelIdx != labels.size() - 1
+                ? parent.childNodes().indexOf(labels.get(startLabelIdx + 1))
+                //Otherwise, the end index should be equal to the capacity of the parent's list of child nodes.
+                : parent.childNodes().size());
         // Return the new div.
-        return Util.divFromChildCopies(realParent, startIdx, endIdx);
+        return Util.divFromChildCopies(parent, startIdx, endIdx);
+    }
+
+    /**
+     * Given a list of label elements, return the index of the one which contains {@code labelNameContains}.
+     * @param labels            List of label elements.
+     * @param labelNameContains Label name substring to look for.
+     * @return Index of label with substring, or -1 if not found or {@code labelNameContains} is {@code null} or the
+     * empty string.
+     */
+    private int findLabelIdx(Elements labels, String labelNameContains) {
+        if (labels == null || labelNameContains == null || labelNameContains.isEmpty()) return -1;
+        for (int i = 0; i < labels.size(); i++)
+            if (labels.get(i).text().trim().contains(labelNameContains)) return i;
+        return -1;
     }
 }

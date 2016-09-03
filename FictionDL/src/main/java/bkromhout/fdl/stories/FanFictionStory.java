@@ -1,6 +1,7 @@
-package bkromhout.fdl.storys;
+package bkromhout.fdl.stories;
 
 import bkromhout.fdl.ex.InitStoryException;
+import bkromhout.fdl.parsing.StoryEntry;
 import bkromhout.fdl.site.Sites;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
@@ -35,12 +36,12 @@ public class FanFictionStory extends Story {
             "|\\QTragedy\\E|\\QWestern\\E";
 
     /**
-     * Create a new {@link FanFictionStory} based off of a url.
-     * @param url url of the story this model represents.
+     * Create a new {@link FanFictionStory}.
+     * @param storyEntry Story entry with details from the input file.
      * @throws InitStoryException if we can't create this story object for some reason.
      */
-    public FanFictionStory(String url) throws InitStoryException {
-        super(url, Sites.FFN());
+    public FanFictionStory(StoryEntry storyEntry) throws InitStoryException {
+        super(storyEntry, Sites.FFN());
     }
 
     @Override
@@ -53,16 +54,24 @@ public class FanFictionStory extends Story {
         if (infoDoc == null || infoDoc.select("span.gui_warning").first() != null)
             throw new InitStoryException(C.STORY_DL_FAILED, site.getName(), storyId);
 
-        title = infoDoc.select("div#profile_top b").first().html().trim();
-        author = infoDoc.select("div#profile_top a[href~=" + "/u/.*" + "]").first().html().trim();
-        summary = infoDoc.select("div#profile_top > div").first().html().trim();
-        ficType = parseFicType(infoDoc); // FFN fandom/crossover fandom
+        title = hasDetailTag(C.J_TITLE) ? detailTags.get(C.J_TITLE)
+                : infoDoc.select("div#profile_top b").first().html().trim();
+
+        author = hasDetailTag(C.J_AUTHOR) ? detailTags.get(C.J_AUTHOR)
+                : infoDoc.select("div#profile_top a[href~=" + "/u/.*" + "]").first().html().trim();
+
+        summary = hasDetailTag(C.J_SUMMARY) ? detailTags.get(C.J_SUMMARY)
+                : infoDoc.select("div#profile_top > div").first().html().trim();
+
+        ficType = hasDetailTag(C.J_FIC_TYPE) ? detailTags.get(C.J_FIC_TYPE)
+                : parseFicType(infoDoc); // FFN fandom/crossover fandom
 
         // Get the details string and split it up to help get the other details.
         Element detailElem = infoDoc.select("div#profile_top > span").last();
         String[] details = detailElem.text().split(" - ");
 
-        rating = details[0].replace("Rated: ", "").trim();
+        rating = hasDetailTag(C.J_RATING) ? detailTags.get(C.J_RATING)
+                : details[0].replace("Rated: ", "").trim();
 
         // Get the chapter count, remember its index for later.
         int chapCntIdx = findDetailsStringIdx(details, "Chapters: ");
@@ -97,12 +106,20 @@ public class FanFictionStory extends Story {
             characters = details[3].trim();
         }
 
+        // However, we might just override that work we just did for genres/characters ;)
+        if (hasDetailTag(C.J_GENRES)) genres = detailTags.get(C.J_GENRES);
+        if (hasDetailTag(C.J_CHARACTERS)) characters = detailTags.get(C.J_CHARACTERS);
+
         // Get the dates.
         Elements dates = detailElem.select("span > span");
         datePublished = dateFromFfnTime(dates.last().attr("data-xutime"));
         dateUpdated = dates.size() > 1 ? dateFromFfnTime(dates.first().attr("data-xutime")) : datePublished;
 
         status = findDetailsStringIdx(details, "Status: Complete") != -1 ? C.STAT_C : C.STAT_I;
+
+        // Detail tags which the site doesn't support.
+        if (hasDetailTag(C.J_SERIES)) series = detailTags.get(C.J_SERIES);
+        if (hasDetailTag(C.J_WARNINGS)) warnings = detailTags.get(C.J_WARNINGS);
 
         // Generate chapter urls.
         for (int i = 0; i < chapCount; i++) chapterUrls.add(String.format(FFN_C_URL, storyId, i + 1));

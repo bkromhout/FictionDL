@@ -3,10 +3,10 @@ package bkromhout.fdl.rx;
 import bkromhout.fdl.ex.RequestException;
 import bkromhout.fdl.ex.ResponseException;
 import bkromhout.fdl.util.C;
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.Callback;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Request;
+import okhttp3.Response;
 import rx.Observable;
 import rx.Subscriber;
 import rx.subscriptions.Subscriptions;
@@ -36,7 +36,7 @@ public class RxOkHttpCall implements Observable.Transformer<Request, Response> {
          * @param request Request to enqueue.
          */
         private ExecuteRequest(Request request) {
-            this(request, C.getHttpClient().getDispatcher().getExecutorService());
+            this(request, C.getHttpClient().dispatcher().executorService());
         }
 
         /**
@@ -59,22 +59,22 @@ public class RxOkHttpCall implements Observable.Transformer<Request, Response> {
             // Enqueue the call.
             call.enqueue(new Callback() {
                 @Override
-                public void onFailure(Request request, IOException e) {
+                public void onFailure(Call innerCall, IOException e) {
                     if (sub.isUnsubscribed()) return;
-                    sub.onError(new RequestException(request, e));
+                    sub.onError(new RequestException(innerCall.request(), e));
                 }
 
                 @Override
-                public void onResponse(Response resp) throws IOException {
+                public void onResponse(Call innerCall, Response response) throws IOException {
                     if (sub.isUnsubscribed()) return;
                     // Make sure the response is actually valid.
-                    if (!resp.isSuccessful()) {
-                        resp.body().close(); // Make sure the response body is closed so that it doesn't leak.
+                    if (!response.isSuccessful()) {
+                        response.body().close(); // Make sure the response body is closed so that it doesn't leak.
                         sub.onError(new ResponseException(
-                                String.format(C.UNEXP_HTML_RESP, resp.request().urlString()), resp));
+                                String.format(C.UNEXP_HTML_RESP, response.request().url()), response));
                     }
                     // If we were successful, notify the subscriber and then indicate we're complete.
-                    sub.onNext(resp);
+                    sub.onNext(response);
                     sub.onCompleted();
                 }
             });

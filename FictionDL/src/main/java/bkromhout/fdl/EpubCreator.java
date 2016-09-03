@@ -1,11 +1,12 @@
 package bkromhout.fdl;
 
 import bkromhout.fdl.chapter.Chapter;
-import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.stories.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
 import nl.siegmann.epublib.domain.*;
 import nl.siegmann.epublib.epub.EpubWriter;
+import nl.siegmann.epublib.service.MediatypeService;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,10 +67,20 @@ public final class EpubCreator {
     private Book generateEpub() {
         // Create Book.
         Book book = new Book();
+        // Set cover image (if present).
+        if (story.hasCover()) {
+            Resource coverImage = new Resource(story.getCoverImage(),
+                    MediatypeService.determineMediaType(story.getCoverImageFileName()));
+            book.setCoverImage(coverImage);
+        }
+        // Add all other image resources.
+        // TODO Fix my fork of epublib so that addAll() work the same way as add().
+        //book.getResources().addAll(story.getImageResources());
+        story.getImageResources().forEach(book::addResource);
         // Set title, author, description (summary), identifier (story url), and publisher (story site).
         book.getMetadata().addTitle(Util.unEscapeAmps(story.getTitle()));
         book.getMetadata().addAuthor(new Author(story.getAuthor()));
-        book.getMetadata().addDescription(Util.cleanHtmlString(story.getSummary()));
+        book.getMetadata().addDescription(Util.removeImgTags(Util.cleanHtmlString(story.getSummary())));
         if (story.getUrl() != null)
             book.getMetadata().addIdentifier(new Identifier(Identifier.Scheme.URL, story.getUrl()));
         if (story.getHost() != null) book.getMetadata().addPublisher(story.getHost());

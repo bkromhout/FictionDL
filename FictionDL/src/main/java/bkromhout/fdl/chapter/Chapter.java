@@ -1,5 +1,6 @@
 package bkromhout.fdl.chapter;
 
+import bkromhout.fdl.stories.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.Util;
 import org.jsoup.nodes.Document;
@@ -8,6 +9,10 @@ import org.jsoup.nodes.Document;
  * Chapter model.
  */
 public class Chapter {
+    /**
+     * Owning story.
+     */
+    public final Story story;
     /**
      * Chapter number.
      */
@@ -30,10 +35,12 @@ public class Chapter {
      * <p>
      * This constructor purposefully <i>does not</i> call through to the {@code Chapter(Document, String, int)}
      * constructor, in case we do not wish to create the title when creating this {@link Chapter}.
+     * @param story Story which this chapter is a part of.
      * @param rawHtml Raw chapter content.
      * @param number  Chapter number.
      */
-    Chapter(Document rawHtml, int number) {
+    Chapter(Story story, Document rawHtml, int number) {
+        this.story = story;
         this.rawHtml = rawHtml;
         this.number = number;
     }
@@ -44,10 +51,12 @@ public class Chapter {
      * Note that this constructor will set {@link #content} to be {@code htmlStr} without putting it into the chapter
      * template first (since we don't know the title yet). Call {@link #wrapContentInTemplate()} later after populating
      * {@link #title} to do so.
+     * @param story Story which this chapter is a part of.
      * @param htmlStr Raw chapter content String.
      * @param number  Chapter number.
      */
-    Chapter(String htmlStr, int number) {
+    Chapter(Story story, String htmlStr, int number) {
+        this.story = story;
         this.rawHtml = null;
         this.number = number;
         this.content = htmlStr;

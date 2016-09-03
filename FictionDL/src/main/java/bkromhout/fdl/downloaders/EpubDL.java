@@ -2,7 +2,7 @@ package bkromhout.fdl.downloaders;
 
 import bkromhout.fdl.FictionDL;
 import bkromhout.fdl.site.Site;
-import bkromhout.fdl.storys.Story;
+import bkromhout.fdl.stories.Story;
 import bkromhout.fdl.util.C;
 import bkromhout.fdl.util.ProgressHelper;
 import bkromhout.fdl.util.Util;
