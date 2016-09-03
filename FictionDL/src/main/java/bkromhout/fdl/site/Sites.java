@@ -23,7 +23,7 @@ public class Sites {
     /**
      * Supported {@link Site}s.
      */
-    private static Site FH, FFN, SIYE, MN, AO3, TBC, WP;
+    private static Site FH, FFN, SIYE, MN, AO3, TBC, WP, HPFF;
 
     /**
      * Create all {@link Site} classes and init this class. Be careful not to call this more than once per {@link
@@ -39,6 +39,7 @@ public class Sites {
         all.add(AO3 = new Site("Ao3", "archiveofourown.org", Ao3DL.class, Ao3Story.class));
         all.add(TBC = new Site("The Broom Cupboard", "thebroomcupboard.net", TbcDL.class, TbcStory.class, true));
         all.add(WP = new Site("Wattpad", "wattpad.com", WattpadDL.class, WattpadStory.class));
+        all.add(HPFF = new Site("Harry Potter FanFiction", "harrypotterfanfiction.com", HpffDL.class, HpffStory.class));
     }
 
     /**
@@ -75,5 +76,9 @@ public class Sites {
 
     public static Site WP() {
         return WP;
+    }
+
+    public static Site HPFF() {
+        return HPFF;
     }
 }
